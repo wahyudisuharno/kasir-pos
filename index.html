@@ -1059,6 +1059,10 @@
     const fmtNum = (n) => Math.max(0, Math.round(Number(n || 0))).toLocaleString("id-ID");
     const fmtRp = (n) => "Rp " + fmtNum(n);
 
+    function normCat(val) {
+      return String(val || "").trim().toLowerCase().replace(/\s+/g, " ");
+    }
+
     function parseMoney(rawVal) {
       if (typeof rawVal === "number") return Math.max(0, Math.round(rawVal));
       const digits = String(rawVal || "").replace(/\D/g, "");
@@ -1171,11 +1175,34 @@
       });
     });
 
+    function getFilteredProdukByKategori() {
+      const cat = document.getElementById("kategoriFilter").value;
+      const activeList = state.katalog.filter(p => p.aktif !== false);
+      if (cat === "ALL") return activeList;
+      const targetCat = normCat(cat);
+      return activeList.filter(p => normCat(p.kategori) === targetCat);
+    }
+
     function populateProdukSelect() {
       const cat = document.getElementById("kategoriFilter").value;
       const sel = document.getElementById("produkSelect");
-      const filtered = cat === "ALL" ? state.katalog : state.katalog.filter(p => p.kategori === cat);
+      const filtered = getFilteredProdukByKategori();
 
+      if (filtered.length === 0) {
+        sel.innerHTML = `<option value="">-- Belum ada produk di kategori ${cat} --</option>`;
+        sel.disabled = true;
+        document.getElementById("btnAddItem").disabled = true;
+        document.getElementById("bannerDimsBox").classList.add("hidden");
+        document.getElementById("qtyLabel").textContent = "Jumlah";
+        document.getElementById("hargaLabel").textContent = "Harga Satuan (Rp)";
+        setMoneyInput("hargaOverride", 0);
+        document.getElementById("itemCalcDesc").textContent = `Tidak ada layanan/produk untuk kategori ${cat}`;
+        document.getElementById("itemCalcTotal").textContent = "Rp 0";
+        return;
+      }
+
+      sel.disabled = false;
+      document.getElementById("btnAddItem").disabled = false;
       sel.innerHTML = filtered.map(p =>
         `<option value="${p.id_produk}">${p.nama_produk} • ${fmtRp(p.harga_dasar)}/${getUnitLabel(p.tipe_hitung)}</option>`
       ).join("");
@@ -1184,8 +1211,10 @@
     }
 
     function getSelectedProduct() {
+      const filtered = getFilteredProdukByKategori();
+      if (filtered.length === 0) return null;
       const id = document.getElementById("produkSelect").value;
-      return state.katalog.find(p => p.id_produk === id) || state.katalog[0];
+      return filtered.find(p => p.id_produk === id) || filtered[0];
     }
 
     function syncSelectedProductFields() {
@@ -1232,9 +1261,8 @@
       document.getElementById("itemCalcTotal").textContent = fmtRp(calc.total);
     }
 
-    ["kategoriFilter", "produkSelect"].forEach(id => {
-      document.getElementById(id).addEventListener("change", syncSelectedProductFields);
-    });
+    document.getElementById("kategoriFilter").addEventListener("change", populateProdukSelect);
+    document.getElementById("produkSelect").addEventListener("change", syncSelectedProductFields);
     document.getElementById("qtyInput").addEventListener("input", () => {
       const prod = getSelectedProduct();
       const qty = Math.max(1, Number(document.getElementById("qtyInput").value || 1));
