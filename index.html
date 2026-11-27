@@ -77,8 +77,36 @@
       margin-bottom: 12px;
     }
 
+    .brand-block {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo-box {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      background: var(--accent-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+      font-weight: 800;
+      color: var(--accent-dark);
+      font-size: 1rem;
+    }
+
+    .brand-logo-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
     .brand-title {
-      font-size: 1.18rem;
+      font-size: 1.15rem;
       font-weight: 800;
       color: var(--accent-dark);
       letter-spacing: -0.01em;
@@ -88,6 +116,12 @@
       font-size: 0.82rem;
       color: var(--text-muted);
       margin-top: 2px;
+    }
+
+    .brand-contact {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 1px;
     }
 
     .actions-row {
@@ -294,6 +328,38 @@
       box-shadow: 0 0 0 3px var(--accent-soft);
     }
 
+    .logo-preview-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px dashed var(--border-color);
+      background: var(--surface-alt);
+      margin-bottom: 12px;
+    }
+
+    .logo-preview-thumb {
+      width: 56px;
+      height: 56px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+      font-weight: 800;
+      color: var(--accent-dark);
+    }
+
+    .logo-preview-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
     .money-input {
       font-variant-numeric: tabular-nums;
       font-weight: 700;
@@ -423,6 +489,33 @@
       overflow-y: auto;
     }
 
+    .nota-brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nota-logo-box {
+      width: 46px;
+      height: 46px;
+      border-radius: 10px;
+      border: 1px solid #e7e5e4;
+      background: #fff7ed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+      font-weight: 800;
+      color: #c2410c;
+    }
+
+    .nota-logo-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
     .nota-sheet table th,
     .nota-sheet table td {
       color: #1c1917;
@@ -498,9 +591,13 @@
 <body>
   <div class="app-wrap">
     <header class="topbar">
-      <div>
-        <div class="brand-title">Omah Oelin Digital Printing — POS & Order</div>
-        <div class="brand-sub">Kitren, RT.23/RW.05, 593, Prenggan, Kec. Kotagede, Yogyakarta 55172</div>
+      <div class="brand-block">
+        <div class="brand-logo-box" id="headerLogoBox">OO</div>
+        <div>
+          <div class="brand-title" id="headerBusinessName">Omah Oelin Digital Printing</div>
+          <div class="brand-sub" id="headerBusinessAddress">Kitren, RT.23/RW.05, 593, Prenggan, Kec. Kotagede, Yogyakarta 55172</div>
+          <div class="brand-contact hidden" id="headerBusinessPhone"></div>
+        </div>
       </div>
       <div class="actions-row no-print">
         <button class="btn btn-sm hidden" id="btnInstallApp">Pasang ke Layar HP</button>
@@ -805,7 +902,7 @@
       </div>
     </section>
 
-    <!-- TAB 4: REKAP KEUANGAN, KAS HARIAN & SISTEM PEMBAYARAN -->
+    <!-- TAB 4: REKAP KEUANGAN, KAS HARIAN, PROFIL USAHA & PEMBAYARAN -->
     <section id="tab-finance" class="hidden">
       <div class="card">
         <div class="card-title">
@@ -875,6 +972,48 @@
         </div>
       </div>
 
+      <!-- PENGATURAN LOGO, NAMA USAHA, ALAMAT & NO. HP/WA -->
+      <div class="card">
+        <div class="card-title">Identitas Usaha (Nama Usaha, Alamat, Kontak & Logo Nota)</div>
+        <form id="formBusinessProfile">
+          <div class="form-grid">
+            <div class="field">
+              <label for="bizNameInput">Nama Usaha</label>
+              <input type="text" id="bizNameInput" required placeholder="Contoh: Omah Oelin Digital Printing" />
+            </div>
+            <div class="field">
+              <label for="bizPhoneInput">Nomor HP / WA Usaha (opsional)</label>
+              <input type="text" id="bizPhoneInput" placeholder="Contoh: 0812-3456-7890" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="bizAddressInput">Alamat Usaha</label>
+            <input type="text" id="bizAddressInput" required placeholder="Contoh: Kitren, RT.23/RW.05, 593, Prenggan, Kec. Kotagede, Yogyakarta 55172" />
+          </div>
+
+          <div class="logo-preview-wrap">
+            <div class="logo-preview-thumb" id="bizLogoPreviewThumb">OO</div>
+            <div style="flex:1">
+              <div style="font-size:0.84rem;font-weight:700">Logo Usaha</div>
+              <div style="font-size:0.76rem;color:var(--text-muted)">Pilih gambar PNG/JPG/SVG (otomatis disesuaikan ukurannya untuk nota & aplikasi)</div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+                <label class="btn btn-sm" style="margin:0">
+                  Pilih Logo
+                  <input type="file" id="bizLogoFile" accept="image/*" style="display:none" />
+                </label>
+                <button type="button" class="btn btn-sm" id="btnRemoveBizLogo">Hapus Logo</button>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button type="submit" class="btn btn-primary btn-sm">Simpan Identitas Usaha</button>
+            <button type="button" class="btn btn-sm" id="btnResetBizProfile">Kembalikan Default</button>
+          </div>
+        </form>
+      </div>
+
       <!-- FORM PENGATURAN SISTEM PEMBAYARAN -->
       <div class="card">
         <div class="card-title">Pengaturan Sistem Pembayaran (Untuk Pesan Pelunasan WA)</div>
@@ -929,10 +1068,14 @@
   <!-- MODAL NOTA SIAP SIMPAN PDF -->
   <div id="notaModal" class="hidden">
     <div class="nota-sheet">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #1c1917;padding-bottom:12px;margin-bottom:14px">
-        <div>
-          <div style="font-size:1.2rem;font-weight:800">OMAH OELIN DIGITAL PRINTING</div>
-          <div style="font-size:0.82rem;color:#57534e">Kitren, RT.23/RW.05, 593, Prenggan, Kotagede, Yogyakarta 55172</div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #1c1917;padding-bottom:12px;margin-bottom:14px;gap:10px">
+        <div class="nota-brand-wrap">
+          <div class="nota-logo-box" id="notaLogoBox">OO</div>
+          <div>
+            <div style="font-size:1.15rem;font-weight:800" id="notaBusinessName">Omah Oelin Digital Printing</div>
+            <div style="font-size:0.82rem;color:#57534e" id="notaBusinessAddress">Kitren, RT.23/RW.05, 593, Prenggan, Kotagede, Yogyakarta 55172</div>
+            <div style="font-size:0.78rem;color:#57534e" class="hidden" id="notaBusinessPhone"></div>
+          </div>
         </div>
         <div style="text-align:right">
           <div style="font-weight:800;font-size:1rem" id="notaNomor">INV-...</div>
@@ -989,7 +1132,7 @@
       <div class="no-print" style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap">
         <button class="btn btn-sm" id="btnCloseNota" style="background:#f5f5f4;color:#1c1917">Tutup</button>
         <button class="btn btn-sm" id="btnWaNota" style="background:#15803d;color:#fff;border:none">Kirim WA</button>
-        <button class="btn btn-primary btn-sm" onclick="window.print()">Simpan / Cetak PDF</button>
+        <button class="btn btn-primary btn-sm" id="btnPrintNotaPdf">Simpan / Cetak PDF</button>
       </div>
     </div>
   </div>
@@ -997,6 +1140,14 @@
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbx6fnbbrFEbkxsqLElTrbOi6ujwbsPfLvgE9bTRDTzEHBajr-yVHSwPO6kPp-QAnvO_/exec";
     const PAYMENT_STORAGE_KEY = "omah_oelin_payment_methods_v1";
+    const BIZ_PROFILE_STORAGE_KEY = "omah_oelin_biz_profile_v1";
+
+    const DEFAULT_BIZ_PROFILE = {
+      nama_usaha: "Omah Oelin Digital Printing",
+      alamat_usaha: "Kitren, RT.23/RW.05, 593, Prenggan, Kec. Kotagede, Yogyakarta 55172",
+      no_hp_usaha: "",
+      logo_data_url: ""
+    };
 
     const UNIT_LABELS = {
       LUAS_M2: "m²",
@@ -1029,6 +1180,26 @@
       { id: "PAYM-1", kanal: "Transfer Bank", nomor: "Silakan isi no. rekening di tab Keuangan & Kas", atas_nama: "", aktif: true }
     ];
 
+    function loadBizProfile() {
+      try {
+        const raw = localStorage.getItem(BIZ_PROFILE_STORAGE_KEY);
+        if (!raw) return { ...DEFAULT_BIZ_PROFILE };
+        const parsed = JSON.parse(raw);
+        return {
+          nama_usaha: String(parsed.nama_usaha || DEFAULT_BIZ_PROFILE.nama_usaha).trim() || DEFAULT_BIZ_PROFILE.nama_usaha,
+          alamat_usaha: String(parsed.alamat_usaha || DEFAULT_BIZ_PROFILE.alamat_usaha).trim() || DEFAULT_BIZ_PROFILE.alamat_usaha,
+          no_hp_usaha: String(parsed.no_hp_usaha || "").trim(),
+          logo_data_url: String(parsed.logo_data_url || "")
+        };
+      } catch {
+        return { ...DEFAULT_BIZ_PROFILE };
+      }
+    }
+
+    function saveBizProfileToStorage() {
+      localStorage.setItem(BIZ_PROFILE_STORAGE_KEY, JSON.stringify(state.bizProfile));
+    }
+
     function loadPaymentMethods() {
       try {
         const raw = localStorage.getItem(PAYMENT_STORAGE_KEY);
@@ -1045,6 +1216,8 @@
     }
 
     const state = {
+      bizProfile: loadBizProfile(),
+      draftLogoUrl: loadBizProfile().logo_data_url,
       katalog: [...DEFAULT_KATALOG],
       stok: [...DEFAULT_STOK],
       paymentMethods: loadPaymentMethods(),
@@ -1053,7 +1226,8 @@
       details: [],
       pembayaran: [],
       activeNota: null,
-      activeWaTemplate: "konfirmasi"
+      activeWaTemplate: "konfirmasi",
+      defaultPageTitle: ""
     };
 
     const fmtNum = (n) => Math.max(0, Math.round(Number(n || 0))).toLocaleString("id-ID");
@@ -1062,6 +1236,152 @@
     function normCat(val) {
       return String(val || "").trim().toLowerCase().replace(/\s+/g, " ");
     }
+
+    function sanitizeFilePart(str, fallback = "") {
+      return String(str || "")
+        .trim()
+        .replace(/[\\/:*?"<>|]+/g, "-")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-")
+        .replace(/^-|-$/g, "") || fallback;
+    }
+
+    function buildPdfFilenameBase(order) {
+      const invPart = sanitizeFilePart(order && order.no_nota, "INV");
+      const custPart = sanitizeFilePart(order && order.nama_pelanggan, "Pelanggan");
+      return `${invPart}-${custPart}`;
+    }
+
+    function getInitials(name) {
+      const words = String(name || "").trim().split(/\s+/).filter(Boolean);
+      if (words.length === 0) return "OO";
+      if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+      return (words[0][0] + words[1][0]).toUpperCase();
+    }
+
+    function renderLogoBox(containerEl, logoDataUrl, businessName) {
+      if (!containerEl) return;
+      if (logoDataUrl) {
+        containerEl.innerHTML = `<img src="${logoDataUrl}" alt="Logo ${businessName}" />`;
+      } else {
+        containerEl.textContent = getInitials(businessName);
+      }
+    }
+
+    function applyPhoneText(el, phoneVal) {
+      if (!el) return;
+      const clean = String(phoneVal || "").trim();
+      if (clean) {
+        el.textContent = `HP / WA: ${clean}`;
+        el.classList.remove("hidden");
+      } else {
+        el.textContent = "";
+        el.classList.add("hidden");
+      }
+    }
+
+    function applyBizProfileUI() {
+      const bizName = state.bizProfile.nama_usaha || DEFAULT_BIZ_PROFILE.nama_usaha;
+      const bizAddress = state.bizProfile.alamat_usaha || DEFAULT_BIZ_PROFILE.alamat_usaha;
+      const bizPhone = state.bizProfile.no_hp_usaha || "";
+      const logoUrl = state.bizProfile.logo_data_url || "";
+
+      state.defaultPageTitle = `${bizName} — POS & Order`;
+      document.title = state.defaultPageTitle;
+      document.getElementById("headerBusinessName").textContent = bizName;
+      document.getElementById("headerBusinessAddress").textContent = bizAddress;
+      applyPhoneText(document.getElementById("headerBusinessPhone"), bizPhone);
+
+      document.getElementById("notaBusinessName").textContent = bizName;
+      document.getElementById("notaBusinessAddress").textContent = bizAddress;
+      applyPhoneText(document.getElementById("notaBusinessPhone"), bizPhone);
+
+      renderLogoBox(document.getElementById("headerLogoBox"), logoUrl, bizName);
+      renderLogoBox(document.getElementById("notaLogoBox"), logoUrl, bizName);
+
+      document.getElementById("bizNameInput").value = bizName;
+      document.getElementById("bizAddressInput").value = bizAddress;
+      document.getElementById("bizPhoneInput").value = bizPhone;
+      state.draftLogoUrl = logoUrl;
+      renderLogoBox(document.getElementById("bizLogoPreviewThumb"), state.draftLogoUrl, bizName);
+
+      if (state.activeNota) {
+        document.getElementById("waPreviewText").value = buildWaMessage(state.activeNota, state.activeWaTemplate);
+      }
+    }
+
+    function compressImageToDataUrl(file, maxSize = 220) {
+      return new Promise((resolve, reject) => {
+        if (!file) {
+          resolve("");
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const img = new Image();
+          img.onload = () => {
+            const ratio = Math.min(maxSize / img.width, maxSize / img.height, 1);
+            const w = Math.max(1, Math.round(img.width * ratio));
+            const h = Math.max(1, Math.round(img.height * ratio));
+            const canvas = document.createElement("canvas");
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, w, h);
+            resolve(canvas.toDataURL("image/png", 0.9));
+          };
+          img.onerror = reject;
+          img.src = ev.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    document.getElementById("bizLogoFile").addEventListener("change", async (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      try {
+        const compressed = await compressImageToDataUrl(file, 220);
+        state.draftLogoUrl = compressed;
+        const currentName = document.getElementById("bizNameInput").value.trim() || state.bizProfile.nama_usaha;
+        renderLogoBox(document.getElementById("bizLogoPreviewThumb"), state.draftLogoUrl, currentName);
+      } catch {
+        alert("Gagal memuat file logo.");
+      }
+    });
+
+    document.getElementById("btnRemoveBizLogo").addEventListener("click", () => {
+      state.draftLogoUrl = "";
+      document.getElementById("bizLogoFile").value = "";
+      const currentName = document.getElementById("bizNameInput").value.trim() || state.bizProfile.nama_usaha;
+      renderLogoBox(document.getElementById("bizLogoPreviewThumb"), "", currentName);
+    });
+
+    document.getElementById("btnResetBizProfile").addEventListener("click", () => {
+      state.bizProfile = { ...DEFAULT_BIZ_PROFILE };
+      state.draftLogoUrl = "";
+      document.getElementById("bizLogoFile").value = "";
+      saveBizProfileToStorage();
+      applyBizProfileUI();
+    });
+
+    document.getElementById("formBusinessProfile").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const nameVal = document.getElementById("bizNameInput").value.trim() || DEFAULT_BIZ_PROFILE.nama_usaha;
+      const addrVal = document.getElementById("bizAddressInput").value.trim() || DEFAULT_BIZ_PROFILE.alamat_usaha;
+      const phoneVal = document.getElementById("bizPhoneInput").value.trim();
+
+      state.bizProfile = {
+        nama_usaha: nameVal,
+        alamat_usaha: addrVal,
+        no_hp_usaha: phoneVal,
+        logo_data_url: state.draftLogoUrl || ""
+      };
+      saveBizProfileToStorage();
+      applyBizProfileUI();
+      alert("Identitas usaha (nama, alamat, kontak & logo) berhasil disimpan.");
+    });
 
     function parseMoney(rawVal) {
       if (typeof rawVal === "number") return Math.max(0, Math.round(rawVal));
@@ -1101,18 +1421,18 @@
         <rect width="192" height="192" rx="36" fill="#c2410c"/>
         <text x="96" y="114" font-family="system-ui,sans-serif" font-size="72" font-weight="800" fill="#ffffff" text-anchor="middle">OO</text>
       </svg>`;
-      const iconUrl = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgIcon);
+      const iconUrl = state.bizProfile.logo_data_url || ("data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgIcon));
       document.getElementById("appleIconLink").href = iconUrl;
 
       const manifestObj = {
-        name: "Omah Oelin POS — Percetakan & Merchandise",
-        short_name: "Omah Oelin POS",
+        name: `${state.bizProfile.nama_usaha} — POS`,
+        short_name: state.bizProfile.nama_usaha.slice(0, 15) || "POS Usaha",
         start_url: "./",
         display: "standalone",
         background_color: "#fff7ed",
         theme_color: "#c2410c",
         icons: [
-          { src: iconUrl, sizes: "192x192", type: "image/svg+xml", purpose: "any" }
+          { src: iconUrl, sizes: "192x192", type: "image/png", purpose: "any" }
         ]
       };
       const manifestUrl = "data:application/manifest+json;charset=utf-8," + encodeURIComponent(JSON.stringify(manifestObj));
@@ -1462,6 +1782,9 @@
     }
 
     function buildWaMessage(ord, templateKey = "konfirmasi") {
+      const bizName = state.bizProfile.nama_usaha || DEFAULT_BIZ_PROFILE.nama_usaha;
+      const bizPhone = (state.bizProfile.no_hp_usaha || "").trim();
+      const footerLines = bizPhone ? `— ${bizName} (${bizPhone})` : `— ${bizName}`;
       const items = ord.items || state.details.filter(d => d.no_nota === ord.no_nota);
       const rincian = items.map(it => `${it.nama_item_snapshot} (${it.qty} ${getUnitLabel(it.tipe_hitung)})`).join(", ") || "-";
       const ringkasan =
@@ -1474,7 +1797,7 @@
         return (
           `Halo Kak ${ord.nama_pelanggan}, preview desain *${ord.no_nota}* (${rincian}) sudah siap dicek.\n` +
           `Mohon cek teks, ukuran & finishing. Balas "ACC CETAK" jika sesuai atau tulis revisinya.\n` +
-          `— Omah Oelin Digital Printing`
+          `${footerLines}`
         );
       }
       if (templateKey === "pelunasan") {
@@ -1484,21 +1807,21 @@
           `Rekening / Pembayaran:\n` +
           `${formatPaymentChannelsText()}\n` +
           `Mohon kirim bukti transfer setelah bayar ya Kak.\n` +
-          `— Omah Oelin Digital Printing`
+          `${footerLines}`
         );
       }
       if (templateKey === "siap_ambil") {
         return (
           `Halo Kak ${ord.nama_pelanggan}, pesanan *${ord.no_nota}* (${rincian}) sudah *SIAP DIAMBIL*.\n` +
           `Sisa Tagihan: *${fmtRp(ord.sisa_tagihan)}*\n` +
-          `— Omah Oelin Digital Printing`
+          `${footerLines}`
         );
       }
       return (
         `Halo Kak ${ord.nama_pelanggan}, order Anda sudah kami terima:\n` +
         `${ringkasan}\n` +
         `Status: *${ord.status_produksi}*\n` +
-        `— Omah Oelin Digital Printing`
+        `${footerLines}`
       );
     }
 
@@ -1522,6 +1845,14 @@
       state.activeNota = order;
       const items = order.items || state.details.filter(d => d.no_nota === order.no_nota);
 
+      document.getElementById("notaBusinessName").textContent = state.bizProfile.nama_usaha || DEFAULT_BIZ_PROFILE.nama_usaha;
+      document.getElementById("notaBusinessAddress").textContent = state.bizProfile.alamat_usaha || DEFAULT_BIZ_PROFILE.alamat_usaha;
+      applyPhoneText(document.getElementById("notaBusinessPhone"), state.bizProfile.no_hp_usaha || "");
+      renderLogoBox(
+        document.getElementById("notaLogoBox"),
+        state.bizProfile.logo_data_url || "",
+        state.bizProfile.nama_usaha || DEFAULT_BIZ_PROFILE.nama_usaha
+      );
       document.getElementById("notaNomor").textContent = order.no_nota;
       document.getElementById("notaTanggal").textContent = order.tanggal_order;
       document.getElementById("notaPelanggan").textContent = order.nama_pelanggan;
@@ -1549,7 +1880,28 @@
       document.getElementById("notaModal").classList.remove("hidden");
     }
 
+    function restorePageTitle() {
+      if (state.defaultPageTitle) {
+        document.title = state.defaultPageTitle;
+      }
+    }
+
+    window.addEventListener("afterprint", restorePageTitle);
+
+    document.getElementById("btnPrintNotaPdf").addEventListener("click", () => {
+      const previousTitle = document.title;
+      const pdfName = buildPdfFilenameBase(state.activeNota);
+      document.title = pdfName;
+      window.print();
+      setTimeout(() => {
+        if (document.title === pdfName) {
+          document.title = previousTitle || state.defaultPageTitle;
+        }
+      }, 1000);
+    });
+
     document.getElementById("btnCloseNota").addEventListener("click", () => {
+      restorePageTitle();
       document.getElementById("notaModal").classList.add("hidden");
     });
 
@@ -2000,6 +2352,7 @@
 
     document.getElementById("btnSync").addEventListener("click", syncFromSheets);
 
+    applyBizProfileUI();
     setupPWA();
     bindMoneyInputs();
     initTheme();
