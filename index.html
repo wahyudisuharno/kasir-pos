@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#1d4ed8" />
+  <meta name="theme-color" content="#c2410c" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Omah Oelin POS" />
@@ -12,35 +12,35 @@
   <link id="appleIconLink" rel="apple-touch-icon" href="" />
   <style>
     :root {
-      --bg-gradient: linear-gradient(135deg, #f0f7ff 0%, #dbeafe 52%, #bfdbfe 100%);
-      --surface: rgba(255, 255, 255, 0.94);
-      --surface-alt: #eff6ff;
-      --text-main: #0f172a;
-      --text-muted: #1e3a8a;
-      --accent-dark: #1d4ed8;
-      --accent-main: #2563eb;
-      --accent-soft: rgba(37, 99, 235, 0.12);
-      --border-color: #93c5fd;
+      --bg-gradient: linear-gradient(160deg, #fffdf9 0%, #fff7ed 55%, #ffedd5 100%);
+      --surface: #ffffff;
+      --surface-alt: #fffaf5;
+      --text-main: #1c1917;
+      --text-muted: #57534e;
+      --accent-dark: #c2410c;
+      --accent-main: #ea580c;
+      --accent-soft: rgba(234, 88, 12, 0.11);
+      --border-color: #fed7aa;
       --success: #15803d;
       --warning: #b45309;
       --danger: #b91c1c;
-      --shadow: 0 10px 28px rgba(30, 58, 138, 0.09);
+      --shadow: 0 6px 20px rgba(124, 45, 18, 0.06);
     }
 
     [data-theme="dark"] {
-      --bg-gradient: linear-gradient(135deg, #071324 0%, #0c1e3a 55%, #122a52 100%);
-      --surface: rgba(13, 27, 48, 0.94);
-      --surface-alt: #132642;
-      --text-main: #f0f9ff;
-      --text-muted: #bae6fd;
-      --accent-dark: #60a5fa;
-      --accent-main: #3b82f6;
-      --accent-soft: rgba(96, 165, 250, 0.16);
-      --border-color: #1e40af;
+      --bg-gradient: linear-gradient(160deg, #141210 0%, #191512 55%, #201a16 100%);
+      --surface: #1f1b18;
+      --surface-alt: #28221e;
+      --text-main: #f5f5f4;
+      --text-muted: #d6d3d1;
+      --accent-dark: #fb923c;
+      --accent-main: #f97316;
+      --accent-soft: rgba(251, 146, 60, 0.15);
+      --border-color: #3f352e;
       --success: #4ade80;
       --warning: #fbbf24;
       --danger: #f87171;
-      --shadow: 0 12px 30px rgba(0, 0, 0, 0.38);
+      --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
     }
 
     * {
@@ -54,8 +54,8 @@
       background: var(--bg-gradient);
       color: var(--text-main);
       min-height: 100vh;
-      padding: 16px;
-      line-height: 1.45;
+      padding: 14px;
+      line-height: 1.5;
     }
 
     .app-wrap {
@@ -72,20 +72,22 @@
       background: var(--surface);
       border: 1px solid var(--border-color);
       border-radius: 16px;
-      padding: 16px 20px;
+      padding: 15px 18px;
       box-shadow: var(--shadow);
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
 
     .brand-title {
-      font-size: 1.25rem;
+      font-size: 1.18rem;
       font-weight: 800;
       color: var(--accent-dark);
+      letter-spacing: -0.01em;
     }
 
     .brand-sub {
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       color: var(--text-muted);
+      margin-top: 2px;
     }
 
     .actions-row {
@@ -108,12 +110,13 @@
       border-radius: 10px;
       font-weight: 600;
       cursor: pointer;
-      transition: transform 0.12s ease, background 0.15s ease;
+      transition: transform 0.12s ease, background 0.15s ease, border-color 0.15s ease;
     }
 
     .btn:hover {
       transform: translateY(-1px);
       background: var(--accent-soft);
+      border-color: var(--accent-main);
     }
 
     .btn-primary {
@@ -128,31 +131,44 @@
     }
 
     .btn-sm {
-      padding: 6px 10px;
+      padding: 7px 11px;
       font-size: 0.8rem;
-      border-radius: 8px;
+      border-radius: 9px;
     }
 
     .tabs {
       display: flex;
       gap: 8px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
+      margin-bottom: 14px;
+      overflow-x: auto;
+      flex-wrap: nowrap;
+      padding-bottom: 4px;
+      scrollbar-width: thin;
+    }
+
+    @media (min-width: 768px) {
+      .tabs {
+        flex-wrap: wrap;
+        overflow-x: visible;
+      }
     }
 
     .tab-btn {
-      padding: 10px 16px;
-      border-radius: 12px;
+      padding: 9px 14px;
+      border-radius: 11px;
       border: 1px solid var(--border-color);
       background: var(--surface);
       color: var(--text-muted);
       font-weight: 700;
+      font-size: 0.84rem;
       cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
 
     .tab-btn.active {
       background: linear-gradient(135deg, var(--accent-dark), var(--accent-main));
-      color: #fff;
+      color: #ffffff;
       border-color: transparent;
     }
 
@@ -196,10 +212,11 @@
     }
 
     .kpi-label {
-      font-size: 0.78rem;
+      font-size: 0.75rem;
       font-weight: 700;
       color: var(--text-muted);
       text-transform: uppercase;
+      letter-spacing: 0.03em;
       margin-bottom: 4px;
     }
 
@@ -221,13 +238,13 @@
       border-radius: 16px;
       padding: 18px;
       box-shadow: var(--shadow);
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
     .card-title {
-      font-size: 1.05rem;
-      font-weight: 700;
-      margin-bottom: 12px;
+      font-size: 1.02rem;
+      font-weight: 800;
+      margin-bottom: 14px;
       color: var(--accent-dark);
       display: flex;
       justify-content: space-between;
@@ -239,40 +256,47 @@
     .form-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
+      gap: 12px;
     }
 
     @media (max-width: 600px) {
       .form-grid {
         grid-template-columns: 1fr;
+        gap: 4px;
       }
     }
 
     .field {
       display: flex;
       flex-direction: column;
-      gap: 4px;
-      margin-bottom: 10px;
+      gap: 5px;
+      margin-bottom: 12px;
     }
 
     .field label {
       font-size: 0.8rem;
-      font-weight: 600;
+      font-weight: 700;
       color: var(--text-muted);
     }
 
     .field input, .field select, .field textarea {
       width: 100%;
-      padding: 9px 11px;
+      padding: 10px 12px;
       border-radius: 10px;
       border: 1px solid var(--border-color);
       background: var(--surface-alt);
       color: var(--text-main);
     }
 
+    .field input:focus, .field select:focus, .field textarea:focus {
+      outline: none;
+      border-color: var(--accent-main);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
     .money-input {
       font-variant-numeric: tabular-nums;
-      font-weight: 600;
+      font-weight: 700;
     }
 
     .hidden {
@@ -283,8 +307,8 @@
       background: var(--surface-alt);
       border: 1px dashed var(--accent-main);
       border-radius: 12px;
-      padding: 12px;
-      margin: 10px 0 14px;
+      padding: 12px 14px;
+      margin: 8px 0 14px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -303,7 +327,7 @@
     }
 
     th, td {
-      padding: 9px 8px;
+      padding: 10px 8px;
       border-bottom: 1px solid var(--border-color);
       text-align: left;
       vertical-align: middle;
@@ -311,22 +335,23 @@
 
     th {
       color: var(--text-muted);
-      font-size: 0.78rem;
+      font-size: 0.75rem;
       text-transform: uppercase;
+      letter-spacing: 0.03em;
     }
 
     .badge {
       display: inline-block;
       padding: 3px 8px;
       border-radius: 999px;
-      font-size: 0.75rem;
+      font-size: 0.74rem;
       font-weight: 700;
       background: var(--accent-soft);
       color: var(--accent-dark);
     }
 
     .badge.lunas, .badge.aman {
-      background: rgba(21, 128, 61, 0.16);
+      background: rgba(21, 128, 61, 0.15);
       color: var(--success);
     }
 
@@ -342,16 +367,17 @@
 
     .summary-box {
       background: var(--surface-alt);
+      border: 1px solid var(--border-color);
       border-radius: 12px;
-      padding: 12px 14px;
-      margin-top: 10px;
+      padding: 13px 14px;
+      margin-top: 8px;
     }
 
     .summary-row {
       display: flex;
       justify-content: space-between;
       margin-bottom: 6px;
-      font-size: 0.92rem;
+      font-size: 0.9rem;
     }
 
     .summary-row.total {
@@ -365,17 +391,19 @@
 
     .status-banner {
       padding: 10px 14px;
-      border-radius: 10px;
-      background: var(--surface-alt);
+      border-radius: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border-color);
       border-left: 4px solid var(--accent-main);
-      font-size: 0.85rem;
-      margin-bottom: 14px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
     }
 
     #notaModal {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.55);
+      background: rgba(28, 25, 23, 0.6);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -385,25 +413,25 @@
 
     .nota-sheet {
       background: #ffffff;
-      color: #111827;
+      color: #1c1917;
       width: 100%;
       max-width: 660px;
       border-radius: 14px;
       padding: 24px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.32);
       max-height: 90vh;
       overflow-y: auto;
     }
 
     .nota-sheet table th,
     .nota-sheet table td {
-      color: #111827;
-      border-bottom: 1px solid #e5e7eb;
+      color: #1c1917;
+      border-bottom: 1px solid #e7e5e4;
     }
 
     .wa-box {
-      background: #f8fafc;
-      border: 1px solid #cbd5e1;
+      background: #fffaf5;
+      border: 1px solid #fed7aa;
       border-radius: 10px;
       padding: 12px;
       margin-top: 14px;
@@ -419,18 +447,18 @@
     .wa-pill {
       padding: 5px 10px;
       border-radius: 8px;
-      border: 1px solid #93c5fd;
-      background: #eff6ff;
-      color: #1e3a8a;
+      border: 1px solid #fdba74;
+      background: #ffffff;
+      color: #9a3412;
       font-size: 0.78rem;
       font-weight: 700;
       cursor: pointer;
     }
 
     .wa-pill.active {
-      background: #1d4ed8;
+      background: #c2410c;
       color: #ffffff;
-      border-color: #1d4ed8;
+      border-color: #c2410c;
     }
 
     .wa-textarea {
@@ -438,9 +466,9 @@
       min-height: 125px;
       padding: 9px 10px;
       border-radius: 8px;
-      border: 1px solid #cbd5e1;
+      border: 1px solid #d6d3d1;
       background: #ffffff;
-      color: #111827;
+      color: #1c1917;
       font-size: 0.82rem;
       resize: vertical;
     }
@@ -482,14 +510,14 @@
     </header>
 
     <div class="status-banner no-print" id="connectionBanner">
-      Mode Lokal aktif (belum ada URL Apps Script). Data tersimpan di browser dan siap disinkronkan ke Google Sheets.
+      Menghubungkan ke Google Sheets...
     </div>
 
     <nav class="tabs no-print">
-      <button class="tab-btn active" data-tab="pos">Kasir & Kalkulator Order</button>
-      <button class="tab-btn" data-tab="orders">Antrean Produksi & Pelunasan</button>
-      <button class="tab-btn" data-tab="inventory">Katalog & Stok Bahan</button>
-      <button class="tab-btn" data-tab="finance">Rekap Keuangan & Kas Harian</button>
+      <button class="tab-btn active" data-tab="pos">Kasir & Order</button>
+      <button class="tab-btn" data-tab="orders">Antrean & Pelunasan</button>
+      <button class="tab-btn" data-tab="inventory">Katalog & Stok</button>
+      <button class="tab-btn" data-tab="finance">Keuangan & Kas</button>
     </nav>
 
     <!-- TAB 1: POS -->
@@ -545,8 +573,8 @@
 
           <div class="calc-preview">
             <div>
-              <div style="font-size:0.8rem;color:var(--text-muted)">Estimasi Subtotal Item</div>
-              <div id="itemCalcDesc" style="font-size:0.85rem;font-weight:600">-</div>
+              <div style="font-size:0.78rem;color:var(--text-muted)">Estimasi Subtotal Item</div>
+              <div id="itemCalcDesc" style="font-size:0.84rem;font-weight:600">-</div>
             </div>
             <div id="itemCalcTotal" style="font-size:1.15rem;font-weight:800;color:var(--accent-dark)">Rp 0</div>
           </div>
@@ -642,7 +670,7 @@
     <section id="tab-orders" class="card hidden">
       <div class="card-title">
         <span>Daftar Order, Status Produksi & Pelunasan</span>
-        <input type="text" id="searchOrder" placeholder="Cari no nota / nama pelanggan..." style="max-width:250px;padding:7px 11px;border-radius:8px;border:1px solid var(--border-color);background:var(--surface-alt);color:var(--text-main)" />
+        <input type="text" id="searchOrder" placeholder="Cari no nota / nama pelanggan..." style="max-width:250px;padding:8px 11px;border-radius:9px;border:1px solid var(--border-color);background:var(--surface-alt);color:var(--text-main)" />
       </div>
       <div class="table-wrap">
         <table>
@@ -901,14 +929,14 @@
   <!-- MODAL NOTA SIAP SIMPAN PDF -->
   <div id="notaModal" class="hidden">
     <div class="nota-sheet">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #111827;padding-bottom:12px;margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #1c1917;padding-bottom:12px;margin-bottom:14px">
         <div>
           <div style="font-size:1.2rem;font-weight:800">OMAH OELIN DIGITAL PRINTING</div>
-          <div style="font-size:0.82rem;color:#4b5563">Kitren, RT.23/RW.05, 593, Prenggan, Kotagede, Yogyakarta 55172</div>
+          <div style="font-size:0.82rem;color:#57534e">Kitren, RT.23/RW.05, 593, Prenggan, Kotagede, Yogyakarta 55172</div>
         </div>
         <div style="text-align:right">
           <div style="font-weight:800;font-size:1rem" id="notaNomor">INV-...</div>
-          <div style="font-size:0.8rem;color:#4b5563" id="notaTanggal">-</div>
+          <div style="font-size:0.8rem;color:#57534e" id="notaTanggal">-</div>
         </div>
       </div>
 
@@ -939,7 +967,7 @@
         <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Subtotal</span><span id="notaSubtotal">Rp 0</span></div>
         <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Biaya Desain</span><span id="notaDesain">Rp 0</span></div>
         <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Diskon</span><span id="notaDiskon">- Rp 0</span></div>
-        <div style="display:flex;justify-content:space-between;font-weight:800;font-size:1.05rem;border-top:1px solid #d1d5db;padding-top:6px;margin-top:6px">
+        <div style="display:flex;justify-content:space-between;font-weight:800;font-size:1.05rem;border-top:1px solid #d6d3d1;padding-top:6px;margin-top:6px">
           <span>Grand Total</span><span id="notaGrandTotal">Rp 0</span>
         </div>
         <div style="display:flex;justify-content:space-between;margin-top:6px"><span>Dibayar / DP</span><span id="notaBayar">Rp 0</span></div>
@@ -948,7 +976,7 @@
 
       <!-- PANEL TEMPLATE WHATSAPP -->
       <div class="wa-box no-print">
-        <div style="font-size:0.8rem;font-weight:700;color:#1e3a8a;margin-bottom:6px">Template Pesan WhatsApp:</div>
+        <div style="font-size:0.8rem;font-weight:700;color:#9a3412;margin-bottom:6px">Template Pesan WhatsApp:</div>
         <div class="wa-template-pills">
           <button type="button" class="wa-pill active" data-tpl="konfirmasi">Konfirmasi</button>
           <button type="button" class="wa-pill" data-tpl="preview">Preview Desain</button>
@@ -959,16 +987,15 @@
       </div>
 
       <div class="no-print" style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap">
-        <button class="btn btn-sm" id="btnCloseNota" style="background:#f3f4f6;color:#111827">Tutup</button>
-        <button class="btn btn-sm" id="btnWaNota" style="background:#16a34a;color:#fff;border:none">Kirim WA</button>
+        <button class="btn btn-sm" id="btnCloseNota" style="background:#f5f5f4;color:#1c1917">Tutup</button>
+        <button class="btn btn-sm" id="btnWaNota" style="background:#15803d;color:#fff;border:none">Kirim WA</button>
         <button class="btn btn-primary btn-sm" onclick="window.print()">Simpan / Cetak PDF</button>
       </div>
     </div>
   </div>
 
   <script>
-    // Isi URL Web App Google Apps Script Anda jika sudah di-deploy:
-    const API_URL = "";
+    const API_URL = "https://script.google.com/macros/s/AKfycbx6fnbbrFEbkxsqLElTrbOi6ujwbsPfLvgE9bTRDTzEHBajr-yVHSwPO6kPp-QAnvO_/exec";
     const PAYMENT_STORAGE_KEY = "omah_oelin_payment_methods_v1";
 
     const UNIT_LABELS = {
@@ -999,7 +1026,7 @@
     ];
 
     const DEFAULT_PAYMENT_METHODS = [
-      { id: "PAYM-1", kanal: "Transfer Bank", nomor: "Silakan isi no. rekening di tab Rekap Keuangan", atas_nama: "", aktif: true }
+      { id: "PAYM-1", kanal: "Transfer Bank", nomor: "Silakan isi no. rekening di tab Keuangan & Kas", atas_nama: "", aktif: true }
     ];
 
     function loadPaymentMethods() {
@@ -1067,7 +1094,7 @@
 
     function setupPWA() {
       const svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
-        <rect width="192" height="192" rx="36" fill="#1d4ed8"/>
+        <rect width="192" height="192" rx="36" fill="#c2410c"/>
         <text x="96" y="114" font-family="system-ui,sans-serif" font-size="72" font-weight="800" fill="#ffffff" text-anchor="middle">OO</text>
       </svg>`;
       const iconUrl = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgIcon);
@@ -1078,8 +1105,8 @@
         short_name: "Omah Oelin POS",
         start_url: "./",
         display: "standalone",
-        background_color: "#dbeafe",
-        theme_color: "#1d4ed8",
+        background_color: "#fff7ed",
+        theme_color: "#c2410c",
         icons: [
           { src: iconUrl, sizes: "192x192", type: "image/svg+xml", purpose: "any" }
         ]
@@ -1150,7 +1177,7 @@
       const filtered = cat === "ALL" ? state.katalog : state.katalog.filter(p => p.kategori === cat);
 
       sel.innerHTML = filtered.map(p =>
-        `<option value="${p.id_produk}">${p.nama_produk} (${fmtRp(p.harga_dasar)} / ${getUnitLabel(p.tipe_hitung)})</option>`
+        `<option value="${p.id_produk}">${p.nama_produk} • ${fmtRp(p.harga_dasar)}/${getUnitLabel(p.tipe_hitung)}</option>`
       ).join("");
 
       syncSelectedProductFields();
@@ -1398,7 +1425,7 @@
     function formatPaymentChannelsText() {
       const activeList = (state.paymentMethods || []).filter(m => m.aktif !== false);
       if (activeList.length === 0) {
-        return "Info pembayaran: silakan atur no. rekening di tab Rekap Keuangan.";
+        return "Info pembayaran: silakan atur no. rekening di tab Keuangan & Kas.";
       }
       return activeList.map(m => {
         const an = m.atas_nama ? ` a.n. ${m.atas_nama}` : "";
@@ -1534,7 +1561,7 @@
             </td>
             <td><span class="badge ${badgeClass}">${o.status_bayar}</span></td>
             <td>
-              <select onchange="changeOrderStatus('${o.no_nota}', this.value)" style="padding:5px 8px;border-radius:8px;border:1px solid var(--border-color);background:var(--surface-alt);color:var(--text-main)">
+              <select onchange="changeOrderStatus('${o.no_nota}', this.value)" style="padding:6px 8px;border-radius:8px;border:1px solid var(--border-color);background:var(--surface-alt);color:var(--text-main)">
                 ${["ANTRE_DESAIN", "PROSES_CETAK", "FINISHING", "SIAP_AMBIL", "SELESAI"].map(st =>
                   `<option value="${st}" ${o.status_produksi === st ? "selected" : ""}>${st}</option>`
                 ).join("")}
