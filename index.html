@@ -6,35 +6,35 @@
   <title>Omah Oelin POS — Percetakan, Merchandise & Souvenir</title>
   <style>
     :root {
-      --bg-gradient: linear-gradient(135deg, #fffdf5 0%, #fff3d6 52%, #ffe0a3 100%);
-      --surface: rgba(255, 255, 255, 0.92);
-      --surface-alt: #fff8e7;
-      --text-main: #23160a;
-      --text-muted: #6b4c30;
-      --accent-dark: #c2410c;
-      --accent-main: #ea580c;
-      --accent-soft: rgba(234, 88, 12, 0.12);
-      --border-color: #f3c68f;
+      --bg-gradient: linear-gradient(135deg, #f0f7ff 0%, #dbeafe 52%, #bfdbfe 100%);
+      --surface: rgba(255, 255, 255, 0.94);
+      --surface-alt: #eff6ff;
+      --text-main: #0f172a;
+      --text-muted: #1e3a8a;
+      --accent-dark: #1d4ed8;
+      --accent-main: #2563eb;
+      --accent-soft: rgba(37, 99, 235, 0.12);
+      --border-color: #93c5fd;
       --success: #15803d;
       --warning: #b45309;
       --danger: #b91c1c;
-      --shadow: 0 10px 28px rgba(124, 45, 18, 0.08);
+      --shadow: 0 10px 28px rgba(30, 58, 138, 0.09);
     }
 
     [data-theme="dark"] {
-      --bg-gradient: linear-gradient(135deg, #1b1008 0%, #2c170b 55%, #431d0b 100%);
-      --surface: rgba(36, 20, 11, 0.92);
-      --surface-alt: #2f190e;
-      --text-main: #fff7ed;
-      --text-muted: #fed7aa;
-      --accent-dark: #fb923c;
-      --accent-main: #f97316;
-      --accent-soft: rgba(251, 146, 60, 0.16);
-      --border-color: #6b3416;
+      --bg-gradient: linear-gradient(135deg, #071324 0%, #0c1e3a 55%, #122a52 100%);
+      --surface: rgba(13, 27, 48, 0.94);
+      --surface-alt: #132642;
+      --text-main: #f0f9ff;
+      --text-muted: #bae6fd;
+      --accent-dark: #60a5fa;
+      --accent-main: #3b82f6;
+      --accent-soft: rgba(96, 165, 250, 0.16);
+      --border-color: #1e40af;
       --success: #4ade80;
       --warning: #fbbf24;
       --danger: #f87171;
-      --shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+      --shadow: 0 12px 30px rgba(0, 0, 0, 0.38);
     }
 
     * {
@@ -53,7 +53,7 @@
     }
 
     .app-wrap {
-      max-width: 1220px;
+      max-width: 1240px;
       margin: 0 auto;
     }
 
@@ -180,6 +180,8 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
     }
 
     .form-grid {
@@ -266,14 +268,19 @@
       color: var(--accent-dark);
     }
 
-    .badge.lunas {
+    .badge.lunas, .badge.aman {
       background: rgba(21, 128, 61, 0.16);
       color: var(--success);
     }
 
-    .badge.dp {
+    .badge.dp, .badge.menipis {
       background: rgba(180, 83, 9, 0.16);
       color: var(--warning);
+    }
+
+    .badge.habis {
+      background: rgba(185, 28, 28, 0.16);
+      color: var(--danger);
     }
 
     .summary-box {
@@ -308,7 +315,6 @@
       margin-bottom: 14px;
     }
 
-    /* Area Nota Cetak / Simpan PDF */
     #notaModal {
       position: fixed;
       inset: 0;
@@ -374,12 +380,13 @@
     </header>
 
     <div class="status-banner no-print" id="connectionBanner">
-      Mode Lokal aktif (belum ada URL Apps Script). Data tersimpan sementara di browser dan bisa langsung diuji.
+      Mode Lokal aktif (belum ada URL Apps Script). Data tersimpan di browser dan siap disinkronkan ke Google Sheets.
     </div>
 
     <nav class="tabs no-print">
       <button class="tab-btn active" data-tab="pos">Kasir & Kalkulator Order</button>
       <button class="tab-btn" data-tab="orders">Antrean Produksi & Pelunasan</button>
+      <button class="tab-btn" data-tab="inventory">Katalog & Stok Bahan</button>
     </nav>
 
     <!-- TAB 1: POS -->
@@ -550,6 +557,119 @@
         </table>
       </div>
     </section>
+
+    <!-- TAB 3: KATALOG & STOK BAHAN -->
+    <section id="tab-inventory" class="grid-2 hidden">
+      <div class="card">
+        <div class="card-title">Kelola Katalog Produk & Layanan</div>
+        <form id="formKatalog">
+          <div class="form-grid">
+            <div class="field">
+              <label for="katIdProduk">ID Produk (kosongkan utk otomatis)</label>
+              <input type="text" id="katIdProduk" placeholder="PRD-010" />
+            </div>
+            <div class="field">
+              <label for="katKategori">Kategori</label>
+              <select id="katKategori">
+                <option value="Banner">Banner</option>
+                <option value="Cetak A3">Cetak A3</option>
+                <option value="Merchandise">Merchandise</option>
+                <option value="Kalender">Kalender</option>
+                <option value="Stationery">Stationery</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label for="katNama">Nama Produk / Layanan</label>
+              <input type="text" id="katNama" required placeholder="Contoh: X-Banner 60x160 cm" />
+            </div>
+            <div class="field">
+              <label for="katTipeHitung">Tipe Hitung</label>
+              <select id="katTipeHitung">
+                <option value="QTY_SATUAN">QTY_SATUAN (pcs / lembar / set)</option>
+                <option value="LUAS_M2">LUAS_M2 (panjang x lebar cm)</option>
+                <option value="PAKET">PAKET</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label for="katHargaDasar">Harga Dasar (Rp)</label>
+              <input type="number" id="katHargaDasar" min="0" step="500" required value="15000" />
+            </div>
+            <div class="field">
+              <label for="katHargaGrosir">Harga Grosir Min. 10 (Rp)</label>
+              <input type="number" id="katHargaGrosir" min="0" step="500" value="0" />
+            </div>
+          </div>
+          <div class="field">
+            <label for="katIdBahan">ID Bahan Terkait di Stok (opsional)</label>
+            <input type="text" id="katIdBahan" placeholder="Contoh: BHN-MUG-01" />
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button type="submit" class="btn btn-primary">Simpan Produk</button>
+            <button type="button" class="btn" id="btnResetKatalog">Reset Form</button>
+          </div>
+        </form>
+
+        <div class="table-wrap" style="margin-top:16px">
+          <table>
+            <thead>
+              <tr>
+                <th>Produk</th>
+                <th>Tipe</th>
+                <th>Harga</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="katalogTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Stok Bahan Baku Kritis</div>
+        <form id="formTambahStok" class="form-grid" style="margin-bottom:12px">
+          <div class="field">
+            <label for="stokIdBahan">ID Bahan</label>
+            <input type="text" id="stokIdBahan" required placeholder="BHN-MUG-01" />
+          </div>
+          <div class="field">
+            <label for="stokNamaBahan">Nama Bahan</label>
+            <input type="text" id="stokNamaBahan" required placeholder="Mug Polos Coating" />
+          </div>
+          <div class="field">
+            <label for="stokSatuan">Satuan</label>
+            <input type="text" id="stokSatuan" required value="pcs" />
+          </div>
+          <div class="field">
+            <label for="stokAwal">Stok Awal & Batas Min.</label>
+            <div style="display:flex;gap:6px">
+              <input type="number" id="stokAwal" min="0" required value="24" placeholder="Stok" />
+              <input type="number" id="stokMin" min="0" required value="6" placeholder="Min" />
+            </div>
+          </div>
+          <div style="grid-column:1/-1">
+            <button type="submit" class="btn btn-primary btn-sm">+ Tambah Jenis Bahan Baru</button>
+          </div>
+        </form>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Bahan</th>
+                <th>Stok / Min</th>
+                <th>Status</th>
+                <th>Penyesuaian</th>
+              </tr>
+            </thead>
+            <tbody id="stokTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
   </div>
 
   <!-- MODAL NOTA SIAP SIMPAN PDF -->
@@ -610,22 +730,29 @@
 
   <script>
     // Isi URL Web App Google Apps Script Anda jika sudah di-deploy:
-    const API_URL = "https://script.google.com/macros/s/AKfycbx6fnbbrFEbkxsqLElTrbOi6ujwbsPfLvgE9bTRDTzEHBajr-yVHSwPO6kPp-QAnvO_/exec";
+    const API_URL = "";
 
     const DEFAULT_KATALOG = [
-      { id_produk: "PRD-001", kategori: "Banner", nama_produk: "Banner Frontlite 280gr", tipe_hitung: "LUAS_M2", harga_dasar: 25000, harga_grosir_min10: 22000 },
-      { id_produk: "PRD-002", kategori: "Banner", nama_produk: "Banner Korcin / Backlite", tipe_hitung: "LUAS_M2", harga_dasar: 35000, harga_grosir_min10: 32000 },
-      { id_produk: "PRD-003", kategori: "Cetak A3", nama_produk: "Cetak A3+ Art Carton 260gr", tipe_hitung: "QTY_SATUAN", harga_dasar: 4500, harga_grosir_min10: 3800 },
-      { id_produk: "PRD-004", kategori: "Merchandise", nama_produk: "Mug Keramik Custom", tipe_hitung: "QTY_SATUAN", harga_dasar: 18000, harga_grosir_min10: 15000 },
-      { id_produk: "PRD-005", kategori: "Merchandise", nama_produk: "Tumbler Custom Grafir/Print", tipe_hitung: "QTY_SATUAN", harga_dasar: 45000, harga_grosir_min10: 40000 },
-      { id_produk: "PRD-006", kategori: "Merchandise", nama_produk: "Kaos Custom Sablon DTF", tipe_hitung: "QTY_SATUAN", harga_dasar: 55000, harga_grosir_min10: 48000 },
-      { id_produk: "PRD-007", kategori: "Merchandise", nama_produk: "Mangkuk Souvenir Custom", tipe_hitung: "QTY_SATUAN", harga_dasar: 16000, harga_grosir_min10: 13500 },
-      { id_produk: "PRD-008", kategori: "Kalender", nama_produk: "Kalender Dinding Custom", tipe_hitung: "QTY_SATUAN", harga_dasar: 12000, harga_grosir_min10: 9500 },
-      { id_produk: "PRD-009", kategori: "Stationery", nama_produk: "Nota / Map / ID Card / Kop Surat", tipe_hitung: "QTY_SATUAN", harga_dasar: 5000, harga_grosir_min10: 4000 }
+      { id_produk: "PRD-001", kategori: "Banner", nama_produk: "Banner Frontlite 280gr", tipe_hitung: "LUAS_M2", harga_dasar: 25000, harga_grosir_min10: 22000, id_bahan_terkait: "BHN-FR280" },
+      { id_produk: "PRD-002", kategori: "Banner", nama_produk: "Banner Korcin / Backlite", tipe_hitung: "LUAS_M2", harga_dasar: 35000, harga_grosir_min10: 32000, id_bahan_terkait: "" },
+      { id_produk: "PRD-003", kategori: "Cetak A3", nama_produk: "Cetak A3+ Art Carton 260gr", tipe_hitung: "QTY_SATUAN", harga_dasar: 4500, harga_grosir_min10: 3800, id_bahan_terkait: "BHN-AC260" },
+      { id_produk: "PRD-004", kategori: "Merchandise", nama_produk: "Mug Keramik Custom", tipe_hitung: "QTY_SATUAN", harga_dasar: 18000, harga_grosir_min10: 15000, id_bahan_terkait: "BHN-MUG-01" },
+      { id_produk: "PRD-005", kategori: "Merchandise", nama_produk: "Tumbler Custom Grafir/Print", tipe_hitung: "QTY_SATUAN", harga_dasar: 45000, harga_grosir_min10: 40000, id_bahan_terkait: "" },
+      { id_produk: "PRD-006", kategori: "Merchandise", nama_produk: "Kaos Custom Sablon DTF", tipe_hitung: "QTY_SATUAN", harga_dasar: 55000, harga_grosir_min10: 48000, id_bahan_terkait: "" },
+      { id_produk: "PRD-007", kategori: "Merchandise", nama_produk: "Mangkuk Souvenir Custom", tipe_hitung: "QTY_SATUAN", harga_dasar: 16000, harga_grosir_min10: 13500, id_bahan_terkait: "" },
+      { id_produk: "PRD-008", kategori: "Kalender", nama_produk: "Kalender Dinding Custom", tipe_hitung: "QTY_SATUAN", harga_dasar: 12000, harga_grosir_min10: 9500, id_bahan_terkait: "" },
+      { id_produk: "PRD-009", kategori: "Stationery", nama_produk: "Nota / Map / ID Card / Kop Surat", tipe_hitung: "QTY_SATUAN", harga_dasar: 5000, harga_grosir_min10: 4000, id_bahan_terkait: "" }
+    ];
+
+    const DEFAULT_STOK = [
+      { id_bahan: "BHN-FR280", nama_bahan: "Bahan Banner Frontlite 280gr", satuan_stok: "m2", stok_saat_ini: 60, batas_minimum: 15 },
+      { id_bahan: "BHN-AC260", nama_bahan: "Kertas Art Carton 260gr A3+", satuan_stok: "lembar", stok_saat_ini: 250, batas_minimum: 50 },
+      { id_bahan: "BHN-MUG-01", nama_bahan: "Mug Polos Coating SNI", satuan_stok: "pcs", stok_saat_ini: 36, batas_minimum: 10 }
     ];
 
     const state = {
       katalog: [...DEFAULT_KATALOG],
+      stok: [...DEFAULT_STOK],
       cart: [],
       orders: [],
       details: [],
@@ -655,7 +782,9 @@
         const target = btn.getAttribute("data-tab");
         document.getElementById("tab-pos").classList.toggle("hidden", target !== "pos");
         document.getElementById("tab-orders").classList.toggle("hidden", target !== "orders");
+        document.getElementById("tab-inventory").classList.toggle("hidden", target !== "inventory");
         if (target === "orders") renderOrdersTable();
+        if (target === "inventory") renderInventoryTab();
       });
     });
 
@@ -747,6 +876,7 @@
         id_produk: prod.id_produk,
         nama_item_snapshot: prod.nama_produk,
         tipe_hitung: prod.tipe_hitung,
+        id_bahan_terkait: prod.id_bahan_terkait || "",
         panjang_cm: p,
         lebar_cm: l,
         qty,
@@ -866,6 +996,18 @@
           alert("Gagal kirim ke Google Sheets: " + err.message);
           return;
         }
+      } else {
+        // Potong stok lokal jika terhubung ke id_bahan_terkait
+        payload.items.forEach(it => {
+          if (!it.id_bahan_terkait) return;
+          const st = state.stok.find(s => s.id_bahan === it.id_bahan_terkait);
+          if (st) {
+            const used = it.tipe_hitung === "LUAS_M2"
+              ? Math.max(1, (Number(it.panjang_cm || 0) * Number(it.lebar_cm || 0)) / 10000) * Number(it.qty || 1)
+              : Number(it.qty || 1);
+            st.stok_saat_ini = Math.max(0, Number((Number(st.stok_saat_ini || 0) - used).toFixed(2)));
+          }
+        });
       }
 
       state.orders.unshift(payload);
@@ -1016,6 +1158,129 @@
       renderOrdersTable();
     };
 
+    // TAB 3: KATALOG & STOK BAHAN
+    function renderInventoryTab() {
+      const katBody = document.getElementById("katalogTableBody");
+      katBody.innerHTML = state.katalog.map(p => `
+        <tr>
+          <td>
+            <strong>${p.nama_produk}</strong>
+            <div style="font-size:0.75rem;color:var(--text-muted)">${p.id_produk} • ${p.kategori}</div>
+          </td>
+          <td><span class="badge">${p.tipe_hitung}</span></td>
+          <td>${fmtRp(p.harga_dasar)}</td>
+          <td><button class="btn btn-sm" onclick="editKatalog('${p.id_produk}')">Edit</button></td>
+        </tr>
+      `).join("");
+
+      const stokBody = document.getElementById("stokTableBody");
+      stokBody.innerHTML = state.stok.map(s => {
+        const cur = Number(s.stok_saat_ini || 0);
+        const min = Number(s.batas_minimum || 0);
+        let stLabel = "AMAN";
+        let stClass = "aman";
+        if (cur <= 0) { stLabel = "HABIS"; stClass = "habis"; }
+        else if (cur <= min) { stLabel = "MENIPIS"; stClass = "menipis"; }
+
+        return `
+          <tr>
+            <td>
+              <strong>${s.nama_bahan}</strong>
+              <div style="font-size:0.75rem;color:var(--text-muted)">${s.id_bahan}</div>
+            </td>
+            <td><strong>${cur}</strong> / ${min} ${s.satuan_stok}</td>
+            <td><span class="badge ${stClass}">${stLabel}</span></td>
+            <td style="white-space:nowrap">
+              <button class="btn btn-sm" onclick="adjustStockUI('${s.id_bahan}', -1)">-1</button>
+              <button class="btn btn-sm" onclick="adjustStockUI('${s.id_bahan}', 1)">+1</button>
+              <button class="btn btn-sm" onclick="adjustStockUI('${s.id_bahan}', 10)">+10</button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    window.editKatalog = function(idProduk) {
+      const p = state.katalog.find(item => item.id_produk === idProduk);
+      if (!p) return;
+      document.getElementById("katIdProduk").value = p.id_produk;
+      document.getElementById("katKategori").value = p.kategori;
+      document.getElementById("katNama").value = p.nama_produk;
+      document.getElementById("katTipeHitung").value = p.tipe_hitung;
+      document.getElementById("katHargaDasar").value = p.harga_dasar;
+      document.getElementById("katHargaGrosir").value = p.harga_grosir_min10 || 0;
+      document.getElementById("katIdBahan").value = p.id_bahan_terkait || "";
+    };
+
+    document.getElementById("btnResetKatalog").addEventListener("click", () => {
+      document.getElementById("formKatalog").reset();
+      document.getElementById("katIdProduk").value = "";
+    });
+
+    document.getElementById("formKatalog").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const idVal = document.getElementById("katIdProduk").value.trim() || ("PRD-" + Date.now().toString().slice(-4));
+      const item = {
+        id_produk: idVal,
+        kategori: document.getElementById("katKategori").value,
+        nama_produk: document.getElementById("katNama").value.trim(),
+        tipe_hitung: document.getElementById("katTipeHitung").value,
+        harga_dasar: Number(document.getElementById("katHargaDasar").value || 0),
+        harga_grosir_min10: Number(document.getElementById("katHargaGrosir").value || 0),
+        id_bahan_terkait: document.getElementById("katIdBahan").value.trim(),
+        aktif: true
+      };
+
+      const idx = state.katalog.findIndex(k => k.id_produk === idVal);
+      if (idx >= 0) state.katalog[idx] = item;
+      else state.katalog.push(item);
+
+      if (API_URL) {
+        await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "upsertProduct", ...item })
+        });
+      }
+
+      populateProdukSelect();
+      renderInventoryTab();
+      document.getElementById("formKatalog").reset();
+      document.getElementById("katIdProduk").value = "";
+    });
+
+    document.getElementById("formTambahStok").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const idBahan = document.getElementById("stokIdBahan").value.trim();
+      const namaBahan = document.getElementById("stokNamaBahan").value.trim();
+      const satuan = document.getElementById("stokSatuan").value.trim() || "pcs";
+      const stokAwal = Number(document.getElementById("stokAwal").value || 0);
+      const stokMin = Number(document.getElementById("stokMin").value || 0);
+
+      const idx = state.stok.findIndex(s => s.id_bahan === idBahan);
+      const row = { id_bahan: idBahan, nama_bahan: namaBahan, satuan_stok: satuan, stok_saat_ini: stokAwal, batas_minimum: stokMin };
+      if (idx >= 0) state.stok[idx] = row;
+      else state.stok.push(row);
+
+      renderInventoryTab();
+      document.getElementById("formTambahStok").reset();
+    });
+
+    window.adjustStockUI = async function(idBahan, delta) {
+      const s = state.stok.find(item => item.id_bahan === idBahan);
+      if (!s) return;
+      s.stok_saat_ini = Math.max(0, Number(s.stok_saat_ini || 0) + Number(delta));
+      renderInventoryTab();
+
+      if (API_URL) {
+        await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "adjustStock", id_bahan: idBahan, delta })
+        });
+      }
+    };
+
     async function syncFromSheets() {
       const banner = document.getElementById("connectionBanner");
       if (!API_URL) {
@@ -1030,11 +1295,15 @@
         if (Array.isArray(json.data.katalog) && json.data.katalog.length > 0) {
           state.katalog = json.data.katalog;
         }
+        if (Array.isArray(json.data.stok) && json.data.stok.length > 0) {
+          state.stok = json.data.stok;
+        }
         state.orders = json.data.orders || [];
         state.details = json.data.details || [];
         populateProdukSelect();
         renderOrdersTable();
-        banner.textContent = "Terhubung ke Google Sheets — data katalog & order tersinkronisasi.";
+        renderInventoryTab();
+        banner.textContent = "Terhubung ke Google Sheets — data katalog, stok, dan order tersinkronisasi.";
       } catch (err) {
         banner.textContent = "Gagal sinkronisasi Google Sheets: " + err.message;
       }
@@ -1046,6 +1315,7 @@
     populateProdukSelect();
     renderCart();
     updateSummary();
+    renderInventoryTab();
     syncFromSheets();
   </script>
 </body>
