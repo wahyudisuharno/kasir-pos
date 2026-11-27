@@ -1736,8 +1736,10 @@
       };
 
       const idx = state.katalog.findIndex(k => k.id_produk === idVal);
-      if (idx >= 0) state.katalog[idx] = item;
-      else state.katalog.push(item);
+      if (idx >= 0) {
+        state.katalog.splice(idx, 1);
+      }
+      state.katalog.unshift(item);
 
       if (API_URL) {
         await fetch(API_URL, {
@@ -1765,8 +1767,10 @@
 
       const idx = state.stok.findIndex(s => s.id_bahan === idBahan);
       const row = { id_bahan: idBahan, nama_bahan: namaBahan, satuan_stok: satuan, stok_saat_ini: stokAwal, batas_minimum: stokMin };
-      if (idx >= 0) state.stok[idx] = row;
-      else state.stok.push(row);
+      if (idx >= 0) {
+        state.stok.splice(idx, 1);
+      }
+      state.stok.unshift(row);
 
       renderInventoryTab();
       document.getElementById("formTambahStok").reset();
@@ -1851,8 +1855,10 @@
       };
 
       const idx = state.paymentMethods.findIndex(m => m.id === item.id);
-      if (idx >= 0) state.paymentMethods[idx] = item;
-      else state.paymentMethods.push(item);
+      if (idx >= 0) {
+        state.paymentMethods.splice(idx, 1);
+      }
+      state.paymentMethods.unshift(item);
 
       savePaymentMethods();
       renderPaymentMethodsTable();
@@ -1974,14 +1980,14 @@
         const json = await res.json();
         if (!json.ok) throw new Error(json.error);
         if (Array.isArray(json.data.katalog) && json.data.katalog.length > 0) {
-          state.katalog = json.data.katalog;
+          state.katalog = [...json.data.katalog].reverse();
         }
         if (Array.isArray(json.data.stok) && json.data.stok.length > 0) {
-          state.stok = json.data.stok;
+          state.stok = [...json.data.stok].reverse();
         }
-        state.orders = json.data.orders || [];
+        state.orders = (json.data.orders || []).slice().reverse();
         state.details = json.data.details || [];
-        state.pembayaran = json.data.pembayaran || [];
+        state.pembayaran = (json.data.pembayaran || []).slice().reverse();
         populateProdukSelect();
         renderOrdersTable();
         renderInventoryTab();
