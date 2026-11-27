@@ -906,10 +906,17 @@
     <section id="tab-finance" class="hidden">
       <div class="card">
         <div class="card-title">
-          <span>Rekap Keuangan & Kas Harian</span>
+          <span id="financeReportTitle">Rekap Keuangan & Kas Harian</span>
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-            <input type="date" id="filterTanggalKas" style="padding:7px 10px;border-radius:8px;border:1px solid var(--border-color);background:var(--surface-alt);color:var(--text-main)" />
-            <button class="btn btn-sm" id="btnResetTanggalKas">Semua Tanggal</button>
+            <input type="month" id="filterBulanKas" title="Filter Bulan Rekap" style="padding:7px 10px;border-radius:8px;border:1px solid var(--border-color);background:var(--surface-alt);color:var(--text-main)" />
+            <input type="date" id="filterTanggalKas" title="Filter Tanggal Harian" style="padding:7px 10px;border-radius:8px;border:1px solid var(--border-color);background:var(--surface-alt);color:var(--text-main)" />
+            <button class="btn btn-sm" id="btnResetTanggalKas">Semua Waktu</button>
+            <button class="btn btn-sm" id="btnExportCsv">Ekspor CSV</button>
+            <button class="btn btn-sm" id="btnExportJson">Ekspor JSON</button>
+            <label class="btn btn-sm" style="margin:0">
+              Impor JSON
+              <input type="file" id="importJsonFile" accept=".json,application/json" style="display:none" />
+            </label>
           </div>
         </div>
 
@@ -934,6 +941,24 @@
             <div class="kpi-value" id="kpiCollectionRate">0%</div>
             <div class="kpi-sub">Kas masuk dibanding omzet</div>
           </div>
+        </div>
+
+        <div class="card-title" style="margin-top:8px;margin-bottom:10px;font-size:0.94rem">
+          <span>Ringkasan Rekap Bulanan</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Bulan</th>
+                <th>Jumlah Order</th>
+                <th>Omzet</th>
+                <th>Kas Masuk</th>
+                <th>Sisa Piutang</th>
+              </tr>
+            </thead>
+            <tbody id="monthlySummaryBody"></tbody>
+          </table>
         </div>
       </div>
 
@@ -1364,6 +1389,7 @@
       document.getElementById("bizLogoFile").value = "";
       saveBizProfileToStorage();
       applyBizProfileUI();
+      setupPWA();
     });
 
     document.getElementById("formBusinessProfile").addEventListener("submit", (e) => {
@@ -1380,6 +1406,7 @@
       };
       saveBizProfileToStorage();
       applyBizProfileUI();
+      setupPWA();
       alert("Identitas usaha (nama, alamat, kontak & logo) berhasil disimpan.");
     });
 
@@ -2223,22 +2250,39 @@
       }
     });
 
-    // TAB 4: REKAP KEUANGAN & KAS HARIAN
+    // TAB 4: REKAP KEUANGAN, KAS HARIAN & EKSPOR/IMPOR DATA
     function extractYmd(dtStr) {
       const m = String(dtStr || "").match(/^(\d{4}-\d{2}-\d{2})/);
       return m ? m[1] : "";
     }
 
-    function renderFinanceTab() {
+    function extractYm(dtStr) {
+      const m = String(dtStr || "").match(/^(\d{4}-\d{2})/);
+      return m ? m[1] : "";
+    }
+
+    function formatMonthLabel(ym) {
+      const m = String(ym || "").match(/^(\d{4})-(\d{2})$/);
+      if (!m) return ym || "-";
+      const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
+      const idx = Math.max(0, Math.min(11, parseInt(m[2], 10) - 1));
+      return `${months[idx]} ${m[1]}`;
+    }
+
+    function getFinancePeriodData() {
+      const selectedMonth = document.getElementById("filterBulanKas").value || "";
       const selectedDate = document.getElementById("filterTanggalKas").value || "";
 
-      const filteredOrders = selectedDate
-        ? state.orders.filter(o => extractYmd(o.tanggal_order) === selectedDate)
-        : state.orders;
+      const matchesPeriod = (dtStr) => {
+        const ymd = extractYmd(dtStr);
+        const ym = extractYm(dtStr);
+        if (selectedDate) return ymd === selectedDate;
+        if (selectedMonth) return ym === selectedMonth;
+        return true;
+      };
 
-      const filteredPayments = selectedDate
-        ? state.pembayaran.filter(p => extractYmd(p.tanggal_bayar) === selectedDate)
-        : state.pembayaran;
+      const filteredOrders = state.orders.filter(o => matchesPeriod(o.tanggal_order));
+      const filteredPayments = state.pembayaran.filter(p => matchesPeriod(p.tanggal_bayar));
 
       const totalOmzet = filteredOrders.reduce((acc, o) => acc + Number(o.grand_total || 0), 0);
 
@@ -2253,7 +2297,7 @@
           if (byMetode[met] !== undefined) byMetode[met] += nom;
           else byMetode.Tunai += nom;
         });
-      } else if (!selectedDate && state.orders.length > 0) {
+      } else if (!selectedDate && !selectedMonth && state.orders.length > 0) {
         state.orders.forEach(o => {
           const nom = Number(o.nominal_bayar || 0);
           kasMasuk += nom;
@@ -2264,25 +2308,93 @@
       }
 
       const piutangOrders = state.orders.filter(o => Number(o.sisa_tagihan || 0) > 0);
-      const totalPiutang = (selectedDate ? filteredOrders : state.orders)
-        .reduce((acc, o) => acc + Number(o.sisa_tagihan || 0), 0);
-
+      const totalPiutang = filteredOrders.reduce((acc, o) => acc + Number(o.sisa_tagihan || 0), 0);
       const rate = totalOmzet > 0 ? Math.min(100, Math.round((kasMasuk / totalOmzet) * 100)) : 0;
 
-      document.getElementById("kpiOmzet").textContent = fmtRp(totalOmzet);
-      document.getElementById("kpiOrderCount").textContent = `${filteredOrders.length} order tercatat`;
-      document.getElementById("kpiKasMasuk").textContent = fmtRp(kasMasuk);
+      const monthlyMap = {};
+      state.orders.forEach(o => {
+        const ym = extractYm(o.tanggal_order) || "Tanpa Bulan";
+        if (selectedMonth && ym !== selectedMonth) return;
+        if (!monthlyMap[ym]) {
+          monthlyMap[ym] = { ym, orderCount: 0, omzet: 0, kasMasuk: 0, piutang: 0 };
+        }
+        monthlyMap[ym].orderCount += 1;
+        monthlyMap[ym].omzet += Number(o.grand_total || 0);
+        monthlyMap[ym].piutang += Number(o.sisa_tagihan || 0);
+      });
+
+      if (state.pembayaran.length > 0) {
+        state.pembayaran.forEach(p => {
+          const ym = extractYm(p.tanggal_bayar) || "Tanpa Bulan";
+          if (selectedMonth && ym !== selectedMonth) return;
+          if (!monthlyMap[ym]) {
+            monthlyMap[ym] = { ym, orderCount: 0, omzet: 0, kasMasuk: 0, piutang: 0 };
+          }
+          monthlyMap[ym].kasMasuk += Number(p.nominal || 0);
+        });
+      } else {
+        state.orders.forEach(o => {
+          const ym = extractYm(o.tanggal_order) || "Tanpa Bulan";
+          if (selectedMonth && ym !== selectedMonth) return;
+          if (monthlyMap[ym]) {
+            monthlyMap[ym].kasMasuk += Number(o.nominal_bayar || 0);
+          }
+        });
+      }
+
+      const monthlyRows = Object.values(monthlyMap).sort((a, b) => b.ym.localeCompare(a.ym));
+
+      return {
+        selectedMonth,
+        selectedDate,
+        filteredOrders,
+        filteredPayments,
+        totalOmzet,
+        kasMasuk,
+        byMetode,
+        piutangOrders,
+        totalPiutang,
+        rate,
+        monthlyRows
+      };
+    }
+
+    function renderFinanceTab() {
+      const data = getFinancePeriodData();
+      const periodSuffix = data.selectedDate
+        ? ` — Tanggal ${data.selectedDate}`
+        : (data.selectedMonth ? ` — Bulan ${formatMonthLabel(data.selectedMonth)}` : " — Semua Periode");
+      document.getElementById("financeReportTitle").textContent = `Rekap Keuangan & Kas Harian${periodSuffix}`;
+
+      document.getElementById("kpiOmzet").textContent = fmtRp(data.totalOmzet);
+      document.getElementById("kpiOrderCount").textContent = `${data.filteredOrders.length} order tercatat`;
+      document.getElementById("kpiKasMasuk").textContent = fmtRp(data.kasMasuk);
       document.getElementById("kpiMetodeBreakdown").textContent =
-        `Tunai: ${fmtRp(byMetode.Tunai)} • QRIS: ${fmtRp(byMetode.QRIS)} • TF: ${fmtRp(byMetode["Transfer Bank"])}`;
-      document.getElementById("kpiPiutang").textContent = fmtRp(totalPiutang);
-      document.getElementById("kpiPiutangCount").textContent = `${piutangOrders.length} nota belum lunas`;
-      document.getElementById("kpiCollectionRate").textContent = `${rate}%`;
+        `Tunai: ${fmtRp(data.byMetode.Tunai)} • QRIS: ${fmtRp(data.byMetode.QRIS)} • TF: ${fmtRp(data.byMetode["Transfer Bank"])}`;
+      document.getElementById("kpiPiutang").textContent = fmtRp(data.totalPiutang);
+      document.getElementById("kpiPiutangCount").textContent = `${data.piutangOrders.length} nota belum lunas`;
+      document.getElementById("kpiCollectionRate").textContent = `${data.rate}%`;
+
+      const monthlyBody = document.getElementById("monthlySummaryBody");
+      if (data.monthlyRows.length === 0) {
+        monthlyBody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-muted)">Belum ada rekap bulanan tercatat</td></tr>`;
+      } else {
+        monthlyBody.innerHTML = data.monthlyRows.map(m => `
+          <tr>
+            <td><strong>${formatMonthLabel(m.ym)}</strong> <span style="font-size:0.75rem;color:var(--text-muted)">(${m.ym})</span></td>
+            <td>${m.orderCount} order</td>
+            <td><strong>${fmtRp(m.omzet)}</strong></td>
+            <td style="color:var(--success)"><strong>${fmtRp(m.kasMasuk)}</strong></td>
+            <td style="color:var(--warning)">${fmtRp(m.piutang)}</td>
+          </tr>
+        `).join("");
+      }
 
       const kasBody = document.getElementById("kasLogBody");
-      if (filteredPayments.length === 0) {
+      if (data.filteredPayments.length === 0) {
         kasBody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--text-muted)">Belum ada mutasi pembayaran tercatat</td></tr>`;
       } else {
-        kasBody.innerHTML = filteredPayments.map(p => `
+        kasBody.innerHTML = data.filteredPayments.map(p => `
           <tr>
             <td>
               <strong>${p.no_nota}</strong>
@@ -2296,10 +2408,10 @@
       }
 
       const piutangBody = document.getElementById("piutangBody");
-      if (piutangOrders.length === 0) {
+      if (data.piutangOrders.length === 0) {
         piutangBody.innerHTML = `<tr><td colspan="3" style="text-align:center;color:var(--text-muted)">Tidak ada sisa piutang</td></tr>`;
       } else {
-        piutangBody.innerHTML = piutangOrders.map(o => `
+        piutangBody.innerHTML = data.piutangOrders.map(o => `
           <tr>
             <td>
               <strong>${o.no_nota}</strong> • ${o.nama_pelanggan}
@@ -2314,10 +2426,152 @@
       renderPaymentMethodsTable();
     }
 
-    document.getElementById("filterTanggalKas").addEventListener("change", renderFinanceTab);
+    document.getElementById("filterBulanKas").addEventListener("change", () => {
+      if (document.getElementById("filterBulanKas").value) {
+        document.getElementById("filterTanggalKas").value = "";
+      }
+      renderFinanceTab();
+    });
+
+    document.getElementById("filterTanggalKas").addEventListener("change", () => {
+      if (document.getElementById("filterTanggalKas").value) {
+        document.getElementById("filterBulanKas").value = "";
+      }
+      renderFinanceTab();
+    });
+
     document.getElementById("btnResetTanggalKas").addEventListener("click", () => {
+      document.getElementById("filterBulanKas").value = "";
       document.getElementById("filterTanggalKas").value = "";
       renderFinanceTab();
+    });
+
+    function csvCell(val) {
+      const s = String(val ?? "").replace(/"/g, '""');
+      return `"${s}"`;
+    }
+
+    function triggerFileDownload(filename, content, mimeType) {
+      const blob = new Blob([content], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    document.getElementById("btnExportCsv").addEventListener("click", () => {
+      const data = getFinancePeriodData();
+      const lines = [];
+
+      lines.push([csvCell("REKAP BULANAN"), csvCell("JUMLAH ORDER"), csvCell("OMZET"), csvCell("KAS MASUK"), csvCell("SISA PIUTANG")].join(";"));
+      data.monthlyRows.forEach(m => {
+        lines.push([csvCell(m.ym), csvCell(m.orderCount), csvCell(m.omzet), csvCell(m.kasMasuk), csvCell(m.piutang)].join(";"));
+      });
+
+      lines.push("");
+      lines.push([csvCell("NO NOTA"), csvCell("TANGGAL ORDER"), csvCell("PELANGGAN"), csvCell("METODE BAYAR"), csvCell("STATUS BAYAR"), csvCell("STATUS PRODUKSI"), csvCell("GRAND TOTAL"), csvCell("DIBAYAR"), csvCell("SISA TAGIHAN")].join(";"));
+      data.filteredOrders.forEach(o => {
+        lines.push([
+          csvCell(o.no_nota),
+          csvCell(o.tanggal_order),
+          csvCell(o.nama_pelanggan),
+          csvCell(o.metode_bayar || "Tunai"),
+          csvCell(o.status_bayar),
+          csvCell(o.status_produksi),
+          csvCell(o.grand_total || 0),
+          csvCell(o.nominal_bayar || 0),
+          csvCell(o.sisa_tagihan || 0)
+        ].join(";"));
+      });
+
+      const periodTag = data.selectedDate || data.selectedMonth || "semua";
+      const fileName = `rekap-bulanan-${sanitizeFilePart(periodTag, "semua")}.csv`;
+      triggerFileDownload(fileName, "\uFEFF" + lines.join("\r\n"), "text/csv;charset=utf-8;");
+    });
+
+    document.getElementById("btnExportJson").addEventListener("click", () => {
+      const exportPayload = {
+        exported_at: formatLocalDateTime(),
+        bizProfile: {
+          nama_usaha: state.bizProfile.nama_usaha,
+          alamat_usaha: state.bizProfile.alamat_usaha,
+          no_hp_usaha: state.bizProfile.no_hp_usaha,
+          logo_data_url: state.bizProfile.logo_data_url
+        },
+        katalog: state.katalog,
+        stok: state.stok,
+        orders: state.orders,
+        details: state.details,
+        pembayaran: state.pembayaran,
+        paymentMethods: state.paymentMethods
+      };
+      const todayYmd = formatLocalDateTime().slice(0, 10);
+      triggerFileDownload(`data-pos-${todayYmd}.json`, JSON.stringify(exportPayload, null, 2), "application/json;charset=utf-8;");
+    });
+
+    document.getElementById("importJsonFile").addEventListener("change", async (e) => {
+      const inputEl = e.target;
+      const file = inputEl && inputEl.files && inputEl.files[0];
+      if (!file) return;
+
+      try {
+        const rawText = await file.text();
+        const parsed = JSON.parse(rawText);
+        if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+          throw new Error("Format objek JSON tidak valid.");
+        }
+
+        const hasAnyData = ["katalog", "stok", "orders", "details", "pembayaran", "paymentMethods", "bizProfile"]
+          .some((k) => Object.prototype.hasOwnProperty.call(parsed, k));
+        if (!hasAnyData) {
+          throw new Error("File JSON tidak memuat struktur backup POS yang dikenali.");
+        }
+
+        const ok = confirm(
+          "Impor file JSON akan menimpa data aktif di aplikasi saat ini (katalog, stok, order, kas & pengaturan). Lanjutkan?"
+        );
+        if (!ok) {
+          inputEl.value = "";
+          return;
+        }
+
+        if (Array.isArray(parsed.katalog)) state.katalog = parsed.katalog;
+        if (Array.isArray(parsed.stok)) state.stok = parsed.stok;
+        if (Array.isArray(parsed.orders)) state.orders = parsed.orders;
+        if (Array.isArray(parsed.details)) state.details = parsed.details;
+        if (Array.isArray(parsed.pembayaran)) state.pembayaran = parsed.pembayaran;
+
+        if (Array.isArray(parsed.paymentMethods) && parsed.paymentMethods.length > 0) {
+          state.paymentMethods = parsed.paymentMethods;
+          savePaymentMethods();
+        }
+
+        if (parsed.bizProfile && typeof parsed.bizProfile === "object") {
+          state.bizProfile = {
+            nama_usaha: String(parsed.bizProfile.nama_usaha || state.bizProfile.nama_usaha || DEFAULT_BIZ_PROFILE.nama_usaha).trim() || DEFAULT_BIZ_PROFILE.nama_usaha,
+            alamat_usaha: String(parsed.bizProfile.alamat_usaha || state.bizProfile.alamat_usaha || DEFAULT_BIZ_PROFILE.alamat_usaha).trim() || DEFAULT_BIZ_PROFILE.alamat_usaha,
+            no_hp_usaha: String(parsed.bizProfile.no_hp_usaha ?? state.bizProfile.no_hp_usaha ?? "").trim(),
+            logo_data_url: String(parsed.bizProfile.logo_data_url ?? state.bizProfile.logo_data_url ?? "")
+          };
+          saveBizProfileToStorage();
+          applyBizProfileUI();
+          setupPWA();
+        }
+
+        populateProdukSelect();
+        renderOrdersTable();
+        renderInventoryTab();
+        renderFinanceTab();
+        alert("Backup JSON berhasil dipulihkan ke aplikasi.");
+      } catch (err) {
+        alert("Gagal mengimpor file JSON: " + err.message);
+      } finally {
+        inputEl.value = "";
+      }
     });
 
     async function syncFromSheets() {
