@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Omah Oelin POS — Percetakan, Merchandise & Souvenir</title>
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #fffdf5 0%, #fff3d6 52%, #ffe0a3 100%);
+      --surface: rgba(255, 255, 255, 0.92);
+      --surface-alt: #fff8e7;
+      --text-main: #23160a;
+      --text-muted: #6b4c30;
+      --accent-dark: #c2410c;
+      --accent-main: #ea580c;
+      --accent-soft: rgba(234, 88, 12, 0.12);
+      --border-color: #f3c68f;
+      --success: #15803d;
+      --warning: #b45309;
+      --danger: #b91c1c;
+      --shadow: 0 10px 28px rgba(124, 45, 18, 0.08);
+    }
+
+    [data-theme="dark"] {
+      --bg-gradient: linear-gradient(135deg, #1b1008 0%, #2c170b 55%, #431d0b 100%);
+      --surface: rgba(36, 20, 11, 0.92);
+      --surface-alt: #2f190e;
+      --text-main: #fff7ed;
+      --text-muted: #fed7aa;
+      --accent-dark: #fb923c;
+      --accent-main: #f97316;
+      --accent-soft: rgba(251, 146, 60, 0.16);
+      --border-color: #6b3416;
+      --success: #4ade80;
+      --warning: #fbbf24;
+      --danger: #f87171;
+      --shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 16px;
+      line-height: 1.45;
+    }
+
+    .app-wrap {
+      max-width: 1220px;
+      margin: 0 auto;
+    }
+
+    .topbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 16px 20px;
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+    }
+
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--accent-dark);
+    }
+
+    .brand-sub {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .actions-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    button, select, input, textarea {
+      font-family: inherit;
+      font-size: 0.92rem;
+    }
+
+    .btn {
+      border: 1px solid var(--border-color);
+      background: var(--surface-alt);
+      color: var(--text-main);
+      padding: 9px 14px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.12s ease, background 0.15s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      background: var(--accent-soft);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-dark), var(--accent-main));
+      color: #ffffff;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.95;
+      background: linear-gradient(135deg, var(--accent-dark), var(--accent-main));
+    }
+
+    .btn-sm {
+      padding: 6px 10px;
+      font-size: 0.8rem;
+      border-radius: 8px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      padding: 10px 16px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      background: var(--surface);
+      color: var(--text-muted);
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--accent-dark), var(--accent-main));
+      color: #fff;
+      border-color: transparent;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    @media (max-width: 900px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+    }
+
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--accent-dark);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    @media (max-width: 600px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 10px;
+    }
+
+    .field label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .field input, .field select, .field textarea {
+      width: 100%;
+      padding: 9px 11px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      background: var(--surface-alt);
+      color: var(--text-main);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .calc-preview {
+      background: var(--surface-alt);
+      border: 1px dashed var(--accent-main);
+      border-radius: 12px;
+      padding: 12px;
+      margin: 10px 0 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.86rem;
+    }
+
+    th, td {
+      padding: 9px 8px;
+      border-bottom: 1px solid var(--border-color);
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: var(--accent-soft);
+      color: var(--accent-dark);
+    }
+
+    .badge.lunas {
+      background: rgba(21, 128, 61, 0.16);
+      color: var(--success);
+    }
+
+    .badge.dp {
+      background: rgba(180, 83, 9, 0.16);
+      color: var(--warning);
+    }
+
+    .summary-box {
+      background: var(--surface-alt);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-top: 10px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      font-size: 0.92rem;
+    }
+
+    .summary-row.total {
+      font-size: 1.08rem;
+      font-weight: 800;
+      color: var(--accent-dark);
+      border-top: 1px solid var(--border-color);
+      padding-top: 8px;
+      margin-top: 8px;
+    }
+
+    .status-banner {
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: var(--surface-alt);
+      border-left: 4px solid var(--accent-main);
+      font-size: 0.85rem;
+      margin-bottom: 14px;
+    }
+
+    /* Area Nota Cetak / Simpan PDF */
+    #notaModal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 999;
+    }
+
+    .nota-sheet {
+      background: #ffffff;
+      color: #111827;
+      width: 100%;
+      max-width: 640px;
+      border-radius: 14px;
+      padding: 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .nota-sheet table th,
+    .nota-sheet table td {
+      color: #111827;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    @media print {
+      body {
+        background: #fff !important;
+        padding: 0 !important;
+      }
+      .app-wrap, .no-print {
+        display: none !important;
+      }
+      #notaModal {
+        position: static !important;
+        background: none !important;
+        padding: 0 !important;
+        display: block !important;
+      }
+      .nota-sheet {
+        box-shadow: none !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-wrap">
+    <header class="topbar">
+      <div>
+        <div class="brand-title">Omah Oelin Digital Printing — POS & Order</div>
+        <div class="brand-sub">Kitren, RT.23/RW.05, 593, Prenggan, Kec. Kotagede, Yogyakarta 55172</div>
+      </div>
+      <div class="actions-row no-print">
+        <button class="btn btn-sm" id="btnSync">Sinkron Sheets</button>
+        <button class="btn btn-sm" id="btnTheme">Mode Gelap</button>
+      </div>
+    </header>
+
+    <div class="status-banner no-print" id="connectionBanner">
+      Mode Lokal aktif (belum ada URL Apps Script). Data tersimpan sementara di browser dan bisa langsung diuji.
+    </div>
+
+    <nav class="tabs no-print">
+      <button class="tab-btn active" data-tab="pos">Kasir & Kalkulator Order</button>
+      <button class="tab-btn" data-tab="orders">Antrean Produksi & Pelunasan</button>
+    </nav>
+
+    <!-- TAB 1: POS -->
+    <section id="tab-pos" class="grid-2">
+      <div>
+        <div class="card">
+          <div class="card-title">1. Tambah Item Pesanan</div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="kategoriFilter">Kategori</label>
+              <select id="kategoriFilter">
+                <option value="ALL">Semua Kategori</option>
+                <option value="Banner">Banner</option>
+                <option value="Cetak A3">Cetak A3</option>
+                <option value="Merchandise">Merchandise</option>
+                <option value="Kalender">Kalender</option>
+                <option value="Stationery">Stationery</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="produkSelect">Pilih Layanan / Produk</label>
+              <select id="produkSelect"></select>
+            </div>
+          </div>
+
+          <div id="bannerDimsBox" class="form-grid hidden">
+            <div class="field">
+              <label for="panjangCm">Panjang (cm)</label>
+              <input type="number" id="panjangCm" min="1" value="300" />
+            </div>
+            <div class="field">
+              <label for="lebarCm">Lebar (cm)</label>
+              <input type="number" id="lebarCm" min="1" value="100" />
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="qtyInput">Jumlah (pcs / lembar / set)</label>
+              <input type="number" id="qtyInput" min="1" value="1" />
+            </div>
+            <div class="field">
+              <label for="hargaOverride">Harga Satuan / per m² (Rp)</label>
+              <input type="number" id="hargaOverride" min="0" step="500" value="0" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="spesifikasiInput">Catatan Spesifikasi / Finishing</label>
+            <input type="text" id="spesifikasiInput" placeholder="Contoh: Mata ayam 4 sudut, Mug putih polos, Cetak 2 sisi" />
+          </div>
+
+          <div class="calc-preview">
+            <div>
+              <div style="font-size:0.8rem;color:var(--text-muted)">Estimasi Subtotal Item</div>
+              <div id="itemCalcDesc" style="font-size:0.85rem;font-weight:600">-</div>
+            </div>
+            <div id="itemCalcTotal" style="font-size:1.15rem;font-weight:800;color:var(--accent-dark)">Rp 0</div>
+          </div>
+
+          <button class="btn btn-primary" id="btnAddItem" style="width:100%">+ Masukkan ke Keranjang Nota</button>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <span>Daftar Item Nota</span>
+            <button class="btn btn-sm" id="btnClearCart">Kosongkan</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Spec / Ukuran</th>
+                  <th>Qty</th>
+                  <th>Total</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="cartBody">
+                <tr><td colspan="5" style="text-align:center;color:var(--text-muted)">Belum ada item ditambahkan</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">2. Data Pelanggan & Pembayaran</div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label for="namaPelanggan">Nama Pelanggan</label>
+            <input type="text" id="namaPelanggan" placeholder="Contoh: Budi / CV Maju" />
+          </div>
+          <div class="field">
+            <label for="noWa">Nomor WhatsApp</label>
+            <input type="text" id="noWa" placeholder="0812xxxxxxxx" />
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label for="deadlineInput">Target Selesai / Deadline</label>
+            <input type="datetime-local" id="deadlineInput" />
+          </div>
+          <div class="field">
+            <label for="metodeBayar">Metode Pembayaran</label>
+            <select id="metodeBayar">
+              <option value="Tunai">Tunai</option>
+              <option value="QRIS">QRIS</option>
+              <option value="Transfer Bank">Transfer Bank</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label for="biayaDesain">Biaya Desain (Rp)</label>
+            <input type="number" id="biayaDesain" min="0" step="1000" value="0" />
+          </div>
+          <div class="field">
+            <label for="diskonInput">Diskon Nota (Rp)</label>
+            <input type="number" id="diskonInput" min="0" step="1000" value="0" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="nominalBayar">Nominal Bayar Saat Ini — DP / Lunas (Rp)</label>
+          <input type="number" id="nominalBayar" min="0" step="1000" value="0" />
+        </div>
+
+        <div class="summary-box">
+          <div class="summary-row"><span>Subtotal Item</span><span id="sumSubtotal">Rp 0</span></div>
+          <div class="summary-row"><span>Biaya Desain</span><span id="sumDesain">Rp 0</span></div>
+          <div class="summary-row"><span>Diskon</span><span id="sumDiskon">- Rp 0</span></div>
+          <div class="summary-row total"><span>Grand Total</span><span id="sumGrandTotal">Rp 0</span></div>
+          <div class="summary-row"><span>Bayar / DP</span><span id="sumBayar">Rp 0</span></div>
+          <div class="summary-row"><span>Sisa Tagihan</span><span id="sumSisa" style="font-weight:700">Rp 0</span></div>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+          <button class="btn btn-primary" id="btnSaveOrder" style="flex:1">Simpan Order & Buka Nota PDF</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: ANTREAN PRODUKSI & PELUNASAN -->
+    <section id="tab-orders" class="card hidden">
+      <div class="card-title">
+        <span>Daftar Order, Status Produksi & Pelunasan</span>
+        <input type="text" id="searchOrder" placeholder="Cari no nota / nama pelanggan..." style="max-width:250px;padding:7px 11px;border-radius:8px;border:1px solid var(--border-color);background:var(--surface-alt);color:var(--text-main)" />
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>No Nota</th>
+              <th>Pelanggan</th>
+              <th>Total / Sisa</th>
+              <th>Status Bayar</th>
+              <th>Status Produksi</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="ordersBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <!-- MODAL NOTA SIAP SIMPAN PDF -->
+  <div id="notaModal" class="hidden">
+    <div class="nota-sheet">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #111827;padding-bottom:12px;margin-bottom:14px">
+        <div>
+          <div style="font-size:1.2rem;font-weight:800">OMAH OELIN DIGITAL PRINTING</div>
+          <div style="font-size:0.82rem;color:#4b5563">Kitren, RT.23/RW.05, 593, Prenggan, Kotagede, Yogyakarta 55172</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-weight:800;font-size:1rem" id="notaNomor">INV-...</div>
+          <div style="font-size:0.8rem;color:#4b5563" id="notaTanggal">-</div>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;font-size:0.86rem;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+        <div>
+          <div><strong>Pelanggan:</strong> <span id="notaPelanggan">-</span></div>
+          <div><strong>No. WA:</strong> <span id="notaWa">-</span></div>
+        </div>
+        <div style="text-align:right">
+          <div><strong>Deadline:</strong> <span id="notaDeadline">-</span></div>
+          <div><strong>Status Bayar:</strong> <span id="notaStatusBayar">-</span></div>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Spesifikasi</th>
+            <th>Qty</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody id="notaItemsBody"></tbody>
+      </table>
+
+      <div style="margin-top:14px;font-size:0.9rem">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Subtotal</span><span id="notaSubtotal">Rp 0</span></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Biaya Desain</span><span id="notaDesain">Rp 0</span></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Diskon</span><span id="notaDiskon">- Rp 0</span></div>
+        <div style="display:flex;justify-content:space-between;font-weight:800;font-size:1.05rem;border-top:1px solid #d1d5db;padding-top:6px;margin-top:6px">
+          <span>Grand Total</span><span id="notaGrandTotal">Rp 0</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:6px"><span>Dibayar / DP</span><span id="notaBayar">Rp 0</span></div>
+        <div style="display:flex;justify-content:space-between;font-weight:700"><span>Sisa Tagihan</span><span id="notaSisa">Rp 0</span></div>
+      </div>
+
+      <div class="no-print" style="display:flex;gap:8px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap">
+        <button class="btn btn-sm" id="btnCloseNota" style="background:#f3f4f6;color:#111827">Tutup</button>
+        <button class="btn btn-sm" id="btnWaNota" style="background:#16a34a;color:#fff;border:none">Kirim WA</button>
+        <button class="btn btn-primary btn-sm" onclick="window.print()">Simpan / Cetak PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Isi URL Web App Google Apps Script Anda jika sudah di-deploy:
+    const API_URL = "https://script.google.com/macros/s/AKfycbx6fnbbrFEbkxsqLElTrbOi6ujwbsPfLvgE9bTRDTzEHBajr-yVHSwPO6kPp-QAnvO_/exec";
+
+    const DEFAULT_KATALOG = [
+      { id_produk: "PRD-001", kategori: "Banner", nama_produk: "Banner Frontlite 280gr", tipe_hitung: "LUAS_M2", harga_dasar: 25000, harga_grosir_min10: 22000 },
+      { id_produk: "PRD-002", kategori: "Banner", nama_produk: "Banner Korcin / Backlite", tipe_hitung: "LUAS_M2", harga_dasar: 35000, harga_grosir_min10: 32000 },
+      { id_produk: "PRD-003", kategori: "Cetak A3", nama_produk: "Cetak A3+ Art Carton 260gr", tipe_hitung: "QTY_SATUAN", harga_dasar: 4500, harga_grosir_min10: 3800 },
+      { id_produk: "PRD-004", kategori: "Merchandise", nama_produk: "Mug Keramik Custom", tipe_hitung: "QTY_SATUAN", harga_dasar: 18000, harga_grosir_min10: 15000 },
+      { id_produk: "PRD-005", kategori: "Merchandise", nama_produk: "Tumbler Custom Grafir/Print", tipe_hitung: "QTY_SATUAN", harga_dasar: 45000, harga_grosir_min10: 40000 },
+      { id_produk: "PRD-006", kategori: "Merchandise", nama_produk: "Kaos Custom Sablon DTF", tipe_hitung: "QTY_SATUAN", harga_dasar: 55000, harga_grosir_min10: 48000 },
+      { id_produk: "PRD-007", kategori: "Merchandise", nama_produk: "Mangkuk Souvenir Custom", tipe_hitung: "QTY_SATUAN", harga_dasar: 16000, harga_grosir_min10: 13500 },
+      { id_produk: "PRD-008", kategori: "Kalender", nama_produk: "Kalender Dinding Custom", tipe_hitung: "QTY_SATUAN", harga_dasar: 12000, harga_grosir_min10: 9500 },
+      { id_produk: "PRD-009", kategori: "Stationery", nama_produk: "Nota / Map / ID Card / Kop Surat", tipe_hitung: "QTY_SATUAN", harga_dasar: 5000, harga_grosir_min10: 4000 }
+    ];
+
+    const state = {
+      katalog: [...DEFAULT_KATALOG],
+      cart: [],
+      orders: [],
+      details: [],
+      activeNota: null
+    };
+
+    const fmtRp = (n) => "Rp " + Number(n || 0).toLocaleString("id-ID");
+
+    function initTheme() {
+      const saved = localStorage.getItem("pos_theme") || "light";
+      document.documentElement.setAttribute("data-theme", saved);
+      document.getElementById("btnTheme").textContent = saved === "dark" ? "Mode Terang" : "Mode Gelap";
+    }
+
+    document.getElementById("btnTheme").addEventListener("click", () => {
+      const current = document.documentElement.getAttribute("data-theme");
+      const next = current === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+      localStorage.setItem("pos_theme", next);
+      document.getElementById("btnTheme").textContent = next === "dark" ? "Mode Terang" : "Mode Gelap";
+    });
+
+    document.querySelectorAll(".tab-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        const target = btn.getAttribute("data-tab");
+        document.getElementById("tab-pos").classList.toggle("hidden", target !== "pos");
+        document.getElementById("tab-orders").classList.toggle("hidden", target !== "orders");
+        if (target === "orders") renderOrdersTable();
+      });
+    });
+
+    function populateProdukSelect() {
+      const cat = document.getElementById("kategoriFilter").value;
+      const sel = document.getElementById("produkSelect");
+      const filtered = cat === "ALL" ? state.katalog : state.katalog.filter(p => p.kategori === cat);
+
+      sel.innerHTML = filtered.map(p =>
+        `<option value="${p.id_produk}">${p.nama_produk} (${fmtRp(p.harga_dasar)})</option>`
+      ).join("");
+
+      syncSelectedProductFields();
+    }
+
+    function getSelectedProduct() {
+      const id = document.getElementById("produkSelect").value;
+      return state.katalog.find(p => p.id_produk === id) || state.katalog[0];
+    }
+
+    function syncSelectedProductFields() {
+      const prod = getSelectedProduct();
+      if (!prod) return;
+      const qty = Math.max(1, Number(document.getElementById("qtyInput").value || 1));
+      const useGrosir = prod.tipe_hitung !== "LUAS_M2" && qty >= 10 && Number(prod.harga_grosir_min10) > 0;
+      const defaultPrice = useGrosir ? Number(prod.harga_grosir_min10) : Number(prod.harga_dasar);
+
+      document.getElementById("hargaOverride").value = defaultPrice;
+      document.getElementById("bannerDimsBox").classList.toggle("hidden", prod.tipe_hitung !== "LUAS_M2");
+      updateItemPreview();
+    }
+
+    function computeItemTotal(prod, qty, panjangCm, lebarCm, hargaSatuan) {
+      if (prod.tipe_hitung === "LUAS_M2") {
+        const rawM2 = (Number(panjangCm || 0) * Number(lebarCm || 0)) / 10000;
+        const billedM2 = Math.max(1, rawM2);
+        return {
+          total: Math.round(billedM2 * qty * hargaSatuan),
+          desc: `${panjangCm}x${lebarCm} cm (${billedM2.toFixed(2).replace(".", ",")} m² bayar) × ${qty} × ${fmtRp(hargaSatuan)}`
+        };
+      }
+      return {
+        total: Math.round(qty * hargaSatuan),
+        desc: `${qty} × ${fmtRp(hargaSatuan)}`
+      };
+    }
+
+    function updateItemPreview() {
+      const prod = getSelectedProduct();
+      if (!prod) return;
+      const qty = Math.max(1, Number(document.getElementById("qtyInput").value || 1));
+      const p = Number(document.getElementById("panjangCm").value || 0);
+      const l = Number(document.getElementById("lebarCm").value || 0);
+      const harga = Number(document.getElementById("hargaOverride").value || prod.harga_dasar || 0);
+
+      const calc = computeItemTotal(prod, qty, p, l, harga);
+      document.getElementById("itemCalcDesc").textContent = calc.desc;
+      document.getElementById("itemCalcTotal").textContent = fmtRp(calc.total);
+    }
+
+    ["kategoriFilter", "produkSelect"].forEach(id => {
+      document.getElementById(id).addEventListener("change", syncSelectedProductFields);
+    });
+    document.getElementById("qtyInput").addEventListener("input", () => {
+      const prod = getSelectedProduct();
+      const qty = Math.max(1, Number(document.getElementById("qtyInput").value || 1));
+      if (prod && prod.tipe_hitung !== "LUAS_M2") {
+        const useGrosir = qty >= 10 && Number(prod.harga_grosir_min10) > 0;
+        document.getElementById("hargaOverride").value = useGrosir ? Number(prod.harga_grosir_min10) : Number(prod.harga_dasar);
+      }
+      updateItemPreview();
+    });
+    ["panjangCm", "lebarCm", "hargaOverride"].forEach(id => {
+      document.getElementById(id).addEventListener("input", updateItemPreview);
+    });
+
+    document.getElementById("btnAddItem").addEventListener("click", () => {
+      const prod = getSelectedProduct();
+      if (!prod) return;
+      const qty = Math.max(1, Number(document.getElementById("qtyInput").value || 1));
+      const p = prod.tipe_hitung === "LUAS_M2" ? Number(document.getElementById("panjangCm").value || 0) : 0;
+      const l = prod.tipe_hitung === "LUAS_M2" ? Number(document.getElementById("lebarCm").value || 0) : 0;
+      const harga = Number(document.getElementById("hargaOverride").value || prod.harga_dasar || 0);
+      const spec = document.getElementById("spesifikasiInput").value.trim() || (prod.tipe_hitung === "LUAS_M2" ? `${p}x${l} cm` : "-");
+
+      const calc = computeItemTotal(prod, qty, p, l, harga);
+
+      state.cart.push({
+        id_produk: prod.id_produk,
+        nama_item_snapshot: prod.nama_produk,
+        tipe_hitung: prod.tipe_hitung,
+        panjang_cm: p,
+        lebar_cm: l,
+        qty,
+        spesifikasi_catatan: spec,
+        harga_satuan: harga,
+        total_harga_item: calc.total
+      });
+
+      document.getElementById("spesifikasiInput").value = "";
+      renderCart();
+      updateSummary();
+    });
+
+    document.getElementById("btnClearCart").addEventListener("click", () => {
+      state.cart = [];
+      renderCart();
+      updateSummary();
+    });
+
+    function renderCart() {
+      const tbody = document.getElementById("cartBody");
+      if (state.cart.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-muted)">Belum ada item ditambahkan</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = state.cart.map((item, idx) => `
+        <tr>
+          <td><strong>${item.nama_item_snapshot}</strong></td>
+          <td>${item.spesifikasi_catatan}</td>
+          <td>${item.qty}</td>
+          <td>${fmtRp(item.total_harga_item)}</td>
+          <td><button class="btn btn-sm" onclick="removeCartItem(${idx})">Hapus</button></td>
+        </tr>
+      `).join("");
+    }
+
+    window.removeCartItem = function(idx) {
+      state.cart.splice(idx, 1);
+      renderCart();
+      updateSummary();
+    };
+
+    function updateSummary() {
+      const subtotal = state.cart.reduce((acc, it) => acc + Number(it.total_harga_item || 0), 0);
+      const desain = Math.max(0, Number(document.getElementById("biayaDesain").value || 0));
+      const diskon = Math.max(0, Number(document.getElementById("diskonInput").value || 0));
+      const grandTotal = Math.max(0, subtotal + desain - diskon);
+      const bayar = Math.min(grandTotal, Math.max(0, Number(document.getElementById("nominalBayar").value || 0)));
+      const sisa = Math.max(0, grandTotal - bayar);
+
+      document.getElementById("sumSubtotal").textContent = fmtRp(subtotal);
+      document.getElementById("sumDesain").textContent = fmtRp(desain);
+      document.getElementById("sumDiskon").textContent = "- " + fmtRp(diskon);
+      document.getElementById("sumGrandTotal").textContent = fmtRp(grandTotal);
+      document.getElementById("sumBayar").textContent = fmtRp(bayar);
+      document.getElementById("sumSisa").textContent = fmtRp(sisa);
+
+      return { subtotal, desain, diskon, grandTotal, bayar, sisa };
+    }
+
+    ["biayaDesain", "diskonInput", "nominalBayar"].forEach(id => {
+      document.getElementById(id).addEventListener("input", updateSummary);
+    });
+
+    function buildLocalNotaNumber() {
+      const d = new Date();
+      const ymd = d.getFullYear() + String(d.getMonth() + 1).padStart(2, "0") + String(d.getDate()).padStart(2, "0");
+      const seq = String(state.orders.length + 1).padStart(3, "0");
+      return `INV-${ymd}-${seq}`;
+    }
+
+    document.getElementById("btnSaveOrder").addEventListener("click", async () => {
+      if (state.cart.length === 0) {
+        alert("Tambahkan minimal 1 item ke nota terlebih dahulu.");
+        return;
+      }
+      const nama = document.getElementById("namaPelanggan").value.trim();
+      if (!nama) {
+        alert("Nama pelanggan wajib diisi.");
+        return;
+      }
+
+      const sum = updateSummary();
+      const statusBayar = sum.bayar >= sum.grandTotal && sum.grandTotal > 0
+        ? "LUNAS"
+        : (sum.bayar > 0 ? "DP" : "BELUM_BAYAR");
+
+      const payload = {
+        no_nota: buildLocalNotaNumber(),
+        tanggal_order: new Date().toISOString().slice(0, 19).replace("T", " "),
+        deadline: document.getElementById("deadlineInput").value.replace("T", " "),
+        nama_pelanggan: nama,
+        no_wa: document.getElementById("noWa").value.trim(),
+        subtotal: sum.subtotal,
+        biaya_desain: sum.desain,
+        diskon: sum.diskon,
+        grand_total: sum.grandTotal,
+        nominal_bayar: sum.bayar,
+        sisa_tagihan: sum.sisa,
+        status_bayar: statusBayar,
+        metode_bayar: document.getElementById("metodeBayar").value,
+        status_produksi: "ANTRE_DESAIN",
+        items: [...state.cart]
+      };
+
+      if (API_URL) {
+        try {
+          const res = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify({ action: "createOrder", ...payload })
+          });
+          const json = await res.json();
+          if (!json.ok) throw new Error(json.error);
+          if (json.data && json.data.no_nota) payload.no_nota = json.data.no_nota;
+        } catch (err) {
+          alert("Gagal kirim ke Google Sheets: " + err.message);
+          return;
+        }
+      }
+
+      state.orders.unshift(payload);
+      payload.items.forEach(it => state.details.push({ ...it, no_nota: payload.no_nota }));
+
+      openNotaModal(payload);
+      state.cart = [];
+      renderCart();
+      updateSummary();
+      document.getElementById("namaPelanggan").value = "";
+      document.getElementById("noWa").value = "";
+      document.getElementById("biayaDesain").value = "0";
+      document.getElementById("diskonInput").value = "0";
+      document.getElementById("nominalBayar").value = "0";
+      updateSummary();
+    });
+
+    function openNotaModal(order) {
+      state.activeNota = order;
+      const items = order.items || state.details.filter(d => d.no_nota === order.no_nota);
+
+      document.getElementById("notaNomor").textContent = order.no_nota;
+      document.getElementById("notaTanggal").textContent = order.tanggal_order;
+      document.getElementById("notaPelanggan").textContent = order.nama_pelanggan;
+      document.getElementById("notaWa").textContent = order.no_wa || "-";
+      document.getElementById("notaDeadline").textContent = order.deadline || "-";
+      document.getElementById("notaStatusBayar").textContent = order.status_bayar;
+
+      document.getElementById("notaItemsBody").innerHTML = items.map(it => `
+        <tr>
+          <td>${it.nama_item_snapshot}</td>
+          <td>${it.spesifikasi_catatan || "-"}</td>
+          <td>${it.qty}</td>
+          <td>${fmtRp(it.total_harga_item)}</td>
+        </tr>
+      `).join("");
+
+      document.getElementById("notaSubtotal").textContent = fmtRp(order.subtotal);
+      document.getElementById("notaDesain").textContent = fmtRp(order.biaya_desain);
+      document.getElementById("notaDiskon").textContent = "- " + fmtRp(order.diskon);
+      document.getElementById("notaGrandTotal").textContent = fmtRp(order.grand_total);
+      document.getElementById("notaBayar").textContent = fmtRp(order.nominal_bayar);
+      document.getElementById("notaSisa").textContent = fmtRp(order.sisa_tagihan);
+
+      document.getElementById("notaModal").classList.remove("hidden");
+    }
+
+    document.getElementById("btnCloseNota").addEventListener("click", () => {
+      document.getElementById("notaModal").classList.add("hidden");
+    });
+
+    document.getElementById("btnWaNota").addEventListener("click", () => {
+      const ord = state.activeNota;
+      if (!ord) return;
+      const rawWa = String(ord.no_wa || "").replace(/\D/g, "");
+      const waNorm = rawWa.startsWith("0") ? "62" + rawWa.slice(1) : rawWa;
+      const text = encodeURIComponent(
+        `Halo ${ord.nama_pelanggan}, terima kasih telah memesan di Omah Oelin Digital Printing.\n` +
+        `No. Nota: ${ord.no_nota}\n` +
+        `Grand Total: ${fmtRp(ord.grand_total)}\n` +
+        `Dibayar/DP: ${fmtRp(ord.nominal_bayar)}\n` +
+        `Sisa Tagihan: ${fmtRp(ord.sisa_tagihan)}\n` +
+        `Status Produksi: ${ord.status_produksi}`
+      );
+      const url = waNorm ? `https://wa.me/${waNorm}?text=${text}` : `https://wa.me/?text=${text}`;
+      window.open(url, "_blank");
+    });
+
+    function renderOrdersTable() {
+      const q = (document.getElementById("searchOrder").value || "").toLowerCase();
+      const filtered = state.orders.filter(o =>
+        String(o.no_nota).toLowerCase().includes(q) ||
+        String(o.nama_pelanggan).toLowerCase().includes(q)
+      );
+
+      const tbody = document.getElementById("ordersBody");
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted)">Belum ada data order</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(o => {
+        const badgeClass = o.status_bayar === "LUNAS" ? "lunas" : (o.status_bayar === "DP" ? "dp" : "");
+        return `
+          <tr>
+            <td><strong>${o.no_nota}</strong></td>
+            <td>${o.nama_pelanggan}</td>
+            <td>
+              <div>${fmtRp(o.grand_total)}</div>
+              <small style="color:var(--text-muted)">Sisa: ${fmtRp(o.sisa_tagihan)}</small>
+            </td>
+            <td><span class="badge ${badgeClass}">${o.status_bayar}</span></td>
+            <td>
+              <select onchange="changeOrderStatus('${o.no_nota}', this.value)" style="padding:5px 8px;border-radius:8px;border:1px solid var(--border-color);background:var(--surface-alt);color:var(--text-main)">
+                ${["ANTRE_DESAIN", "PROSES_CETAK", "FINISHING", "SIAP_AMBIL", "SELESAI"].map(st =>
+                  `<option value="${st}" ${o.status_produksi === st ? "selected" : ""}>${st}</option>`
+                ).join("")}
+              </select>
+            </td>
+            <td style="white-space:nowrap">
+              <button class="btn btn-sm" onclick="reopenNota('${o.no_nota}')">Nota PDF</button>
+              ${Number(o.sisa_tagihan) > 0 ? `<button class="btn btn-primary btn-sm" onclick="payRemaining('${o.no_nota}', ${o.sisa_tagihan})">Lunasi</button>` : ""}
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    document.getElementById("searchOrder").addEventListener("input", renderOrdersTable);
+
+    window.reopenNota = function(noNota) {
+      const ord = state.orders.find(o => o.no_nota === noNota);
+      if (ord) openNotaModal(ord);
+    };
+
+    window.changeOrderStatus = async function(noNota, statusBaru) {
+      const ord = state.orders.find(o => o.no_nota === noNota);
+      if (ord) ord.status_produksi = statusBaru;
+      if (API_URL) {
+        await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "updateStatus", no_nota: noNota, status_produksi: statusBaru })
+        });
+      }
+    };
+
+    window.payRemaining = async function(noNota, sisa) {
+      const input = prompt(`Catat pembayaran untuk ${noNota} (Sisa: ${fmtRp(sisa)}):`, String(sisa));
+      if (!input) return;
+      const nominal = Math.min(Number(sisa), Math.max(0, Number(input)));
+      if (!nominal) return;
+
+      const ord = state.orders.find(o => o.no_nota === noNota);
+      if (ord) {
+        ord.nominal_bayar = Number(ord.nominal_bayar || 0) + nominal;
+        ord.sisa_tagihan = Math.max(0, Number(ord.grand_total || 0) - ord.nominal_bayar);
+        ord.status_bayar = ord.sisa_tagihan === 0 ? "LUNAS" : "DP";
+      }
+
+      if (API_URL) {
+        await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "recordPayment", no_nota: noNota, nominal, metode: "Tunai" })
+        });
+      }
+      renderOrdersTable();
+    };
+
+    async function syncFromSheets() {
+      const banner = document.getElementById("connectionBanner");
+      if (!API_URL) {
+        banner.textContent = "Mode Lokal aktif: isi variabel API_URL di kode untuk menghubungkan ke Google Sheets.";
+        return;
+      }
+      banner.textContent = "Menghubungkan ke Google Sheets...";
+      try {
+        const res = await fetch(`${API_URL}?action=getDashboardData`);
+        const json = await res.json();
+        if (!json.ok) throw new Error(json.error);
+        if (Array.isArray(json.data.katalog) && json.data.katalog.length > 0) {
+          state.katalog = json.data.katalog;
+        }
+        state.orders = json.data.orders || [];
+        state.details = json.data.details || [];
+        populateProdukSelect();
+        renderOrdersTable();
+        banner.textContent = "Terhubung ke Google Sheets — data katalog & order tersinkronisasi.";
+      } catch (err) {
+        banner.textContent = "Gagal sinkronisasi Google Sheets: " + err.message;
+      }
+    }
+
+    document.getElementById("btnSync").addEventListener("click", syncFromSheets);
+
+    initTheme();
+    populateProdukSelect();
+    renderCart();
+    updateSummary();
+    syncFromSheets();
+  </script>
+</body>
+</html>
