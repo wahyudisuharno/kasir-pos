@@ -3,7 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1d4ed8" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Omah Oelin POS" />
   <title>Omah Oelin POS — Percetakan, Merchandise & Souvenir</title>
+  <link id="pwaManifestLink" rel="manifest" href="" />
+  <link id="appleIconLink" rel="apple-touch-icon" href="" />
   <style>
     :root {
       --bg-gradient: linear-gradient(135deg, #f0f7ff 0%, #dbeafe 52%, #bfdbfe 100%);
@@ -420,6 +426,7 @@
         <div class="brand-sub">Kitren, RT.23/RW.05, 593, Prenggan, Kec. Kotagede, Yogyakarta 55172</div>
       </div>
       <div class="actions-row no-print">
+        <button class="btn btn-sm hidden" id="btnInstallApp">Pasang ke Layar HP</button>
         <button class="btn btn-sm" id="btnSync">Sinkron Sheets</button>
         <button class="btn btn-sm" id="btnTheme">Mode Gelap</button>
       </div>
@@ -473,11 +480,11 @@
 
           <div class="form-grid">
             <div class="field">
-              <label for="qtyInput">Jumlah (pcs / lembar / set)</label>
+              <label id="qtyLabel" for="qtyInput">Jumlah</label>
               <input type="number" id="qtyInput" min="1" value="1" />
             </div>
             <div class="field">
-              <label for="hargaOverride">Harga Satuan / per m² (Rp)</label>
+              <label id="hargaLabel" for="hargaOverride">Harga Satuan (Rp)</label>
               <input type="number" id="hargaOverride" min="0" step="500" value="0" />
             </div>
           </div>
@@ -629,14 +636,17 @@
           <div class="form-grid">
             <div class="field">
               <label for="katNama">Nama Produk / Layanan</label>
-              <input type="text" id="katNama" required placeholder="Contoh: X-Banner 60x160 cm" />
+              <input type="text" id="katNama" required placeholder="Contoh: Box Souvenir / Kertas A3" />
             </div>
             <div class="field">
               <label for="katTipeHitung">Tipe Hitung</label>
               <select id="katTipeHitung">
-                <option value="QTY_SATUAN">QTY_SATUAN (pcs / lembar / set)</option>
+                <option value="QTY_SATUAN">QTY_SATUAN (pcs / set)</option>
+                <option value="LEMBAR">LEMBAR (lembar)</option>
+                <option value="PACK">PACK (pack)</option>
+                <option value="BOX">BOX (box)</option>
                 <option value="LUAS_M2">LUAS_M2 (panjang x lebar cm)</option>
-                <option value="PAKET">PAKET</option>
+                <option value="PAKET">PAKET (paket)</option>
               </select>
             </div>
           </div>
@@ -850,16 +860,25 @@
     // Isi URL Web App Google Apps Script Anda jika sudah di-deploy:
     const API_URL = "";
 
+    const UNIT_LABELS = {
+      LUAS_M2: "m²",
+      QTY_SATUAN: "pcs",
+      LEMBAR: "lembar",
+      PACK: "pack",
+      BOX: "box",
+      PAKET: "paket"
+    };
+
     const DEFAULT_KATALOG = [
       { id_produk: "PRD-001", kategori: "Banner", nama_produk: "Banner Frontlite 280gr", tipe_hitung: "LUAS_M2", harga_dasar: 25000, harga_grosir_min10: 22000, id_bahan_terkait: "BHN-FR280" },
       { id_produk: "PRD-002", kategori: "Banner", nama_produk: "Banner Korcin / Backlite", tipe_hitung: "LUAS_M2", harga_dasar: 35000, harga_grosir_min10: 32000, id_bahan_terkait: "" },
-      { id_produk: "PRD-003", kategori: "Cetak A3", nama_produk: "Cetak A3+ Art Carton 260gr", tipe_hitung: "QTY_SATUAN", harga_dasar: 4500, harga_grosir_min10: 3800, id_bahan_terkait: "BHN-AC260" },
+      { id_produk: "PRD-003", kategori: "Cetak A3", nama_produk: "Cetak A3+ Art Carton 260gr", tipe_hitung: "LEMBAR", harga_dasar: 4500, harga_grosir_min10: 3800, id_bahan_terkait: "BHN-AC260" },
       { id_produk: "PRD-004", kategori: "Merchandise", nama_produk: "Mug Keramik Custom", tipe_hitung: "QTY_SATUAN", harga_dasar: 18000, harga_grosir_min10: 15000, id_bahan_terkait: "BHN-MUG-01" },
       { id_produk: "PRD-005", kategori: "Merchandise", nama_produk: "Tumbler Custom Grafir/Print", tipe_hitung: "QTY_SATUAN", harga_dasar: 45000, harga_grosir_min10: 40000, id_bahan_terkait: "" },
       { id_produk: "PRD-006", kategori: "Merchandise", nama_produk: "Kaos Custom Sablon DTF", tipe_hitung: "QTY_SATUAN", harga_dasar: 55000, harga_grosir_min10: 48000, id_bahan_terkait: "" },
-      { id_produk: "PRD-007", kategori: "Merchandise", nama_produk: "Mangkuk Souvenir Custom", tipe_hitung: "QTY_SATUAN", harga_dasar: 16000, harga_grosir_min10: 13500, id_bahan_terkait: "" },
-      { id_produk: "PRD-008", kategori: "Kalender", nama_produk: "Kalender Dinding Custom", tipe_hitung: "QTY_SATUAN", harga_dasar: 12000, harga_grosir_min10: 9500, id_bahan_terkait: "" },
-      { id_produk: "PRD-009", kategori: "Stationery", nama_produk: "Nota / Map / ID Card / Kop Surat", tipe_hitung: "QTY_SATUAN", harga_dasar: 5000, harga_grosir_min10: 4000, id_bahan_terkait: "" }
+      { id_produk: "PRD-007", kategori: "Merchandise", nama_produk: "Mangkuk Souvenir Custom", tipe_hitung: "BOX", harga_dasar: 180000, harga_grosir_min10: 165000, id_bahan_terkait: "" },
+      { id_produk: "PRD-008", kategori: "Kalender", nama_produk: "Kalender Dinding Custom", tipe_hitung: "PACK", harga_dasar: 110000, harga_grosir_min10: 95000, id_bahan_terkait: "" },
+      { id_produk: "PRD-009", kategori: "Stationery", nama_produk: "Nota / Map / ID Card / Kop Surat", tipe_hitung: "PACK", harga_dasar: 45000, harga_grosir_min10: 40000, id_bahan_terkait: "" }
     ];
 
     const DEFAULT_STOK = [
@@ -879,6 +898,50 @@
     };
 
     const fmtRp = (n) => "Rp " + Number(n || 0).toLocaleString("id-ID");
+
+    function getUnitLabel(tipeHitung) {
+      return UNIT_LABELS[String(tipeHitung || "").toUpperCase()] || "pcs";
+    }
+
+    function setupPWA() {
+      const svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+        <rect width="192" height="192" rx="36" fill="#1d4ed8"/>
+        <text x="96" y="114" font-family="system-ui,sans-serif" font-size="72" font-weight="800" fill="#ffffff" text-anchor="middle">OO</text>
+      </svg>`;
+      const iconUrl = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgIcon);
+      document.getElementById("appleIconLink").href = iconUrl;
+
+      const manifestObj = {
+        name: "Omah Oelin POS — Percetakan & Merchandise",
+        short_name: "Omah Oelin POS",
+        start_url: "./",
+        display: "standalone",
+        background_color: "#dbeafe",
+        theme_color: "#1d4ed8",
+        icons: [
+          { src: iconUrl, sizes: "192x192", type: "image/svg+xml", purpose: "any" }
+        ]
+      };
+      const manifestUrl = "data:application/manifest+json;charset=utf-8," + encodeURIComponent(JSON.stringify(manifestObj));
+      document.getElementById("pwaManifestLink").href = manifestUrl;
+
+      let deferredPrompt = null;
+      const btnInstall = document.getElementById("btnInstallApp");
+
+      window.addEventListener("beforeinstallprompt", (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        btnInstall.classList.remove("hidden");
+      });
+
+      btnInstall.addEventListener("click", async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        btnInstall.classList.add("hidden");
+      });
+    }
 
     function formatLocalDateTime(dateObj = new Date()) {
       const y = dateObj.getFullYear();
@@ -925,7 +988,7 @@
       const filtered = cat === "ALL" ? state.katalog : state.katalog.filter(p => p.kategori === cat);
 
       sel.innerHTML = filtered.map(p =>
-        `<option value="${p.id_produk}">${p.nama_produk} (${fmtRp(p.harga_dasar)})</option>`
+        `<option value="${p.id_produk}">${p.nama_produk} (${fmtRp(p.harga_dasar)} / ${getUnitLabel(p.tipe_hitung)})</option>`
       ).join("");
 
       syncSelectedProductFields();
@@ -939,16 +1002,20 @@
     function syncSelectedProductFields() {
       const prod = getSelectedProduct();
       if (!prod) return;
+      const unitLabel = getUnitLabel(prod.tipe_hitung);
       const qty = Math.max(1, Number(document.getElementById("qtyInput").value || 1));
       const useGrosir = prod.tipe_hitung !== "LUAS_M2" && qty >= 10 && Number(prod.harga_grosir_min10) > 0;
       const defaultPrice = useGrosir ? Number(prod.harga_grosir_min10) : Number(prod.harga_dasar);
 
+      document.getElementById("qtyLabel").textContent = `Jumlah (${unitLabel})`;
+      document.getElementById("hargaLabel").textContent = `Harga per ${unitLabel} (Rp)`;
       document.getElementById("hargaOverride").value = defaultPrice;
       document.getElementById("bannerDimsBox").classList.toggle("hidden", prod.tipe_hitung !== "LUAS_M2");
       updateItemPreview();
     }
 
     function computeItemTotal(prod, qty, panjangCm, lebarCm, hargaSatuan) {
+      const unitLabel = getUnitLabel(prod.tipe_hitung);
       if (prod.tipe_hitung === "LUAS_M2") {
         const rawM2 = (Number(panjangCm || 0) * Number(lebarCm || 0)) / 10000;
         const billedM2 = Math.max(1, rawM2);
@@ -959,7 +1026,7 @@
       }
       return {
         total: Math.round(qty * hargaSatuan),
-        desc: `${qty} × ${fmtRp(hargaSatuan)}`
+        desc: `${qty} ${unitLabel} × ${fmtRp(hargaSatuan)}`
       };
     }
 
@@ -1037,7 +1104,7 @@
         <tr>
           <td><strong>${item.nama_item_snapshot}</strong></td>
           <td>${item.spesifikasi_catatan}</td>
-          <td>${item.qty}</td>
+          <td>${item.qty} ${getUnitLabel(item.tipe_hitung)}</td>
           <td>${fmtRp(item.total_harga_item)}</td>
           <td><button class="btn btn-sm" onclick="removeCartItem(${idx})">Hapus</button></td>
         </tr>
@@ -1182,7 +1249,7 @@
         <tr>
           <td>${it.nama_item_snapshot}</td>
           <td>${it.spesifikasi_catatan || "-"}</td>
-          <td>${it.qty}</td>
+          <td>${it.qty} ${getUnitLabel(it.tipe_hitung)}</td>
           <td>${fmtRp(it.total_harga_item)}</td>
         </tr>
       `).join("");
@@ -1320,7 +1387,7 @@
             <div style="font-size:0.75rem;color:var(--text-muted)">${p.id_produk} • ${p.kategori}</div>
           </td>
           <td><span class="badge">${p.tipe_hitung}</span></td>
-          <td>${fmtRp(p.harga_dasar)}</td>
+          <td>${fmtRp(p.harga_dasar)} / ${getUnitLabel(p.tipe_hitung)}</td>
           <td><button class="btn btn-sm" onclick="editKatalog('${p.id_produk}')">Edit</button></td>
         </tr>
       `).join("");
@@ -1452,7 +1519,6 @@
 
       const totalOmzet = filteredOrders.reduce((acc, o) => acc + Number(o.grand_total || 0), 0);
 
-      // Jika Log_Pembayaran ada, hitung kas masuk dari log; jika kosong namun ada orders, fallback ke nominal_bayar order
       let kasMasuk = 0;
       const byMetode = { Tunai: 0, QRIS: 0, "Transfer Bank": 0 };
 
@@ -1561,6 +1627,7 @@
 
     document.getElementById("btnSync").addEventListener("click", syncFromSheets);
 
+    setupPWA();
     initTheme();
     populateProdukSelect();
     renderCart();
