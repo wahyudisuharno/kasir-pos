@@ -382,7 +382,7 @@
       background: #ffffff;
       color: #111827;
       width: 100%;
-      max-width: 640px;
+      max-width: 660px;
       border-radius: 14px;
       padding: 24px;
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
@@ -394,6 +394,50 @@
     .nota-sheet table td {
       color: #111827;
       border-bottom: 1px solid #e5e7eb;
+    }
+
+    .wa-box {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 12px;
+      margin-top: 14px;
+    }
+
+    .wa-template-pills {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+
+    .wa-pill {
+      padding: 5px 10px;
+      border-radius: 8px;
+      border: 1px solid #93c5fd;
+      background: #eff6ff;
+      color: #1e3a8a;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .wa-pill.active {
+      background: #1d4ed8;
+      color: #ffffff;
+      border-color: #1d4ed8;
+    }
+
+    .wa-textarea {
+      width: 100%;
+      min-height: 110px;
+      padding: 9px 10px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      color: #111827;
+      font-size: 0.82rem;
+      resize: vertical;
     }
 
     @media print {
@@ -848,7 +892,19 @@
         <div style="display:flex;justify-content:space-between;font-weight:700"><span>Sisa Tagihan</span><span id="notaSisa">Rp 0</span></div>
       </div>
 
-      <div class="no-print" style="display:flex;gap:8px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap">
+      <!-- PANEL TEMPLATE WHATSAPP -->
+      <div class="wa-box no-print">
+        <div style="font-size:0.8rem;font-weight:700;color:#1e3a8a;margin-bottom:6px">Pilih Template Pesan WhatsApp:</div>
+        <div class="wa-template-pills">
+          <button type="button" class="wa-pill active" data-tpl="konfirmasi">Konfirmasi</button>
+          <button type="button" class="wa-pill" data-tpl="preview">Preview Desain</button>
+          <button type="button" class="wa-pill" data-tpl="pelunasan">Pelunasan</button>
+          <button type="button" class="wa-pill" data-tpl="siap_ambil">Siap Diambil</button>
+        </div>
+        <textarea id="waPreviewText" class="wa-textarea"></textarea>
+      </div>
+
+      <div class="no-print" style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap">
         <button class="btn btn-sm" id="btnCloseNota" style="background:#f3f4f6;color:#111827">Tutup</button>
         <button class="btn btn-sm" id="btnWaNota" style="background:#16a34a;color:#fff;border:none">Kirim WA</button>
         <button class="btn btn-primary btn-sm" onclick="window.print()">Simpan / Cetak PDF</button>
@@ -894,7 +950,8 @@
       orders: [],
       details: [],
       pembayaran: [],
-      activeNota: null
+      activeNota: null,
+      activeWaTemplate: "konfirmasi"
     };
 
     const fmtRp = (n) => "Rp " + Number(n || 0).toLocaleString("id-ID");
@@ -1222,7 +1279,7 @@
       state.orders.unshift(payload);
       payload.items.forEach(it => state.details.push({ ...it, no_nota: payload.no_nota }));
 
-      openNotaModal(payload);
+      openNotaModal(payload, "konfirmasi");
       state.cart = [];
       renderCart();
       updateSummary();
@@ -1234,7 +1291,64 @@
       updateSummary();
     });
 
-    function openNotaModal(order) {
+    function buildWaMessage(ord, templateKey = "konfirmasi") {
+      const items = ord.items || state.details.filter(d => d.no_nota === ord.no_nota);
+      const rincian = items.map(it => `${it.nama_item_snapshot} (${it.qty} ${getUnitLabel(it.tipe_hitung)})`).join(", ") || "-";
+      const baseInfo =
+        `No. Nota: *${ord.no_nota}*\n` +
+        `Item: ${rincian}\n` +
+        `Grand Total: *${fmtRp(ord.grand_total)}*\n` +
+        `Dibayar: *${fmtRp(ord.nominal_bayar)}*\n` +
+        `Sisa Tagihan: *${fmtRp(ord.sisa_tagihan)}*`;
+
+      if (templateKey === "preview") {
+        return (
+          `Halo Kak ${ord.nama_pelanggan}, preview desain untuk *${ord.no_nota}* (${rincian}) sudah siap dicek.\n` +
+          `Mohon periksa teks, ukuran, dan finishing sebelum cetak. Balas "ACC CETAK" jika sudah sesuai atau tuliskan bagian yang perlu direvisi.\n` +
+          `— Omah Oelin Digital Printing, Kotagede`
+        );
+      }
+      if (templateKey === "pelunasan") {
+        return (
+          `Halo Kak ${ord.nama_pelanggan}, pengingat pelunasan pesanan:\n` +
+          `${baseInfo}\n` +
+          `Status Produksi: *${ord.status_produksi}*\n` +
+          `— Omah Oelin Digital Printing, Kotagede`
+        );
+      }
+      if (templateKey === "siap_ambil") {
+        return (
+          `Halo Kak ${ord.nama_pelanggan}, pesanan Anda sudah *SIAP DIAMBIL*!\n` +
+          `${baseInfo}\n` +
+          `Lokasi: Kitren, RT.23/RW.05, 593, Prenggan, Kotagede, Yogyakarta 55172 (Minggu buka setelah jam 12.00).\n` +
+          `— Omah Oelin Digital Printing`
+        );
+      }
+      return (
+        `Halo Kak ${ord.nama_pelanggan}, terima kasih telah memesan di *Omah Oelin Digital Printing*.\n` +
+        `${baseInfo}\n` +
+        `Status Produksi: *${ord.status_produksi}*\n` +
+        `Kitren, RT.23/RW.05, 593, Prenggan, Kotagede, Yogyakarta 55172.`
+      );
+    }
+
+    function setActiveWaTemplate(tplKey) {
+      state.activeWaTemplate = tplKey;
+      document.querySelectorAll(".wa-pill").forEach(pill => {
+        pill.classList.toggle("active", pill.getAttribute("data-tpl") === tplKey);
+      });
+      if (state.activeNota) {
+        document.getElementById("waPreviewText").value = buildWaMessage(state.activeNota, tplKey);
+      }
+    }
+
+    document.querySelectorAll(".wa-pill").forEach(pill => {
+      pill.addEventListener("click", () => {
+        setActiveWaTemplate(pill.getAttribute("data-tpl"));
+      });
+    });
+
+    function openNotaModal(order, defaultTpl = "konfirmasi") {
       state.activeNota = order;
       const items = order.items || state.details.filter(d => d.no_nota === order.no_nota);
 
@@ -1261,6 +1375,7 @@
       document.getElementById("notaBayar").textContent = fmtRp(order.nominal_bayar);
       document.getElementById("notaSisa").textContent = fmtRp(order.sisa_tagihan);
 
+      setActiveWaTemplate(defaultTpl);
       document.getElementById("notaModal").classList.remove("hidden");
     }
 
@@ -1273,14 +1388,8 @@
       if (!ord) return;
       const rawWa = String(ord.no_wa || "").replace(/\D/g, "");
       const waNorm = rawWa.startsWith("0") ? "62" + rawWa.slice(1) : rawWa;
-      const text = encodeURIComponent(
-        `Halo ${ord.nama_pelanggan}, terima kasih telah memesan di Omah Oelin Digital Printing.\n` +
-        `No. Nota: ${ord.no_nota}\n` +
-        `Grand Total: ${fmtRp(ord.grand_total)}\n` +
-        `Dibayar/DP: ${fmtRp(ord.nominal_bayar)}\n` +
-        `Sisa Tagihan: ${fmtRp(ord.sisa_tagihan)}\n` +
-        `Status Produksi: ${ord.status_produksi}`
-      );
+      const customMsg = document.getElementById("waPreviewText").value || buildWaMessage(ord, state.activeWaTemplate);
+      const text = encodeURIComponent(customMsg);
       const url = waNorm ? `https://wa.me/${waNorm}?text=${text}` : `https://wa.me/?text=${text}`;
       window.open(url, "_blank");
     });
@@ -1317,7 +1426,7 @@
               </select>
             </td>
             <td style="white-space:nowrap">
-              <button class="btn btn-sm" onclick="reopenNota('${o.no_nota}')">Nota PDF</button>
+              <button class="btn btn-sm" onclick="reopenNota('${o.no_nota}')">Nota & WA</button>
               ${Number(o.sisa_tagihan) > 0 ? `<button class="btn btn-primary btn-sm" onclick="payRemaining('${o.no_nota}', ${o.sisa_tagihan})">Lunasi</button>` : ""}
             </td>
           </tr>
@@ -1329,7 +1438,11 @@
 
     window.reopenNota = function(noNota) {
       const ord = state.orders.find(o => o.no_nota === noNota);
-      if (ord) openNotaModal(ord);
+      if (!ord) return;
+      const tpl = ord.status_produksi === "SIAP_AMBIL"
+        ? "siap_ambil"
+        : (Number(ord.sisa_tagihan) > 0 && ord.status_produksi !== "ANTRE_DESAIN" ? "pelunasan" : "konfirmasi");
+      openNotaModal(ord, tpl);
     };
 
     window.changeOrderStatus = async function(noNota, statusBaru) {
