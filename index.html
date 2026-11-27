@@ -157,10 +157,56 @@
       align-items: start;
     }
 
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 980px) {
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
     @media (max-width: 900px) {
       .grid-2 {
         grid-template-columns: 1fr;
       }
+    }
+
+    @media (max-width: 540px) {
+      .kpi-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .kpi-card {
+      background: var(--surface-alt);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .kpi-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .kpi-value {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--accent-dark);
+    }
+
+    .kpi-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 2px;
     }
 
     .card {
@@ -387,6 +433,7 @@
       <button class="tab-btn active" data-tab="pos">Kasir & Kalkulator Order</button>
       <button class="tab-btn" data-tab="orders">Antrean Produksi & Pelunasan</button>
       <button class="tab-btn" data-tab="inventory">Katalog & Stok Bahan</button>
+      <button class="tab-btn" data-tab="finance">Rekap Keuangan & Kas Harian</button>
     </nav>
 
     <!-- TAB 1: POS -->
@@ -670,6 +717,77 @@
         </div>
       </div>
     </section>
+
+    <!-- TAB 4: REKAP KEUANGAN & KAS HARIAN -->
+    <section id="tab-finance" class="hidden">
+      <div class="card">
+        <div class="card-title">
+          <span>Rekap Keuangan & Kas Harian</span>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <input type="date" id="filterTanggalKas" style="padding:7px 10px;border-radius:8px;border:1px solid var(--border-color);background:var(--surface-alt);color:var(--text-main)" />
+            <button class="btn btn-sm" id="btnResetTanggalKas">Semua Tanggal</button>
+          </div>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label">Total Omzet</div>
+            <div class="kpi-value" id="kpiOmzet">Rp 0</div>
+            <div class="kpi-sub" id="kpiOrderCount">0 order tercatat</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Kas Masuk (DP & Pelunasan)</div>
+            <div class="kpi-value" id="kpiKasMasuk" style="color:var(--success)">Rp 0</div>
+            <div class="kpi-sub" id="kpiMetodeBreakdown">Tunai: Rp 0 • QRIS: Rp 0 • TF: Rp 0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Sisa Piutang Aktif</div>
+            <div class="kpi-value" id="kpiPiutang" style="color:var(--warning)">Rp 0</div>
+            <div class="kpi-sub" id="kpiPiutangCount">0 nota belum lunas</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Tingkat Tertagih</div>
+            <div class="kpi-value" id="kpiCollectionRate">0%</div>
+            <div class="kpi-sub">Kas masuk dibanding omzet</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Mutasi Kas / Pembayaran Masuk</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Waktu / No Nota</th>
+                  <th>Jenis</th>
+                  <th>Metode</th>
+                  <th>Nominal</th>
+                </tr>
+              </thead>
+              <tbody id="kasLogBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Daftar Piutang Pelanggan (Sisa Tagihan)</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>No Nota / Pelanggan</th>
+                  <th>Sisa</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="piutangBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 
   <!-- MODAL NOTA SIAP SIMPAN PDF -->
@@ -756,10 +874,21 @@
       cart: [],
       orders: [],
       details: [],
+      pembayaran: [],
       activeNota: null
     };
 
     const fmtRp = (n) => "Rp " + Number(n || 0).toLocaleString("id-ID");
+
+    function formatLocalDateTime(dateObj = new Date()) {
+      const y = dateObj.getFullYear();
+      const m = String(dateObj.getMonth() + 1).padStart(2, "0");
+      const d = String(dateObj.getDate()).padStart(2, "0");
+      const hh = String(dateObj.getHours()).padStart(2, "0");
+      const mm = String(dateObj.getMinutes()).padStart(2, "0");
+      const ss = String(dateObj.getSeconds()).padStart(2, "0");
+      return `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
+    }
 
     function initTheme() {
       const saved = localStorage.getItem("pos_theme") || "light";
@@ -783,8 +912,10 @@
         document.getElementById("tab-pos").classList.toggle("hidden", target !== "pos");
         document.getElementById("tab-orders").classList.toggle("hidden", target !== "orders");
         document.getElementById("tab-inventory").classList.toggle("hidden", target !== "inventory");
+        document.getElementById("tab-finance").classList.toggle("hidden", target !== "finance");
         if (target === "orders") renderOrdersTable();
         if (target === "inventory") renderInventoryTab();
+        if (target === "finance") renderFinanceTab();
       });
     });
 
@@ -963,10 +1094,11 @@
       const statusBayar = sum.bayar >= sum.grandTotal && sum.grandTotal > 0
         ? "LUNAS"
         : (sum.bayar > 0 ? "DP" : "BELUM_BAYAR");
+      const nowStr = formatLocalDateTime();
 
       const payload = {
         no_nota: buildLocalNotaNumber(),
-        tanggal_order: new Date().toISOString().slice(0, 19).replace("T", " "),
+        tanggal_order: nowStr,
         deadline: document.getElementById("deadlineInput").value.replace("T", " "),
         nama_pelanggan: nama,
         no_wa: document.getElementById("noWa").value.trim(),
@@ -997,7 +1129,6 @@
           return;
         }
       } else {
-        // Potong stok lokal jika terhubung ke id_bahan_terkait
         payload.items.forEach(it => {
           if (!it.id_bahan_terkait) return;
           const st = state.stok.find(s => s.id_bahan === it.id_bahan_terkait);
@@ -1007,6 +1138,17 @@
               : Number(it.qty || 1);
             st.stok_saat_ini = Math.max(0, Number((Number(st.stok_saat_ini || 0) - used).toFixed(2)));
           }
+        });
+      }
+
+      if (Number(payload.nominal_bayar) > 0) {
+        state.pembayaran.unshift({
+          id_bayar: "PAY-" + Date.now().toString().slice(-6),
+          no_nota: payload.no_nota,
+          tanggal_bayar: nowStr,
+          jenis_bayar: statusBayar === "LUNAS" ? "LUNAS_LANGSUNG" : "DP",
+          nominal: Number(payload.nominal_bayar),
+          metode: payload.metode_bayar
         });
       }
 
@@ -1148,14 +1290,24 @@
         ord.status_bayar = ord.sisa_tagihan === 0 ? "LUNAS" : "DP";
       }
 
+      state.pembayaran.unshift({
+        id_bayar: "PAY-" + Date.now().toString().slice(-6),
+        no_nota: noNota,
+        tanggal_bayar: formatLocalDateTime(),
+        jenis_bayar: ord && ord.status_bayar === "LUNAS" ? "PELUNASAN" : "CICILAN",
+        nominal,
+        metode: (ord && ord.metode_bayar) || "Tunai"
+      });
+
       if (API_URL) {
         await fetch(API_URL, {
           method: "POST",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ action: "recordPayment", no_nota: noNota, nominal, metode: "Tunai" })
+          body: JSON.stringify({ action: "recordPayment", no_nota: noNota, nominal, metode: (ord && ord.metode_bayar) || "Tunai" })
         });
       }
       renderOrdersTable();
+      renderFinanceTab();
     };
 
     // TAB 3: KATALOG & STOK BAHAN
@@ -1281,6 +1433,102 @@
       }
     };
 
+    // TAB 4: REKAP KEUANGAN & KAS HARIAN
+    function extractYmd(dtStr) {
+      const m = String(dtStr || "").match(/^(\d{4}-\d{2}-\d{2})/);
+      return m ? m[1] : "";
+    }
+
+    function renderFinanceTab() {
+      const selectedDate = document.getElementById("filterTanggalKas").value || "";
+
+      const filteredOrders = selectedDate
+        ? state.orders.filter(o => extractYmd(o.tanggal_order) === selectedDate)
+        : state.orders;
+
+      const filteredPayments = selectedDate
+        ? state.pembayaran.filter(p => extractYmd(p.tanggal_bayar) === selectedDate)
+        : state.pembayaran;
+
+      const totalOmzet = filteredOrders.reduce((acc, o) => acc + Number(o.grand_total || 0), 0);
+
+      // Jika Log_Pembayaran ada, hitung kas masuk dari log; jika kosong namun ada orders, fallback ke nominal_bayar order
+      let kasMasuk = 0;
+      const byMetode = { Tunai: 0, QRIS: 0, "Transfer Bank": 0 };
+
+      if (filteredPayments.length > 0) {
+        filteredPayments.forEach(p => {
+          const nom = Number(p.nominal || 0);
+          kasMasuk += nom;
+          const met = p.metode || "Tunai";
+          if (byMetode[met] !== undefined) byMetode[met] += nom;
+          else byMetode.Tunai += nom;
+        });
+      } else if (!selectedDate && state.orders.length > 0) {
+        state.orders.forEach(o => {
+          const nom = Number(o.nominal_bayar || 0);
+          kasMasuk += nom;
+          const met = o.metode_bayar || "Tunai";
+          if (byMetode[met] !== undefined) byMetode[met] += nom;
+          else byMetode.Tunai += nom;
+        });
+      }
+
+      const piutangOrders = state.orders.filter(o => Number(o.sisa_tagihan || 0) > 0);
+      const totalPiutang = (selectedDate ? filteredOrders : state.orders)
+        .reduce((acc, o) => acc + Number(o.sisa_tagihan || 0), 0);
+
+      const rate = totalOmzet > 0 ? Math.min(100, Math.round((kasMasuk / totalOmzet) * 100)) : 0;
+
+      document.getElementById("kpiOmzet").textContent = fmtRp(totalOmzet);
+      document.getElementById("kpiOrderCount").textContent = `${filteredOrders.length} order tercatat`;
+      document.getElementById("kpiKasMasuk").textContent = fmtRp(kasMasuk);
+      document.getElementById("kpiMetodeBreakdown").textContent =
+        `Tunai: ${fmtRp(byMetode.Tunai)} • QRIS: ${fmtRp(byMetode.QRIS)} • TF: ${fmtRp(byMetode["Transfer Bank"])}`;
+      document.getElementById("kpiPiutang").textContent = fmtRp(totalPiutang);
+      document.getElementById("kpiPiutangCount").textContent = `${piutangOrders.length} nota belum lunas`;
+      document.getElementById("kpiCollectionRate").textContent = `${rate}%`;
+
+      const kasBody = document.getElementById("kasLogBody");
+      if (filteredPayments.length === 0) {
+        kasBody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--text-muted)">Belum ada mutasi pembayaran tercatat</td></tr>`;
+      } else {
+        kasBody.innerHTML = filteredPayments.map(p => `
+          <tr>
+            <td>
+              <strong>${p.no_nota}</strong>
+              <div style="font-size:0.75rem;color:var(--text-muted)">${p.tanggal_bayar || "-"}</div>
+            </td>
+            <td><span class="badge">${p.jenis_bayar || "BAYAR"}</span></td>
+            <td>${p.metode || "Tunai"}</td>
+            <td><strong>${fmtRp(p.nominal)}</strong></td>
+          </tr>
+        `).join("");
+      }
+
+      const piutangBody = document.getElementById("piutangBody");
+      if (piutangOrders.length === 0) {
+        piutangBody.innerHTML = `<tr><td colspan="3" style="text-align:center;color:var(--text-muted)">Tidak ada sisa piutang</td></tr>`;
+      } else {
+        piutangBody.innerHTML = piutangOrders.map(o => `
+          <tr>
+            <td>
+              <strong>${o.no_nota}</strong> • ${o.nama_pelanggan}
+              <div style="font-size:0.75rem;color:var(--text-muted)">Total: ${fmtRp(o.grand_total)} • Bayar: ${fmtRp(o.nominal_bayar)}</div>
+            </td>
+            <td><strong style="color:var(--warning)">${fmtRp(o.sisa_tagihan)}</strong></td>
+            <td><button class="btn btn-primary btn-sm" onclick="payRemaining('${o.no_nota}', ${o.sisa_tagihan})">Lunasi</button></td>
+          </tr>
+        `).join("");
+      }
+    }
+
+    document.getElementById("filterTanggalKas").addEventListener("change", renderFinanceTab);
+    document.getElementById("btnResetTanggalKas").addEventListener("click", () => {
+      document.getElementById("filterTanggalKas").value = "";
+      renderFinanceTab();
+    });
+
     async function syncFromSheets() {
       const banner = document.getElementById("connectionBanner");
       if (!API_URL) {
@@ -1300,10 +1548,12 @@
         }
         state.orders = json.data.orders || [];
         state.details = json.data.details || [];
+        state.pembayaran = json.data.pembayaran || [];
         populateProdukSelect();
         renderOrdersTable();
         renderInventoryTab();
-        banner.textContent = "Terhubung ke Google Sheets — data katalog, stok, dan order tersinkronisasi.";
+        renderFinanceTab();
+        banner.textContent = "Terhubung ke Google Sheets — data katalog, stok, order & kas tersinkronisasi.";
       } catch (err) {
         banner.textContent = "Gagal sinkronisasi Google Sheets: " + err.message;
       }
@@ -1316,6 +1566,7 @@
     renderCart();
     updateSummary();
     renderInventoryTab();
+    renderFinanceTab();
     syncFromSheets();
   </script>
 </body>
