@@ -435,7 +435,7 @@
 
     .wa-textarea {
       width: 100%;
-      min-height: 110px;
+      min-height: 125px;
       padding: 9px 10px;
       border-radius: 8px;
       border: 1px solid #cbd5e1;
@@ -777,7 +777,7 @@
       </div>
     </section>
 
-    <!-- TAB 4: REKAP KEUANGAN & KAS HARIAN -->
+    <!-- TAB 4: REKAP KEUANGAN, KAS HARIAN & SISTEM PEMBAYARAN -->
     <section id="tab-finance" class="hidden">
       <div class="card">
         <div class="card-title">
@@ -846,6 +846,55 @@
           </div>
         </div>
       </div>
+
+      <!-- FORM PENGATURAN SISTEM PEMBAYARAN -->
+      <div class="card">
+        <div class="card-title">Pengaturan Sistem Pembayaran (Untuk Pesan Pelunasan WA)</div>
+        <form id="formPaymentMethod">
+          <input type="hidden" id="payEditId" />
+          <div class="form-grid">
+            <div class="field">
+              <label for="payKanal">Jenis / Nama Saluran</label>
+              <input type="text" id="payKanal" required placeholder="Contoh: Bank BRI / Bank Mandiri / QRIS / GoPay" />
+            </div>
+            <div class="field">
+              <label for="payNomor">No. Rekening / No. HP / Info Bayar</label>
+              <input type="text" id="payNomor" required placeholder="Contoh: 1234-01-000123-50-0 atau Scan QRIS Kasir" />
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label for="payAtasNama">Atas Nama (opsional)</label>
+              <input type="text" id="payAtasNama" placeholder="Contoh: Wahyudi Suharno / Omah Oelin" />
+            </div>
+            <div class="field">
+              <label for="payAktif">Status Dipakai di Pesan Pelunasan</label>
+              <select id="payAktif">
+                <option value="true">Aktif (Tampil di WA Pelunasan)</option>
+                <option value="false">Nonaktif</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button type="submit" class="btn btn-primary btn-sm">Simpan Rekening / Metode</button>
+            <button type="button" class="btn btn-sm" id="btnResetPaymentMethod">Reset Form</button>
+          </div>
+        </form>
+
+        <div class="table-wrap" style="margin-top:14px">
+          <table>
+            <thead>
+              <tr>
+                <th>Saluran</th>
+                <th>No. Rekening / Detail</th>
+                <th>Status</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="paymentMethodsBody"></tbody>
+          </table>
+        </div>
+      </div>
     </section>
   </div>
 
@@ -899,7 +948,7 @@
 
       <!-- PANEL TEMPLATE WHATSAPP -->
       <div class="wa-box no-print">
-        <div style="font-size:0.8rem;font-weight:700;color:#1e3a8a;margin-bottom:6px">Pilih Template Pesan WhatsApp:</div>
+        <div style="font-size:0.8rem;font-weight:700;color:#1e3a8a;margin-bottom:6px">Template Pesan WhatsApp:</div>
         <div class="wa-template-pills">
           <button type="button" class="wa-pill active" data-tpl="konfirmasi">Konfirmasi</button>
           <button type="button" class="wa-pill" data-tpl="preview">Preview Desain</button>
@@ -919,7 +968,8 @@
 
   <script>
     // Isi URL Web App Google Apps Script Anda jika sudah di-deploy:
-    const API_URL = "https://script.google.com/macros/s/AKfycbx6fnbbrFEbkxsqLElTrbOi6ujwbsPfLvgE9bTRDTzEHBajr-yVHSwPO6kPp-QAnvO_/exec";
+    const API_URL = "";
+    const PAYMENT_STORAGE_KEY = "omah_oelin_payment_methods_v1";
 
     const UNIT_LABELS = {
       LUAS_M2: "m²",
@@ -948,9 +998,29 @@
       { id_bahan: "BHN-MUG-01", nama_bahan: "Mug Polos Coating SNI", satuan_stok: "pcs", stok_saat_ini: 36, batas_minimum: 10 }
     ];
 
+    const DEFAULT_PAYMENT_METHODS = [
+      { id: "PAYM-1", kanal: "Transfer Bank", nomor: "Silakan isi no. rekening di tab Rekap Keuangan", atas_nama: "", aktif: true }
+    ];
+
+    function loadPaymentMethods() {
+      try {
+        const raw = localStorage.getItem(PAYMENT_STORAGE_KEY);
+        if (!raw) return [...DEFAULT_PAYMENT_METHODS];
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [...DEFAULT_PAYMENT_METHODS];
+      } catch {
+        return [...DEFAULT_PAYMENT_METHODS];
+      }
+    }
+
+    function savePaymentMethods() {
+      localStorage.setItem(PAYMENT_STORAGE_KEY, JSON.stringify(state.paymentMethods));
+    }
+
     const state = {
       katalog: [...DEFAULT_KATALOG],
       stok: [...DEFAULT_STOK],
+      paymentMethods: loadPaymentMethods(),
       cart: [],
       orders: [],
       details: [],
@@ -1325,44 +1395,55 @@
       updateSummary();
     });
 
+    function formatPaymentChannelsText() {
+      const activeList = (state.paymentMethods || []).filter(m => m.aktif !== false);
+      if (activeList.length === 0) {
+        return "Info pembayaran: silakan atur no. rekening di tab Rekap Keuangan.";
+      }
+      return activeList.map(m => {
+        const an = m.atas_nama ? ` a.n. ${m.atas_nama}` : "";
+        return `• ${m.kanal}: *${m.nomor}*${an}`;
+      }).join("\n");
+    }
+
     function buildWaMessage(ord, templateKey = "konfirmasi") {
       const items = ord.items || state.details.filter(d => d.no_nota === ord.no_nota);
       const rincian = items.map(it => `${it.nama_item_snapshot} (${it.qty} ${getUnitLabel(it.tipe_hitung)})`).join(", ") || "-";
-      const baseInfo =
-        `No. Nota: *${ord.no_nota}*\n` +
+      const ringkasan =
+        `Nota: *${ord.no_nota}*\n` +
         `Item: ${rincian}\n` +
-        `Grand Total: *${fmtRp(ord.grand_total)}*\n` +
-        `Dibayar: *${fmtRp(ord.nominal_bayar)}*\n` +
-        `Sisa Tagihan: *${fmtRp(ord.sisa_tagihan)}*`;
+        `Total: *${fmtRp(ord.grand_total)}* | Dibayar: *${fmtRp(ord.nominal_bayar)}*\n` +
+        `Sisa: *${fmtRp(ord.sisa_tagihan)}*`;
 
       if (templateKey === "preview") {
         return (
-          `Halo Kak ${ord.nama_pelanggan}, preview desain untuk *${ord.no_nota}* (${rincian}) sudah siap dicek.\n` +
-          `Mohon periksa teks, ukuran, dan finishing sebelum cetak. Balas "ACC CETAK" jika sudah sesuai atau tuliskan bagian yang perlu direvisi.\n` +
-          `— Omah Oelin Digital Printing, Kotagede`
+          `Halo Kak ${ord.nama_pelanggan}, preview desain *${ord.no_nota}* (${rincian}) sudah siap dicek.\n` +
+          `Mohon cek teks, ukuran & finishing. Balas "ACC CETAK" jika sesuai atau tulis revisinya.\n` +
+          `— Omah Oelin Digital Printing`
         );
       }
       if (templateKey === "pelunasan") {
         return (
-          `Halo Kak ${ord.nama_pelanggan}, pengingat pelunasan pesanan:\n` +
-          `${baseInfo}\n` +
-          `Status Produksi: *${ord.status_produksi}*\n` +
-          `— Omah Oelin Digital Printing, Kotagede`
+          `Halo Kak ${ord.nama_pelanggan}, pengingat pelunasan:\n` +
+          `${ringkasan}\n\n` +
+          `Rekening / Pembayaran:\n` +
+          `${formatPaymentChannelsText()}\n` +
+          `Mohon kirim bukti transfer setelah bayar ya Kak.\n` +
+          `— Omah Oelin Digital Printing`
         );
       }
       if (templateKey === "siap_ambil") {
         return (
-          `Halo Kak ${ord.nama_pelanggan}, pesanan Anda sudah *SIAP DIAMBIL*!\n` +
-          `${baseInfo}\n` +
-          `Lokasi: Kitren, RT.23/RW.05, 593, Prenggan, Kotagede, Yogyakarta 55172 (Minggu buka setelah jam 12.00).\n` +
+          `Halo Kak ${ord.nama_pelanggan}, pesanan *${ord.no_nota}* (${rincian}) sudah *SIAP DIAMBIL*.\n` +
+          `Sisa Tagihan: *${fmtRp(ord.sisa_tagihan)}*\n` +
           `— Omah Oelin Digital Printing`
         );
       }
       return (
-        `Halo Kak ${ord.nama_pelanggan}, terima kasih telah memesan di *Omah Oelin Digital Printing*.\n` +
-        `${baseInfo}\n` +
-        `Status Produksi: *${ord.status_produksi}*\n` +
-        `Kitren, RT.23/RW.05, 593, Prenggan, Kotagede, Yogyakarta 55172.`
+        `Halo Kak ${ord.nama_pelanggan}, order Anda sudah kami terima:\n` +
+        `${ringkasan}\n` +
+        `Status: *${ord.status_produksi}*\n` +
+        `— Omah Oelin Digital Printing`
       );
     }
 
@@ -1651,6 +1732,84 @@
       }
     };
 
+    // PENGATURAN SISTEM PEMBAYARAN
+    function renderPaymentMethodsTable() {
+      const body = document.getElementById("paymentMethodsBody");
+      if (!state.paymentMethods || state.paymentMethods.length === 0) {
+        body.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--text-muted)">Belum ada rekening/metode tersimpan</td></tr>`;
+        return;
+      }
+
+      body.innerHTML = state.paymentMethods.map(m => {
+        const an = m.atas_nama ? `<div style="font-size:0.75rem;color:var(--text-muted)">a.n. ${m.atas_nama}</div>` : "";
+        const stBadge = m.aktif !== false
+          ? `<span class="badge aman">Aktif</span>`
+          : `<span class="badge">Nonaktif</span>`;
+        return `
+          <tr>
+            <td><strong>${m.kanal}</strong></td>
+            <td><strong>${m.nomor}</strong>${an}</td>
+            <td>${stBadge}</td>
+            <td style="white-space:nowrap">
+              <button class="btn btn-sm" onclick="editPaymentMethod('${m.id}')">Edit</button>
+              <button class="btn btn-sm" onclick="deletePaymentMethod('${m.id}')">Hapus</button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    window.editPaymentMethod = function(id) {
+      const m = state.paymentMethods.find(item => item.id === id);
+      if (!m) return;
+      document.getElementById("payEditId").value = m.id;
+      document.getElementById("payKanal").value = m.kanal;
+      document.getElementById("payNomor").value = m.nomor;
+      document.getElementById("payAtasNama").value = m.atas_nama || "";
+      document.getElementById("payAktif").value = String(m.aktif !== false);
+    };
+
+    window.deletePaymentMethod = function(id) {
+      state.paymentMethods = state.paymentMethods.filter(item => item.id !== id);
+      savePaymentMethods();
+      renderPaymentMethodsTable();
+      if (state.activeNota && state.activeWaTemplate === "pelunasan") {
+        setActiveWaTemplate("pelunasan");
+      }
+    };
+
+    document.getElementById("btnResetPaymentMethod").addEventListener("click", () => {
+      document.getElementById("formPaymentMethod").reset();
+      document.getElementById("payEditId").value = "";
+      document.getElementById("payAktif").value = "true";
+    });
+
+    document.getElementById("formPaymentMethod").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const editId = document.getElementById("payEditId").value.trim();
+      const item = {
+        id: editId || ("PAYM-" + Date.now().toString().slice(-5)),
+        kanal: document.getElementById("payKanal").value.trim(),
+        nomor: document.getElementById("payNomor").value.trim(),
+        atas_nama: document.getElementById("payAtasNama").value.trim(),
+        aktif: document.getElementById("payAktif").value === "true"
+      };
+
+      const idx = state.paymentMethods.findIndex(m => m.id === item.id);
+      if (idx >= 0) state.paymentMethods[idx] = item;
+      else state.paymentMethods.push(item);
+
+      savePaymentMethods();
+      renderPaymentMethodsTable();
+      document.getElementById("formPaymentMethod").reset();
+      document.getElementById("payEditId").value = "";
+      document.getElementById("payAktif").value = "true";
+
+      if (state.activeNota && state.activeWaTemplate === "pelunasan") {
+        setActiveWaTemplate("pelunasan");
+      }
+    });
+
     // TAB 4: REKAP KEUANGAN & KAS HARIAN
     function extractYmd(dtStr) {
       const m = String(dtStr || "").match(/^(\d{4}-\d{2}-\d{2})/);
@@ -1738,6 +1897,8 @@
           </tr>
         `).join("");
       }
+
+      renderPaymentMethodsTable();
     }
 
     document.getElementById("filterTanggalKas").addEventListener("change", renderFinanceTab);
