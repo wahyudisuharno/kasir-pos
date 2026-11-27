@@ -270,6 +270,11 @@
       color: var(--text-main);
     }
 
+    .money-input {
+      font-variant-numeric: tabular-nums;
+      font-weight: 600;
+    }
+
     .hidden {
       display: none !important;
     }
@@ -529,7 +534,7 @@
             </div>
             <div class="field">
               <label id="hargaLabel" for="hargaOverride">Harga Satuan (Rp)</label>
-              <input type="number" id="hargaOverride" min="0" step="500" value="0" />
+              <input type="text" inputmode="numeric" id="hargaOverride" class="money-input" value="0" />
             </div>
           </div>
 
@@ -605,17 +610,17 @@
         <div class="form-grid">
           <div class="field">
             <label for="biayaDesain">Biaya Desain (Rp)</label>
-            <input type="number" id="biayaDesain" min="0" step="1000" value="0" />
+            <input type="text" inputmode="numeric" id="biayaDesain" class="money-input" value="0" />
           </div>
           <div class="field">
             <label for="diskonInput">Diskon Nota (Rp)</label>
-            <input type="number" id="diskonInput" min="0" step="1000" value="0" />
+            <input type="text" inputmode="numeric" id="diskonInput" class="money-input" value="0" />
           </div>
         </div>
 
         <div class="field">
           <label for="nominalBayar">Nominal Bayar Saat Ini — DP / Lunas (Rp)</label>
-          <input type="number" id="nominalBayar" min="0" step="1000" value="0" />
+          <input type="text" inputmode="numeric" id="nominalBayar" class="money-input" value="0" />
         </div>
 
         <div class="summary-box">
@@ -697,11 +702,11 @@
           <div class="form-grid">
             <div class="field">
               <label for="katHargaDasar">Harga Dasar (Rp)</label>
-              <input type="number" id="katHargaDasar" min="0" step="500" required value="15000" />
+              <input type="text" inputmode="numeric" id="katHargaDasar" class="money-input" required value="15.000" />
             </div>
             <div class="field">
               <label for="katHargaGrosir">Harga Grosir Min. 10 (Rp)</label>
-              <input type="number" id="katHargaGrosir" min="0" step="500" value="0" />
+              <input type="text" inputmode="numeric" id="katHargaGrosir" class="money-input" value="0" />
             </div>
           </div>
           <div class="field">
@@ -914,7 +919,7 @@
 
   <script>
     // Isi URL Web App Google Apps Script Anda jika sudah di-deploy:
-    const API_URL = "https://script.google.com/macros/s/AKfycbx6fnbbrFEbkxsqLElTrbOi6ujwbsPfLvgE9bTRDTzEHBajr-yVHSwPO6kPp-QAnvO_/exec";
+    const API_URL = "";
 
     const UNIT_LABELS = {
       LUAS_M2: "m²",
@@ -954,7 +959,37 @@
       activeWaTemplate: "konfirmasi"
     };
 
-    const fmtRp = (n) => "Rp " + Number(n || 0).toLocaleString("id-ID");
+    const fmtNum = (n) => Math.max(0, Math.round(Number(n || 0))).toLocaleString("id-ID");
+    const fmtRp = (n) => "Rp " + fmtNum(n);
+
+    function parseMoney(rawVal) {
+      if (typeof rawVal === "number") return Math.max(0, Math.round(rawVal));
+      const digits = String(rawVal || "").replace(/\D/g, "");
+      return digits ? parseInt(digits, 10) : 0;
+    }
+
+    function setMoneyInput(elOrId, numVal) {
+      const el = typeof elOrId === "string" ? document.getElementById(elOrId) : elOrId;
+      if (!el) return;
+      el.value = fmtNum(numVal);
+    }
+
+    function getMoneyInput(elOrId) {
+      const el = typeof elOrId === "string" ? document.getElementById(elOrId) : elOrId;
+      return el ? parseMoney(el.value) : 0;
+    }
+
+    function bindMoneyInputs() {
+      document.querySelectorAll(".money-input").forEach(input => {
+        input.addEventListener("input", () => {
+          const num = parseMoney(input.value);
+          input.value = fmtNum(num);
+        });
+        input.addEventListener("focus", () => {
+          if (parseMoney(input.value) === 0) input.select();
+        });
+      });
+    }
 
     function getUnitLabel(tipeHitung) {
       return UNIT_LABELS[String(tipeHitung || "").toUpperCase()] || "pcs";
@@ -1066,7 +1101,7 @@
 
       document.getElementById("qtyLabel").textContent = `Jumlah (${unitLabel})`;
       document.getElementById("hargaLabel").textContent = `Harga per ${unitLabel} (Rp)`;
-      document.getElementById("hargaOverride").value = defaultPrice;
+      setMoneyInput("hargaOverride", defaultPrice);
       document.getElementById("bannerDimsBox").classList.toggle("hidden", prod.tipe_hitung !== "LUAS_M2");
       updateItemPreview();
     }
@@ -1093,7 +1128,7 @@
       const qty = Math.max(1, Number(document.getElementById("qtyInput").value || 1));
       const p = Number(document.getElementById("panjangCm").value || 0);
       const l = Number(document.getElementById("lebarCm").value || 0);
-      const harga = Number(document.getElementById("hargaOverride").value || prod.harga_dasar || 0);
+      const harga = getMoneyInput("hargaOverride");
 
       const calc = computeItemTotal(prod, qty, p, l, harga);
       document.getElementById("itemCalcDesc").textContent = calc.desc;
@@ -1108,7 +1143,7 @@
       const qty = Math.max(1, Number(document.getElementById("qtyInput").value || 1));
       if (prod && prod.tipe_hitung !== "LUAS_M2") {
         const useGrosir = qty >= 10 && Number(prod.harga_grosir_min10) > 0;
-        document.getElementById("hargaOverride").value = useGrosir ? Number(prod.harga_grosir_min10) : Number(prod.harga_dasar);
+        setMoneyInput("hargaOverride", useGrosir ? Number(prod.harga_grosir_min10) : Number(prod.harga_dasar));
       }
       updateItemPreview();
     });
@@ -1122,7 +1157,7 @@
       const qty = Math.max(1, Number(document.getElementById("qtyInput").value || 1));
       const p = prod.tipe_hitung === "LUAS_M2" ? Number(document.getElementById("panjangCm").value || 0) : 0;
       const l = prod.tipe_hitung === "LUAS_M2" ? Number(document.getElementById("lebarCm").value || 0) : 0;
-      const harga = Number(document.getElementById("hargaOverride").value || prod.harga_dasar || 0);
+      const harga = getMoneyInput("hargaOverride");
       const spec = document.getElementById("spesifikasiInput").value.trim() || (prod.tipe_hitung === "LUAS_M2" ? `${p}x${l} cm` : "-");
 
       const calc = computeItemTotal(prod, qty, p, l, harga);
@@ -1176,10 +1211,10 @@
 
     function updateSummary() {
       const subtotal = state.cart.reduce((acc, it) => acc + Number(it.total_harga_item || 0), 0);
-      const desain = Math.max(0, Number(document.getElementById("biayaDesain").value || 0));
-      const diskon = Math.max(0, Number(document.getElementById("diskonInput").value || 0));
+      const desain = getMoneyInput("biayaDesain");
+      const diskon = getMoneyInput("diskonInput");
       const grandTotal = Math.max(0, subtotal + desain - diskon);
-      const bayar = Math.min(grandTotal, Math.max(0, Number(document.getElementById("nominalBayar").value || 0)));
+      const bayar = Math.min(grandTotal, getMoneyInput("nominalBayar"));
       const sisa = Math.max(0, grandTotal - bayar);
 
       document.getElementById("sumSubtotal").textContent = fmtRp(subtotal);
@@ -1282,12 +1317,11 @@
       openNotaModal(payload, "konfirmasi");
       state.cart = [];
       renderCart();
-      updateSummary();
       document.getElementById("namaPelanggan").value = "";
       document.getElementById("noWa").value = "";
-      document.getElementById("biayaDesain").value = "0";
-      document.getElementById("diskonInput").value = "0";
-      document.getElementById("nominalBayar").value = "0";
+      setMoneyInput("biayaDesain", 0);
+      setMoneyInput("diskonInput", 0);
+      setMoneyInput("nominalBayar", 0);
       updateSummary();
     });
 
@@ -1458,9 +1492,9 @@
     };
 
     window.payRemaining = async function(noNota, sisa) {
-      const input = prompt(`Catat pembayaran untuk ${noNota} (Sisa: ${fmtRp(sisa)}):`, String(sisa));
+      const input = prompt(`Catat pembayaran untuk ${noNota} (Sisa: ${fmtRp(sisa)}):`, fmtNum(sisa));
       if (!input) return;
-      const nominal = Math.min(Number(sisa), Math.max(0, Number(input)));
+      const nominal = Math.min(Number(sisa), parseMoney(input));
       if (!nominal) return;
 
       const ord = state.orders.find(o => o.no_nota === noNota);
@@ -1539,14 +1573,16 @@
       document.getElementById("katKategori").value = p.kategori;
       document.getElementById("katNama").value = p.nama_produk;
       document.getElementById("katTipeHitung").value = p.tipe_hitung;
-      document.getElementById("katHargaDasar").value = p.harga_dasar;
-      document.getElementById("katHargaGrosir").value = p.harga_grosir_min10 || 0;
+      setMoneyInput("katHargaDasar", p.harga_dasar);
+      setMoneyInput("katHargaGrosir", p.harga_grosir_min10 || 0);
       document.getElementById("katIdBahan").value = p.id_bahan_terkait || "";
     };
 
     document.getElementById("btnResetKatalog").addEventListener("click", () => {
       document.getElementById("formKatalog").reset();
       document.getElementById("katIdProduk").value = "";
+      setMoneyInput("katHargaDasar", 15000);
+      setMoneyInput("katHargaGrosir", 0);
     });
 
     document.getElementById("formKatalog").addEventListener("submit", async (e) => {
@@ -1557,8 +1593,8 @@
         kategori: document.getElementById("katKategori").value,
         nama_produk: document.getElementById("katNama").value.trim(),
         tipe_hitung: document.getElementById("katTipeHitung").value,
-        harga_dasar: Number(document.getElementById("katHargaDasar").value || 0),
-        harga_grosir_min10: Number(document.getElementById("katHargaGrosir").value || 0),
+        harga_dasar: getMoneyInput("katHargaDasar"),
+        harga_grosir_min10: getMoneyInput("katHargaGrosir"),
         id_bahan_terkait: document.getElementById("katIdBahan").value.trim(),
         aktif: true
       };
@@ -1579,6 +1615,8 @@
       renderInventoryTab();
       document.getElementById("formKatalog").reset();
       document.getElementById("katIdProduk").value = "";
+      setMoneyInput("katHargaDasar", 15000);
+      setMoneyInput("katHargaGrosir", 0);
     });
 
     document.getElementById("formTambahStok").addEventListener("submit", (e) => {
@@ -1741,6 +1779,7 @@
     document.getElementById("btnSync").addEventListener("click", syncFromSheets);
 
     setupPWA();
+    bindMoneyInputs();
     initTheme();
     populateProdukSelect();
     renderCart();
