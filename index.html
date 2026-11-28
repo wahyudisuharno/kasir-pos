@@ -10,583 +10,7 @@
   <title>Omah Oelin POS — Percetakan, Merchandise & Souvenir</title>
   <link id="pwaManifestLink" rel="manifest" href="" />
   <link id="appleIconLink" rel="apple-touch-icon" href="" />
-  <style>
-    :root {
-      --bg-gradient: linear-gradient(160deg, #fffdf9 0%, #fff7ed 55%, #ffedd5 100%);
-      --surface: #ffffff;
-      --surface-alt: #fffaf5;
-      --text-main: #1c1917;
-      --text-muted: #57534e;
-      --accent-dark: #c2410c;
-      --accent-main: #ea580c;
-      --accent-soft: rgba(234, 88, 12, 0.11);
-      --border-color: #fed7aa;
-      --success: #15803d;
-      --warning: #b45309;
-      --danger: #b91c1c;
-      --shadow: 0 6px 20px rgba(124, 45, 18, 0.06);
-    }
-
-    [data-theme="dark"] {
-      --bg-gradient: linear-gradient(160deg, #141210 0%, #191512 55%, #201a16 100%);
-      --surface: #1f1b18;
-      --surface-alt: #28221e;
-      --text-main: #f5f5f4;
-      --text-muted: #d6d3d1;
-      --accent-dark: #fb923c;
-      --accent-main: #f97316;
-      --accent-soft: rgba(251, 146, 60, 0.15);
-      --border-color: #3f352e;
-      --success: #4ade80;
-      --warning: #fbbf24;
-      --danger: #f87171;
-      --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg-gradient);
-      color: var(--text-main);
-      min-height: 100vh;
-      padding: 14px;
-      line-height: 1.5;
-    }
-
-    .app-wrap {
-      max-width: 1240px;
-      margin: 0 auto;
-    }
-
-    .topbar {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      background: var(--surface);
-      border: 1px solid var(--border-color);
-      border-radius: 16px;
-      padding: 15px 18px;
-      box-shadow: var(--shadow);
-      margin-bottom: 12px;
-    }
-
-    .brand-block {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .brand-logo-box {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      border: 1px solid var(--border-color);
-      background: var(--accent-soft);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      flex-shrink: 0;
-      font-weight: 800;
-      color: var(--accent-dark);
-      font-size: 1rem;
-    }
-
-    .brand-logo-box img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
-
-    .brand-title {
-      font-size: 1.15rem;
-      font-weight: 800;
-      color: var(--accent-dark);
-      letter-spacing: -0.01em;
-    }
-
-    .brand-sub {
-      font-size: 0.82rem;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
-
-    .brand-contact {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      margin-top: 1px;
-    }
-
-    .actions-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-    }
-
-    button, select, input, textarea {
-      font-family: inherit;
-      font-size: 0.92rem;
-    }
-
-    .btn {
-      border: 1px solid var(--border-color);
-      background: var(--surface-alt);
-      color: var(--text-main);
-      padding: 9px 14px;
-      border-radius: 10px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: transform 0.12s ease, background 0.15s ease, border-color 0.15s ease;
-    }
-
-    .btn:hover {
-      transform: translateY(-1px);
-      background: var(--accent-soft);
-      border-color: var(--accent-main);
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--accent-dark), var(--accent-main));
-      color: #ffffff;
-      border: none;
-    }
-
-    .btn-primary:hover {
-      opacity: 0.95;
-      background: linear-gradient(135deg, var(--accent-dark), var(--accent-main));
-    }
-
-    .btn-sm {
-      padding: 7px 11px;
-      font-size: 0.8rem;
-      border-radius: 9px;
-    }
-
-    .tabs {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 14px;
-      overflow-x: auto;
-      flex-wrap: nowrap;
-      padding-bottom: 4px;
-      scrollbar-width: thin;
-    }
-
-    @media (min-width: 768px) {
-      .tabs {
-        flex-wrap: wrap;
-        overflow-x: visible;
-      }
-    }
-
-    .tab-btn {
-      padding: 9px 14px;
-      border-radius: 11px;
-      border: 1px solid var(--border-color);
-      background: var(--surface);
-      color: var(--text-muted);
-      font-weight: 700;
-      font-size: 0.84rem;
-      cursor: pointer;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-
-    .tab-btn.active {
-      background: linear-gradient(135deg, var(--accent-dark), var(--accent-main));
-      color: #ffffff;
-      border-color: transparent;
-    }
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
-      gap: 16px;
-      align-items: start;
-    }
-
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-
-    @media (max-width: 980px) {
-      .kpi-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (max-width: 900px) {
-      .grid-2 {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 540px) {
-      .kpi-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .kpi-card {
-      background: var(--surface-alt);
-      border: 1px solid var(--border-color);
-      border-radius: 14px;
-      padding: 14px;
-    }
-
-    .kpi-label {
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-      margin-bottom: 4px;
-    }
-
-    .kpi-value {
-      font-size: 1.25rem;
-      font-weight: 800;
-      color: var(--accent-dark);
-    }
-
-    .kpi-sub {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
-
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border-color);
-      border-radius: 16px;
-      padding: 18px;
-      box-shadow: var(--shadow);
-      margin-bottom: 14px;
-    }
-
-    .card-title {
-      font-size: 1.02rem;
-      font-weight: 800;
-      margin-bottom: 14px;
-      color: var(--accent-dark);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
-
-    @media (max-width: 600px) {
-      .form-grid {
-        grid-template-columns: 1fr;
-        gap: 4px;
-      }
-    }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-      margin-bottom: 12px;
-    }
-
-    .field label {
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: var(--text-muted);
-    }
-
-    .field input, .field select, .field textarea {
-      width: 100%;
-      padding: 10px 12px;
-      border-radius: 10px;
-      border: 1px solid var(--border-color);
-      background: var(--surface-alt);
-      color: var(--text-main);
-    }
-
-    .field input:focus, .field select:focus, .field textarea:focus {
-      outline: none;
-      border-color: var(--accent-main);
-      box-shadow: 0 0 0 3px var(--accent-soft);
-    }
-
-    .logo-preview-wrap {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 12px;
-      border-radius: 12px;
-      border: 1px dashed var(--border-color);
-      background: var(--surface-alt);
-      margin-bottom: 12px;
-    }
-
-    .logo-preview-thumb {
-      width: 56px;
-      height: 56px;
-      border-radius: 10px;
-      border: 1px solid var(--border-color);
-      background: #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      flex-shrink: 0;
-      font-weight: 800;
-      color: var(--accent-dark);
-    }
-
-    .logo-preview-thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
-
-    .money-input {
-      font-variant-numeric: tabular-nums;
-      font-weight: 700;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .calc-preview {
-      background: var(--surface-alt);
-      border: 1px dashed var(--accent-main);
-      border-radius: 12px;
-      padding: 12px 14px;
-      margin: 8px 0 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .table-wrap {
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.86rem;
-    }
-
-    th, td {
-      padding: 10px 8px;
-      border-bottom: 1px solid var(--border-color);
-      text-align: left;
-      vertical-align: middle;
-    }
-
-    th {
-      color: var(--text-muted);
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 3px 8px;
-      border-radius: 999px;
-      font-size: 0.74rem;
-      font-weight: 700;
-      background: var(--accent-soft);
-      color: var(--accent-dark);
-    }
-
-    .badge.lunas, .badge.aman {
-      background: rgba(21, 128, 61, 0.15);
-      color: var(--success);
-    }
-
-    .badge.dp, .badge.menipis {
-      background: rgba(180, 83, 9, 0.16);
-      color: var(--warning);
-    }
-
-    .badge.habis {
-      background: rgba(185, 28, 28, 0.16);
-      color: var(--danger);
-    }
-
-    .summary-box {
-      background: var(--surface-alt);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 13px 14px;
-      margin-top: 8px;
-    }
-
-    .summary-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 6px;
-      font-size: 0.9rem;
-    }
-
-    .summary-row.total {
-      font-size: 1.08rem;
-      font-weight: 800;
-      color: var(--accent-dark);
-      border-top: 1px solid var(--border-color);
-      padding-top: 8px;
-      margin-top: 8px;
-    }
-
-    .status-banner {
-      padding: 10px 14px;
-      border-radius: 12px;
-      background: var(--surface);
-      border: 1px solid var(--border-color);
-      border-left: 4px solid var(--accent-main);
-      font-size: 0.82rem;
-      color: var(--text-muted);
-      margin-bottom: 12px;
-    }
-
-    #notaModal {
-      position: fixed;
-      inset: 0;
-      background: rgba(28, 25, 23, 0.6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-      z-index: 999;
-    }
-
-    .nota-sheet {
-      background: #ffffff;
-      color: #1c1917;
-      width: 100%;
-      max-width: 660px;
-      border-radius: 14px;
-      padding: 24px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.32);
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-
-    .nota-brand-wrap {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .nota-logo-box {
-      width: 46px;
-      height: 46px;
-      border-radius: 10px;
-      border: 1px solid #e7e5e4;
-      background: #fff7ed;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      flex-shrink: 0;
-      font-weight: 800;
-      color: #c2410c;
-    }
-
-    .nota-logo-box img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
-
-    .nota-sheet table th,
-    .nota-sheet table td {
-      color: #1c1917;
-      border-bottom: 1px solid #e7e5e4;
-    }
-
-    .wa-box {
-      background: #fffaf5;
-      border: 1px solid #fed7aa;
-      border-radius: 10px;
-      padding: 12px;
-      margin-top: 14px;
-    }
-
-    .wa-template-pills {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      margin-bottom: 8px;
-    }
-
-    .wa-pill {
-      padding: 5px 10px;
-      border-radius: 8px;
-      border: 1px solid #fdba74;
-      background: #ffffff;
-      color: #9a3412;
-      font-size: 0.78rem;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .wa-pill.active {
-      background: #c2410c;
-      color: #ffffff;
-      border-color: #c2410c;
-    }
-
-    .wa-textarea {
-      width: 100%;
-      min-height: 125px;
-      padding: 9px 10px;
-      border-radius: 8px;
-      border: 1px solid #d6d3d1;
-      background: #ffffff;
-      color: #1c1917;
-      font-size: 0.82rem;
-      resize: vertical;
-    }
-
-    @media print {
-      body {
-        background: #fff !important;
-        padding: 0 !important;
-      }
-      .app-wrap, .no-print {
-        display: none !important;
-      }
-      #notaModal {
-        position: static !important;
-        background: none !important;
-        padding: 0 !important;
-        display: block !important;
-      }
-      .nota-sheet {
-        box-shadow: none !important;
-        max-width: 100% !important;
-        padding: 0 !important;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="app-wrap">
@@ -594,13 +18,19 @@
       <div class="brand-block">
         <div class="brand-logo-box" id="headerLogoBox">OO</div>
         <div>
-          <div class="brand-title" id="headerBusinessName">Omah Oelin Digital Printing</div>
-          <div class="brand-sub" id="headerBusinessAddress">Kitren, RT.23/RW.05, 593, Prenggan, Kec. Kotagede, Yogyakarta 55172</div>
+          <div class="brand-title" id="headerBusinessName">
+            Omah Oelin Digital Printing
+          </div>
+          <div class="brand-sub" id="headerBusinessAddress">
+            Kitren, RT.23/RW.05, 593, Prenggan, Kec. Kotagede, Yogyakarta 55172
+          </div>
           <div class="brand-contact hidden" id="headerBusinessPhone"></div>
         </div>
       </div>
       <div class="actions-row no-print">
-        <button class="btn btn-sm hidden" id="btnInstallApp">Pasang ke Layar HP</button>
+        <button class="btn btn-sm hidden" id="btnInstallApp">
+          Pasang ke Layar HP
+        </button>
         <button class="btn btn-sm" id="btnSync">Sinkron Sheets</button>
         <button class="btn btn-sm" id="btnTheme">Mode Gelap</button>
       </div>
@@ -633,6 +63,7 @@
                 <option value="Merchandise">Merchandise</option>
                 <option value="Kalender">Kalender</option>
                 <option value="Stationery">Stationery</option>
+                <option value="Jasa">Jasa</option>
               </select>
             </div>
             <div class="field">
@@ -659,24 +90,36 @@
             </div>
             <div class="field">
               <label id="hargaLabel" for="hargaOverride">Harga Satuan (Rp)</label>
-              <input type="text" inputmode="numeric" id="hargaOverride" class="money-input" value="0" />
+              <input
+                type="text"
+                inputmode="numeric"
+                id="hargaOverride"
+                class="money-input"
+                value="0"
+              />
             </div>
           </div>
 
           <div class="field">
             <label for="spesifikasiInput">Catatan Spesifikasi / Finishing</label>
-            <input type="text" id="spesifikasiInput" placeholder="Contoh: Mata ayam 4 sudut, Mug putih polos, Cetak 2 sisi" />
+            <input
+              type="text"
+              id="spesifikasiInput"
+              placeholder="Contoh: Mata ayam 4 sudut, Mug putih polos, Cetak 2 sisi"
+            />
           </div>
 
           <div class="calc-preview">
             <div>
-              <div style="font-size:0.78rem;color:var(--text-muted)">Estimasi Subtotal Item</div>
-              <div id="itemCalcDesc" style="font-size:0.84rem;font-weight:600">-</div>
+              <div class="calc-label">Estimasi Subtotal Item</div>
+              <div id="itemCalcDesc" class="calc-desc">-</div>
             </div>
-            <div id="itemCalcTotal" style="font-size:1.15rem;font-weight:800;color:var(--accent-dark)">Rp 0</div>
+            <div id="itemCalcTotal" class="calc-total">Rp 0</div>
           </div>
 
-          <button class="btn btn-primary" id="btnAddItem" style="width:100%">+ Masukkan ke Keranjang Nota</button>
+          <button class="btn btn-primary btn-full" id="btnAddItem">
+            + Masukkan ke Keranjang Nota
+          </button>
         </div>
 
         <div class="card">
@@ -696,7 +139,11 @@
                 </tr>
               </thead>
               <tbody id="cartBody">
-                <tr><td colspan="5" style="text-align:center;color:var(--text-muted)">Belum ada item ditambahkan</td></tr>
+                <tr>
+                  <td colspan="5" class="empty-cell">
+                    Belum ada item ditambahkan
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -709,7 +156,11 @@
         <div class="form-grid">
           <div class="field">
             <label for="namaPelanggan">Nama Pelanggan</label>
-            <input type="text" id="namaPelanggan" placeholder="Contoh: Budi / CV Maju" />
+            <input
+              type="text"
+              id="namaPelanggan"
+              placeholder="Contoh: Budi / CV Maju"
+            />
           </div>
           <div class="field">
             <label for="noWa">Nomor WhatsApp</label>
@@ -735,30 +186,68 @@
         <div class="form-grid">
           <div class="field">
             <label for="biayaDesain">Biaya Desain (Rp)</label>
-            <input type="text" inputmode="numeric" id="biayaDesain" class="money-input" value="0" />
+            <input
+              type="text"
+              inputmode="numeric"
+              id="biayaDesain"
+              class="money-input"
+              value="0"
+            />
           </div>
           <div class="field">
             <label for="diskonInput">Diskon Nota (Rp)</label>
-            <input type="text" inputmode="numeric" id="diskonInput" class="money-input" value="0" />
+            <input
+              type="text"
+              inputmode="numeric"
+              id="diskonInput"
+              class="money-input"
+              value="0"
+            />
           </div>
         </div>
 
         <div class="field">
           <label for="nominalBayar">Nominal Bayar Saat Ini — DP / Lunas (Rp)</label>
-          <input type="text" inputmode="numeric" id="nominalBayar" class="money-input" value="0" />
+          <input
+            type="text"
+            inputmode="numeric"
+            id="nominalBayar"
+            class="money-input"
+            value="0"
+          />
         </div>
 
         <div class="summary-box">
-          <div class="summary-row"><span>Subtotal Item</span><span id="sumSubtotal">Rp 0</span></div>
-          <div class="summary-row"><span>Biaya Desain</span><span id="sumDesain">Rp 0</span></div>
-          <div class="summary-row"><span>Diskon</span><span id="sumDiskon">- Rp 0</span></div>
-          <div class="summary-row total"><span>Grand Total</span><span id="sumGrandTotal">Rp 0</span></div>
-          <div class="summary-row"><span>Bayar / DP</span><span id="sumBayar">Rp 0</span></div>
-          <div class="summary-row"><span>Sisa Tagihan</span><span id="sumSisa" style="font-weight:700">Rp 0</span></div>
+          <div class="summary-row">
+            <span>Subtotal Item</span>
+            <span id="sumSubtotal">Rp 0</span>
+          </div>
+          <div class="summary-row">
+            <span>Biaya Desain</span>
+            <span id="sumDesain">Rp 0</span>
+          </div>
+          <div class="summary-row">
+            <span>Diskon</span>
+            <span id="sumDiskon">- Rp 0</span>
+          </div>
+          <div class="summary-row total">
+            <span>Grand Total</span>
+            <span id="sumGrandTotal">Rp 0</span>
+          </div>
+          <div class="summary-row">
+            <span>Bayar / DP</span>
+            <span id="sumBayar">Rp 0</span>
+          </div>
+          <div class="summary-row">
+            <span>Sisa Tagihan</span>
+            <span id="sumSisa" class="sisa-bold">Rp 0</span>
+          </div>
         </div>
 
-        <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
-          <button class="btn btn-primary" id="btnSaveOrder" style="flex:1">Simpan Order & Buka Nota PDF</button>
+        <div class="save-actions">
+          <button class="btn btn-primary btn-flex" id="btnSaveOrder">
+            Simpan Order & Buka Nota PDF
+          </button>
         </div>
       </div>
     </section>
@@ -767,7 +256,12 @@
     <section id="tab-orders" class="card hidden">
       <div class="card-title">
         <span>Daftar Order, Status Produksi & Pelunasan</span>
-        <input type="text" id="searchOrder" placeholder="Cari no nota / nama pelanggan..." style="max-width:250px;padding:8px 11px;border-radius:9px;border:1px solid var(--border-color);background:var(--surface-alt);color:var(--text-main)" />
+        <input
+          type="text"
+          id="searchOrder"
+          class="search-input-sm"
+          placeholder="Cari no nota / nama pelanggan..."
+        />
       </div>
       <div class="table-wrap">
         <table>
@@ -804,13 +298,20 @@
                 <option value="Merchandise">Merchandise</option>
                 <option value="Kalender">Kalender</option>
                 <option value="Stationery">Stationery</option>
+                <option value="Jasa">Jasa</option>
               </select>
             </div>
           </div>
+
           <div class="form-grid">
             <div class="field">
               <label for="katNama">Nama Produk / Layanan</label>
-              <input type="text" id="katNama" required placeholder="Contoh: Box Souvenir / Kertas A3" />
+              <input
+                type="text"
+                id="katNama"
+                required
+                placeholder="Contoh: Box Souvenir / Jasa Desain"
+              />
             </div>
             <div class="field">
               <label for="katTipeHitung">Tipe Hitung</label>
@@ -824,27 +325,70 @@
               </select>
             </div>
           </div>
+
           <div class="form-grid">
             <div class="field">
               <label for="katHargaDasar">Harga Dasar (Rp)</label>
-              <input type="text" inputmode="numeric" id="katHargaDasar" class="money-input" required value="15.000" />
+              <input
+                type="text"
+                inputmode="numeric"
+                id="katHargaDasar"
+                class="money-input"
+                required
+                value="15.000"
+              />
             </div>
             <div class="field">
               <label for="katHargaGrosir">Harga Grosir Min. 10 (Rp)</label>
-              <input type="text" inputmode="numeric" id="katHargaGrosir" class="money-input" value="0" />
+              <input
+                type="text"
+                inputmode="numeric"
+                id="katHargaGrosir"
+                class="money-input"
+                value="0"
+              />
             </div>
           </div>
+
           <div class="field">
             <label for="katIdBahan">ID Bahan Terkait di Stok (opsional)</label>
-            <input type="text" id="katIdBahan" placeholder="Contoh: BHN-MUG-01" />
+            <input
+              type="text"
+              id="katIdBahan"
+              placeholder="Contoh: BHN-MUG-01"
+            />
           </div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
+
+          <div class="btn-row">
             <button type="submit" class="btn btn-primary">Simpan Produk</button>
-            <button type="button" class="btn" id="btnResetKatalog">Reset Form</button>
+            <button type="button" class="btn" id="btnResetKatalog">
+              Reset Form
+            </button>
           </div>
         </form>
 
-        <div class="table-wrap" style="margin-top:16px">
+        <div class="compact-table-toolbar">
+          <input
+            type="text"
+            id="searchKatalog"
+            class="katalog-search"
+            placeholder="Cari produk / ID..."
+          />
+          <select id="filterKatalogKategori" class="katalog-select">
+            <option value="ALL">Semua Kategori</option>
+            <option value="Banner">Banner</option>
+            <option value="Cetak A3">Cetak A3</option>
+            <option value="Merchandise">Merchandise</option>
+            <option value="Kalender">Kalender</option>
+            <option value="Stationery">Stationery</option>
+            <option value="Jasa">Jasa</option>
+          </select>
+          <button type="button" class="btn btn-sm" id="btnToggleKatalogLimit">
+            Tampilkan Semua
+          </button>
+        </div>
+
+        <div class="table-wrap">
           <table>
             <thead>
               <tr>
@@ -857,18 +401,40 @@
             <tbody id="katalogTableBody"></tbody>
           </table>
         </div>
+
+        <div class="compact-table-footer">
+          <span id="katalogPageInfo">0 produk</span>
+          <div class="pager-group">
+            <button type="button" class="btn btn-sm" id="btnPrevKatalogPage">
+              Sebelumnya
+            </button>
+            <button type="button" class="btn btn-sm" id="btnNextKatalogPage">
+              Berikutnya
+            </button>
+          </div>
+        </div>
       </div>
 
       <div class="card">
         <div class="card-title">Stok Bahan Baku Kritis</div>
-        <form id="formTambahStok" class="form-grid" style="margin-bottom:12px">
+        <form id="formTambahStok" class="form-grid stok-form">
           <div class="field">
             <label for="stokIdBahan">ID Bahan</label>
-            <input type="text" id="stokIdBahan" required placeholder="BHN-MUG-01" />
+            <input
+              type="text"
+              id="stokIdBahan"
+              required
+              placeholder="BHN-MUG-01"
+            />
           </div>
           <div class="field">
             <label for="stokNamaBahan">Nama Bahan</label>
-            <input type="text" id="stokNamaBahan" required placeholder="Mug Polos Coating" />
+            <input
+              type="text"
+              id="stokNamaBahan"
+              required
+              placeholder="Mug Polos Coating"
+            />
           </div>
           <div class="field">
             <label for="stokSatuan">Satuan</label>
@@ -876,13 +442,29 @@
           </div>
           <div class="field">
             <label for="stokAwal">Stok Awal & Batas Min.</label>
-            <div style="display:flex;gap:6px">
-              <input type="number" id="stokAwal" min="0" required value="24" placeholder="Stok" />
-              <input type="number" id="stokMin" min="0" required value="6" placeholder="Min" />
+            <div class="stok-pair">
+              <input
+                type="number"
+                id="stokAwal"
+                min="0"
+                required
+                value="24"
+                placeholder="Stok"
+              />
+              <input
+                type="number"
+                id="stokMin"
+                min="0"
+                required
+                value="6"
+                placeholder="Min"
+              />
             </div>
           </div>
-          <div style="grid-column:1/-1">
-            <button type="submit" class="btn btn-primary btn-sm">+ Tambah Jenis Bahan Baru</button>
+          <div class="span-full">
+            <button type="submit" class="btn btn-primary btn-sm">
+              + Tambah Jenis Bahan Baru
+            </button>
           </div>
         </form>
 
@@ -907,15 +489,32 @@
       <div class="card">
         <div class="card-title">
           <span id="financeReportTitle">Rekap Keuangan & Kas Harian</span>
-          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-            <input type="month" id="filterBulanKas" title="Filter Bulan Rekap" style="padding:7px 10px;border-radius:8px;border:1px solid var(--border-color);background:var(--surface-alt);color:var(--text-main)" />
-            <input type="date" id="filterTanggalKas" title="Filter Tanggal Harian" style="padding:7px 10px;border-radius:8px;border:1px solid var(--border-color);background:var(--surface-alt);color:var(--text-main)" />
-            <button class="btn btn-sm" id="btnResetTanggalKas">Semua Waktu</button>
+          <div class="finance-toolbar">
+            <input
+              type="month"
+              id="filterBulanKas"
+              class="filter-control"
+              title="Filter Bulan Rekap"
+            />
+            <input
+              type="date"
+              id="filterTanggalKas"
+              class="filter-control"
+              title="Filter Tanggal Harian"
+            />
+            <button class="btn btn-sm" id="btnResetTanggalKas">
+              Semua Waktu
+            </button>
             <button class="btn btn-sm" id="btnExportCsv">Ekspor CSV</button>
             <button class="btn btn-sm" id="btnExportJson">Ekspor JSON</button>
-            <label class="btn btn-sm" style="margin:0">
+            <label class="btn btn-sm file-label-btn">
               Impor JSON
-              <input type="file" id="importJsonFile" accept=".json,application/json" style="display:none" />
+              <input
+                type="file"
+                id="importJsonFile"
+                accept=".json,application/json"
+                class="hidden-file"
+              />
             </label>
           </div>
         </div>
@@ -928,12 +527,14 @@
           </div>
           <div class="kpi-card">
             <div class="kpi-label">Kas Masuk (DP & Pelunasan)</div>
-            <div class="kpi-value" id="kpiKasMasuk" style="color:var(--success)">Rp 0</div>
-            <div class="kpi-sub" id="kpiMetodeBreakdown">Tunai: Rp 0 • QRIS: Rp 0 • TF: Rp 0</div>
+            <div class="kpi-value kpi-success" id="kpiKasMasuk">Rp 0</div>
+            <div class="kpi-sub" id="kpiMetodeBreakdown">
+              Tunai: Rp 0 • QRIS: Rp 0 • TF: Rp 0
+            </div>
           </div>
           <div class="kpi-card">
             <div class="kpi-label">Sisa Piutang Aktif</div>
-            <div class="kpi-value" id="kpiPiutang" style="color:var(--warning)">Rp 0</div>
+            <div class="kpi-value kpi-warning" id="kpiPiutang">Rp 0</div>
             <div class="kpi-sub" id="kpiPiutangCount">0 nota belum lunas</div>
           </div>
           <div class="kpi-card">
@@ -943,7 +544,7 @@
           </div>
         </div>
 
-        <div class="card-title" style="margin-top:8px;margin-bottom:10px;font-size:0.94rem">
+        <div class="sub-section-title">
           <span>Ringkasan Rekap Bulanan</span>
         </div>
         <div class="table-wrap">
@@ -961,7 +562,7 @@
           </table>
         </div>
 
-        <div class="card-title" style="margin-top:18px;margin-bottom:10px;font-size:0.94rem">
+        <div class="sub-section-title sub-section-spaced">
           <span>Rincian Omzet per Kategori Produk (Bulanan)</span>
         </div>
         <div class="table-wrap">
@@ -1016,65 +617,111 @@
 
       <!-- PENGATURAN LOGO, NAMA USAHA, ALAMAT & NO. HP/WA -->
       <div class="card">
-        <div class="card-title">Identitas Usaha (Nama Usaha, Alamat, Kontak & Logo Nota)</div>
+        <div class="card-title">
+          Identitas Usaha (Nama Usaha, Alamat, Kontak & Logo Nota)
+        </div>
         <form id="formBusinessProfile">
           <div class="form-grid">
             <div class="field">
               <label for="bizNameInput">Nama Usaha</label>
-              <input type="text" id="bizNameInput" required placeholder="Contoh: Omah Oelin Digital Printing" />
+              <input
+                type="text"
+                id="bizNameInput"
+                required
+                placeholder="Contoh: Omah Oelin Digital Printing"
+              />
             </div>
             <div class="field">
               <label for="bizPhoneInput">Nomor HP / WA Usaha (opsional)</label>
-              <input type="text" id="bizPhoneInput" placeholder="Contoh: 0812-3456-7890" />
+              <input
+                type="text"
+                id="bizPhoneInput"
+                placeholder="Contoh: 0812-3456-7890"
+              />
             </div>
           </div>
 
           <div class="field">
             <label for="bizAddressInput">Alamat Usaha</label>
-            <input type="text" id="bizAddressInput" required placeholder="Contoh: Kitren, RT.23/RW.05, 593, Prenggan, Kec. Kotagede, Yogyakarta 55172" />
+            <input
+              type="text"
+              id="bizAddressInput"
+              required
+              placeholder="Contoh: Kitren, RT.23/RW.05, 593, Prenggan, Kec. Kotagede, Yogyakarta 55172"
+            />
           </div>
 
           <div class="logo-preview-wrap">
             <div class="logo-preview-thumb" id="bizLogoPreviewThumb">OO</div>
-            <div style="flex:1">
-              <div style="font-size:0.84rem;font-weight:700">Logo Usaha</div>
-              <div style="font-size:0.76rem;color:var(--text-muted)">Pilih gambar PNG/JPG/SVG (otomatis disesuaikan ukurannya untuk nota & aplikasi)</div>
-              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
-                <label class="btn btn-sm" style="margin:0">
+            <div class="logo-meta">
+              <div class="logo-title">Logo Usaha</div>
+              <div class="logo-hint">
+                Pilih gambar PNG/JPG/SVG (otomatis disesuaikan ukurannya untuk nota & aplikasi)
+              </div>
+              <div class="logo-actions">
+                <label class="btn btn-sm file-label-btn">
                   Pilih Logo
-                  <input type="file" id="bizLogoFile" accept="image/*" style="display:none" />
+                  <input
+                    type="file"
+                    id="bizLogoFile"
+                    accept="image/*"
+                    class="hidden-file"
+                  />
                 </label>
-                <button type="button" class="btn btn-sm" id="btnRemoveBizLogo">Hapus Logo</button>
+                <button type="button" class="btn btn-sm" id="btnRemoveBizLogo">
+                  Hapus Logo
+                </button>
               </div>
             </div>
           </div>
 
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <button type="submit" class="btn btn-primary btn-sm">Simpan Identitas Usaha</button>
-            <button type="button" class="btn btn-sm" id="btnResetBizProfile">Kembalikan Default</button>
+          <div class="btn-row">
+            <button type="submit" class="btn btn-primary btn-sm">
+              Simpan Identitas Usaha
+            </button>
+            <button type="button" class="btn btn-sm" id="btnResetBizProfile">
+              Kembalikan Default
+            </button>
           </div>
         </form>
       </div>
 
       <!-- FORM PENGATURAN SISTEM PEMBAYARAN -->
       <div class="card">
-        <div class="card-title">Pengaturan Sistem Pembayaran (Untuk Pesan Pelunasan WA)</div>
+        <div class="card-title">
+          Pengaturan Sistem Pembayaran (Untuk Pesan Pelunasan WA)
+        </div>
         <form id="formPaymentMethod">
           <input type="hidden" id="payEditId" />
           <div class="form-grid">
             <div class="field">
               <label for="payKanal">Jenis / Nama Saluran</label>
-              <input type="text" id="payKanal" required placeholder="Contoh: Bank BRI / Bank Mandiri / QRIS / GoPay" />
+              <input
+                type="text"
+                id="payKanal"
+                required
+                placeholder="Contoh: Bank BRI / Bank Mandiri / QRIS / GoPay"
+              />
             </div>
             <div class="field">
               <label for="payNomor">No. Rekening / No. HP / Info Bayar</label>
-              <input type="text" id="payNomor" required placeholder="Contoh: 1234-01-000123-50-0 atau Scan QRIS Kasir" />
+              <input
+                type="text"
+                id="payNomor"
+                required
+                placeholder="Contoh: 1234-01-000123-50-0 atau Scan QRIS Kasir"
+              />
             </div>
           </div>
+
           <div class="form-grid">
             <div class="field">
               <label for="payAtasNama">Atas Nama (opsional)</label>
-              <input type="text" id="payAtasNama" placeholder="Contoh: Wahyudi Suharno / Omah Oelin" />
+              <input
+                type="text"
+                id="payAtasNama"
+                placeholder="Contoh: Wahyudi Suharno / Omah Oelin"
+              />
             </div>
             <div class="field">
               <label for="payAktif">Status Dipakai di Pesan Pelunasan</label>
@@ -1084,13 +731,18 @@
               </select>
             </div>
           </div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <button type="submit" class="btn btn-primary btn-sm">Simpan Rekening / Metode</button>
-            <button type="button" class="btn btn-sm" id="btnResetPaymentMethod">Reset Form</button>
+
+          <div class="btn-row">
+            <button type="submit" class="btn btn-primary btn-sm">
+              Simpan Rekening / Metode
+            </button>
+            <button type="button" class="btn btn-sm" id="btnResetPaymentMethod">
+              Reset Form
+            </button>
           </div>
         </form>
 
-        <div class="table-wrap" style="margin-top:14px">
+        <div class="table-wrap payment-table-wrap">
           <table>
             <thead>
               <tr>
@@ -1110,29 +762,36 @@
   <!-- MODAL NOTA SIAP SIMPAN PDF -->
   <div id="notaModal" class="hidden">
     <div class="nota-sheet">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #1c1917;padding-bottom:12px;margin-bottom:14px;gap:10px">
+      <div class="nota-header">
         <div class="nota-brand-wrap">
           <div class="nota-logo-box" id="notaLogoBox">OO</div>
           <div>
-            <div style="font-size:1.15rem;font-weight:800" id="notaBusinessName">Omah Oelin Digital Printing</div>
-            <div style="font-size:0.82rem;color:#57534e" id="notaBusinessAddress">Kitren, RT.23/RW.05, 593, Prenggan, Kotagede, Yogyakarta 55172</div>
-            <div style="font-size:0.78rem;color:#57534e" class="hidden" id="notaBusinessPhone"></div>
+            <div class="nota-biz-name" id="notaBusinessName">
+              Omah Oelin Digital Printing
+            </div>
+            <div class="nota-biz-addr" id="notaBusinessAddress">
+              Kitren, RT.23/RW.05, 593, Prenggan, Kotagede, Yogyakarta 55172
+            </div>
+            <div class="nota-biz-phone hidden" id="notaBusinessPhone"></div>
           </div>
         </div>
-        <div style="text-align:right">
-          <div style="font-weight:800;font-size:1rem" id="notaNomor">INV-...</div>
-          <div style="font-size:0.8rem;color:#57534e" id="notaTanggal">-</div>
+        <div class="nota-meta-right">
+          <div class="nota-inv-no" id="notaNomor">INV-...</div>
+          <div class="nota-inv-date" id="notaTanggal">-</div>
         </div>
       </div>
 
-      <div style="display:flex;justify-content:space-between;font-size:0.86rem;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+      <div class="nota-customer-row">
         <div>
           <div><strong>Pelanggan:</strong> <span id="notaPelanggan">-</span></div>
           <div><strong>No. WA:</strong> <span id="notaWa">-</span></div>
         </div>
-        <div style="text-align:right">
+        <div class="nota-meta-right">
           <div><strong>Deadline:</strong> <span id="notaDeadline">-</span></div>
-          <div><strong>Status Bayar:</strong> <span id="notaStatusBayar">-</span></div>
+          <div>
+            <strong>Status Bayar:</strong>
+            <span id="notaStatusBayar">-</span>
+          </div>
         </div>
       </div>
 
@@ -1148,1585 +807,65 @@
         <tbody id="notaItemsBody"></tbody>
       </table>
 
-      <div style="margin-top:14px;font-size:0.9rem">
-        <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Subtotal</span><span id="notaSubtotal">Rp 0</span></div>
-        <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Biaya Desain</span><span id="notaDesain">Rp 0</span></div>
-        <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Diskon</span><span id="notaDiskon">- Rp 0</span></div>
-        <div style="display:flex;justify-content:space-between;font-weight:800;font-size:1.05rem;border-top:1px solid #d6d3d1;padding-top:6px;margin-top:6px">
-          <span>Grand Total</span><span id="notaGrandTotal">Rp 0</span>
+      <div class="nota-totals">
+        <div class="nota-total-row">
+          <span>Subtotal</span>
+          <span id="notaSubtotal">Rp 0</span>
         </div>
-        <div style="display:flex;justify-content:space-between;margin-top:6px"><span>Dibayar / DP</span><span id="notaBayar">Rp 0</span></div>
-        <div style="display:flex;justify-content:space-between;font-weight:700"><span>Sisa Tagihan</span><span id="notaSisa">Rp 0</span></div>
+        <div class="nota-total-row">
+          <span>Biaya Desain</span>
+          <span id="notaDesain">Rp 0</span>
+        </div>
+        <div class="nota-total-row">
+          <span>Diskon</span>
+          <span id="notaDiskon">- Rp 0</span>
+        </div>
+        <div class="nota-total-row grand">
+          <span>Grand Total</span>
+          <span id="notaGrandTotal">Rp 0</span>
+        </div>
+        <div class="nota-total-row paid">
+          <span>Dibayar / DP</span>
+          <span id="notaBayar">Rp 0</span>
+        </div>
+        <div class="nota-total-row due">
+          <span>Sisa Tagihan</span>
+          <span id="notaSisa">Rp 0</span>
+        </div>
       </div>
 
       <!-- PANEL TEMPLATE WHATSAPP -->
       <div class="wa-box no-print">
-        <div style="font-size:0.8rem;font-weight:700;color:#9a3412;margin-bottom:6px">Template Pesan WhatsApp:</div>
+        <div class="wa-box-label">Template Pesan WhatsApp:</div>
         <div class="wa-template-pills">
-          <button type="button" class="wa-pill active" data-tpl="konfirmasi">Konfirmasi</button>
-          <button type="button" class="wa-pill" data-tpl="preview">Preview Desain</button>
-          <button type="button" class="wa-pill" data-tpl="pelunasan">Pelunasan</button>
-          <button type="button" class="wa-pill" data-tpl="siap_ambil">Siap Diambil</button>
+          <button type="button" class="wa-pill active" data-tpl="konfirmasi">
+            Konfirmasi
+          </button>
+          <button type="button" class="wa-pill" data-tpl="preview">
+            Preview Desain
+          </button>
+          <button type="button" class="wa-pill" data-tpl="pelunasan">
+            Pelunasan
+          </button>
+          <button type="button" class="wa-pill" data-tpl="siap_ambil">
+            Siap Diambil
+          </button>
         </div>
         <textarea id="waPreviewText" class="wa-textarea"></textarea>
       </div>
 
-      <div class="no-print" style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap">
-        <button class="btn btn-sm" id="btnCloseNota" style="background:#f5f5f4;color:#1c1917">Tutup</button>
-        <button class="btn btn-sm" id="btnWaNota" style="background:#15803d;color:#fff;border:none">Kirim WA</button>
-        <button class="btn btn-primary btn-sm" id="btnPrintNotaPdf">Simpan / Cetak PDF</button>
+      <div class="no-print nota-actions">
+        <button class="btn btn-sm btn-close-nota" id="btnCloseNota">
+          Tutup
+        </button>
+        <button class="btn btn-sm btn-wa" id="btnWaNota">Kirim WA</button>
+        <button class="btn btn-primary btn-sm" id="btnPrintNotaPdf">
+          Simpan / Cetak PDF
+        </button>
       </div>
     </div>
   </div>
 
-  <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbx6fnbbrFEbkxsqLElTrbOi6ujwbsPfLvgE9bTRDTzEHBajr-yVHSwPO6kPp-QAnvO_/exec";
-    const PAYMENT_STORAGE_KEY = "omah_oelin_payment_methods_v1";
-    const BIZ_PROFILE_STORAGE_KEY = "omah_oelin_biz_profile_v1";
-
-    const DEFAULT_BIZ_PROFILE = {
-      nama_usaha: "Omah Oelin Digital Printing",
-      alamat_usaha: "Kitren, RT.23/RW.05, 593, Prenggan, Kec. Kotagede, Yogyakarta 55172",
-      no_hp_usaha: "",
-      logo_data_url: ""
-    };
-
-    const UNIT_LABELS = {
-      LUAS_M2: "m²",
-      QTY_SATUAN: "pcs",
-      LEMBAR: "lembar",
-      PACK: "pack",
-      BOX: "box",
-      PAKET: "paket"
-    };
-
-    const DEFAULT_KATALOG = [
-      { id_produk: "PRD-001", kategori: "Banner", nama_produk: "Banner Frontlite 280gr", tipe_hitung: "LUAS_M2", harga_dasar: 25000, harga_grosir_min10: 22000, id_bahan_terkait: "BHN-FR280" },
-      { id_produk: "PRD-002", kategori: "Banner", nama_produk: "Banner Korcin / Backlite", tipe_hitung: "LUAS_M2", harga_dasar: 35000, harga_grosir_min10: 32000, id_bahan_terkait: "" },
-      { id_produk: "PRD-003", kategori: "Cetak A3", nama_produk: "Cetak A3+ Art Carton 260gr", tipe_hitung: "LEMBAR", harga_dasar: 4500, harga_grosir_min10: 3800, id_bahan_terkait: "BHN-AC260" },
-      { id_produk: "PRD-004", kategori: "Merchandise", nama_produk: "Mug Keramik Custom", tipe_hitung: "QTY_SATUAN", harga_dasar: 18000, harga_grosir_min10: 15000, id_bahan_terkait: "BHN-MUG-01" },
-      { id_produk: "PRD-005", kategori: "Merchandise", nama_produk: "Tumbler Custom Grafir/Print", tipe_hitung: "QTY_SATUAN", harga_dasar: 45000, harga_grosir_min10: 40000, id_bahan_terkait: "" },
-      { id_produk: "PRD-006", kategori: "Merchandise", nama_produk: "Kaos Custom Sablon DTF", tipe_hitung: "QTY_SATUAN", harga_dasar: 55000, harga_grosir_min10: 48000, id_bahan_terkait: "" },
-      { id_produk: "PRD-007", kategori: "Merchandise", nama_produk: "Mangkuk Souvenir Custom", tipe_hitung: "BOX", harga_dasar: 180000, harga_grosir_min10: 165000, id_bahan_terkait: "" },
-      { id_produk: "PRD-008", kategori: "Kalender", nama_produk: "Kalender Dinding Custom", tipe_hitung: "PACK", harga_dasar: 110000, harga_grosir_min10: 95000, id_bahan_terkait: "" },
-      { id_produk: "PRD-009", kategori: "Stationery", nama_produk: "Nota / Map / ID Card / Kop Surat", tipe_hitung: "PACK", harga_dasar: 45000, harga_grosir_min10: 40000, id_bahan_terkait: "" }
-    ];
-
-    const DEFAULT_STOK = [
-      { id_bahan: "BHN-FR280", nama_bahan: "Bahan Banner Frontlite 280gr", satuan_stok: "m2", stok_saat_ini: 60, batas_minimum: 15 },
-      { id_bahan: "BHN-AC260", nama_bahan: "Kertas Art Carton 260gr A3+", satuan_stok: "lembar", stok_saat_ini: 250, batas_minimum: 50 },
-      { id_bahan: "BHN-MUG-01", nama_bahan: "Mug Polos Coating SNI", satuan_stok: "pcs", stok_saat_ini: 36, batas_minimum: 10 }
-    ];
-
-    const DEFAULT_PAYMENT_METHODS = [
-      { id: "PAYM-1", kanal: "Transfer Bank", nomor: "Silakan isi no. rekening di tab Keuangan & Kas", atas_nama: "", aktif: true }
-    ];
-
-    function loadBizProfile() {
-      try {
-        const raw = localStorage.getItem(BIZ_PROFILE_STORAGE_KEY);
-        if (!raw) return { ...DEFAULT_BIZ_PROFILE };
-        const parsed = JSON.parse(raw);
-        return {
-          nama_usaha: String(parsed.nama_usaha || DEFAULT_BIZ_PROFILE.nama_usaha).trim() || DEFAULT_BIZ_PROFILE.nama_usaha,
-          alamat_usaha: String(parsed.alamat_usaha || DEFAULT_BIZ_PROFILE.alamat_usaha).trim() || DEFAULT_BIZ_PROFILE.alamat_usaha,
-          no_hp_usaha: String(parsed.no_hp_usaha || "").trim(),
-          logo_data_url: String(parsed.logo_data_url || "")
-        };
-      } catch {
-        return { ...DEFAULT_BIZ_PROFILE };
-      }
-    }
-
-    function saveBizProfileToStorage() {
-      localStorage.setItem(BIZ_PROFILE_STORAGE_KEY, JSON.stringify(state.bizProfile));
-    }
-
-    function loadPaymentMethods() {
-      try {
-        const raw = localStorage.getItem(PAYMENT_STORAGE_KEY);
-        if (!raw) return [...DEFAULT_PAYMENT_METHODS];
-        const parsed = JSON.parse(raw);
-        return Array.isArray(parsed) ? parsed : [...DEFAULT_PAYMENT_METHODS];
-      } catch {
-        return [...DEFAULT_PAYMENT_METHODS];
-      }
-    }
-
-    function savePaymentMethods() {
-      localStorage.setItem(PAYMENT_STORAGE_KEY, JSON.stringify(state.paymentMethods));
-    }
-
-    const state = {
-      bizProfile: loadBizProfile(),
-      draftLogoUrl: loadBizProfile().logo_data_url,
-      katalog: [...DEFAULT_KATALOG],
-      stok: [...DEFAULT_STOK],
-      paymentMethods: loadPaymentMethods(),
-      cart: [],
-      orders: [],
-      details: [],
-      pembayaran: [],
-      activeNota: null,
-      activeWaTemplate: "konfirmasi",
-      defaultPageTitle: ""
-    };
-
-    const fmtNum = (n) => Math.max(0, Math.round(Number(n || 0))).toLocaleString("id-ID");
-    const fmtRp = (n) => "Rp " + fmtNum(n);
-
-    function normCat(val) {
-      return String(val || "").trim().toLowerCase().replace(/\s+/g, " ");
-    }
-
-    function formatCategoryLabel(rawCat) {
-      const clean = String(rawCat || "").trim();
-      if (!clean) return "Lainnya";
-      const known = ["Banner", "Cetak A3", "Merchandise", "Kalender", "Stationery"];
-      const matched = known.find(k => normCat(k) === normCat(clean));
-      return matched || clean;
-    }
-
-    function sanitizeFilePart(str, fallback = "") {
-      return String(str || "")
-        .trim()
-        .replace(/[\\/:*?"<>|]+/g, "-")
-        .replace(/\s+/g, "-")
-        .replace(/-+/g, "-")
-        .replace(/^-|-$/g, "") || fallback;
-    }
-
-    function buildPdfFilenameBase(order) {
-      const invPart = sanitizeFilePart(order && order.no_nota, "INV");
-      const custPart = sanitizeFilePart(order && order.nama_pelanggan, "Pelanggan");
-      return `${invPart}-${custPart}`;
-    }
-
-    function getInitials(name) {
-      const words = String(name || "").trim().split(/\s+/).filter(Boolean);
-      if (words.length === 0) return "OO";
-      if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
-      return (words[0][0] + words[1][0]).toUpperCase();
-    }
-
-    function renderLogoBox(containerEl, logoDataUrl, businessName) {
-      if (!containerEl) return;
-      if (logoDataUrl) {
-        containerEl.innerHTML = `<img src="${logoDataUrl}" alt="Logo ${businessName}" />`;
-      } else {
-        containerEl.textContent = getInitials(businessName);
-      }
-    }
-
-    function applyPhoneText(el, phoneVal) {
-      if (!el) return;
-      const clean = String(phoneVal || "").trim();
-      if (clean) {
-        el.textContent = `HP / WA: ${clean}`;
-        el.classList.remove("hidden");
-      } else {
-        el.textContent = "";
-        el.classList.add("hidden");
-      }
-    }
-
-    function applyBizProfileUI() {
-      const bizName = state.bizProfile.nama_usaha || DEFAULT_BIZ_PROFILE.nama_usaha;
-      const bizAddress = state.bizProfile.alamat_usaha || DEFAULT_BIZ_PROFILE.alamat_usaha;
-      const bizPhone = state.bizProfile.no_hp_usaha || "";
-      const logoUrl = state.bizProfile.logo_data_url || "";
-
-      state.defaultPageTitle = `${bizName} — POS & Order`;
-      document.title = state.defaultPageTitle;
-      document.getElementById("headerBusinessName").textContent = bizName;
-      document.getElementById("headerBusinessAddress").textContent = bizAddress;
-      applyPhoneText(document.getElementById("headerBusinessPhone"), bizPhone);
-
-      document.getElementById("notaBusinessName").textContent = bizName;
-      document.getElementById("notaBusinessAddress").textContent = bizAddress;
-      applyPhoneText(document.getElementById("notaBusinessPhone"), bizPhone);
-
-      renderLogoBox(document.getElementById("headerLogoBox"), logoUrl, bizName);
-      renderLogoBox(document.getElementById("notaLogoBox"), logoUrl, bizName);
-
-      document.getElementById("bizNameInput").value = bizName;
-      document.getElementById("bizAddressInput").value = bizAddress;
-      document.getElementById("bizPhoneInput").value = bizPhone;
-      state.draftLogoUrl = logoUrl;
-      renderLogoBox(document.getElementById("bizLogoPreviewThumb"), state.draftLogoUrl, bizName);
-
-      if (state.activeNota) {
-        document.getElementById("waPreviewText").value = buildWaMessage(state.activeNota, state.activeWaTemplate);
-      }
-    }
-
-    function compressImageToDataUrl(file, maxSize = 220) {
-      return new Promise((resolve, reject) => {
-        if (!file) {
-          resolve("");
-          return;
-        }
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-          const img = new Image();
-          img.onload = () => {
-            const ratio = Math.min(maxSize / img.width, maxSize / img.height, 1);
-            const w = Math.max(1, Math.round(img.width * ratio));
-            const h = Math.max(1, Math.round(img.height * ratio));
-            const canvas = document.createElement("canvas");
-            canvas.width = w;
-            canvas.height = h;
-            const ctx = canvas.getContext("2d");
-            ctx.drawImage(img, 0, 0, w, h);
-            resolve(canvas.toDataURL("image/png", 0.9));
-          };
-          img.onerror = reject;
-          img.src = ev.target.result;
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-    }
-
-    document.getElementById("bizLogoFile").addEventListener("change", async (e) => {
-      const file = e.target.files && e.target.files[0];
-      if (!file) return;
-      try {
-        const compressed = await compressImageToDataUrl(file, 220);
-        state.draftLogoUrl = compressed;
-        const currentName = document.getElementById("bizNameInput").value.trim() || state.bizProfile.nama_usaha;
-        renderLogoBox(document.getElementById("bizLogoPreviewThumb"), state.draftLogoUrl, currentName);
-      } catch {
-        alert("Gagal memuat file logo.");
-      }
-    });
-
-    document.getElementById("btnRemoveBizLogo").addEventListener("click", () => {
-      state.draftLogoUrl = "";
-      document.getElementById("bizLogoFile").value = "";
-      const currentName = document.getElementById("bizNameInput").value.trim() || state.bizProfile.nama_usaha;
-      renderLogoBox(document.getElementById("bizLogoPreviewThumb"), "", currentName);
-    });
-
-    document.getElementById("btnResetBizProfile").addEventListener("click", () => {
-      state.bizProfile = { ...DEFAULT_BIZ_PROFILE };
-      state.draftLogoUrl = "";
-      document.getElementById("bizLogoFile").value = "";
-      saveBizProfileToStorage();
-      applyBizProfileUI();
-      setupPWA();
-    });
-
-    document.getElementById("formBusinessProfile").addEventListener("submit", (e) => {
-      e.preventDefault();
-      const nameVal = document.getElementById("bizNameInput").value.trim() || DEFAULT_BIZ_PROFILE.nama_usaha;
-      const addrVal = document.getElementById("bizAddressInput").value.trim() || DEFAULT_BIZ_PROFILE.alamat_usaha;
-      const phoneVal = document.getElementById("bizPhoneInput").value.trim();
-
-      state.bizProfile = {
-        nama_usaha: nameVal,
-        alamat_usaha: addrVal,
-        no_hp_usaha: phoneVal,
-        logo_data_url: state.draftLogoUrl || ""
-      };
-      saveBizProfileToStorage();
-      applyBizProfileUI();
-      setupPWA();
-      alert("Identitas usaha (nama, alamat, kontak & logo) berhasil disimpan.");
-    });
-
-    function parseMoney(rawVal) {
-      if (typeof rawVal === "number") return Math.max(0, Math.round(rawVal));
-      const digits = String(rawVal || "").replace(/\D/g, "");
-      return digits ? parseInt(digits, 10) : 0;
-    }
-
-    function setMoneyInput(elOrId, numVal) {
-      const el = typeof elOrId === "string" ? document.getElementById(elOrId) : elOrId;
-      if (!el) return;
-      el.value = fmtNum(numVal);
-    }
-
-    function getMoneyInput(elOrId) {
-      const el = typeof elOrId === "string" ? document.getElementById(elOrId) : elOrId;
-      return el ? parseMoney(el.value) : 0;
-    }
-
-    function bindMoneyInputs() {
-      document.querySelectorAll(".money-input").forEach(input => {
-        input.addEventListener("input", () => {
-          const num = parseMoney(input.value);
-          input.value = fmtNum(num);
-        });
-        input.addEventListener("focus", () => {
-          if (parseMoney(input.value) === 0) input.select();
-        });
-      });
-    }
-
-    function getUnitLabel(tipeHitung) {
-      return UNIT_LABELS[String(tipeHitung || "").toUpperCase()] || "pcs";
-    }
-
-    function setupPWA() {
-      const svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
-        <rect width="192" height="192" rx="36" fill="#c2410c"/>
-        <text x="96" y="114" font-family="system-ui,sans-serif" font-size="72" font-weight="800" fill="#ffffff" text-anchor="middle">OO</text>
-      </svg>`;
-      const iconUrl = state.bizProfile.logo_data_url || ("data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgIcon));
-      document.getElementById("appleIconLink").href = iconUrl;
-
-      const manifestObj = {
-        name: `${state.bizProfile.nama_usaha} — POS`,
-        short_name: state.bizProfile.nama_usaha.slice(0, 15) || "POS Usaha",
-        start_url: "./",
-        display: "standalone",
-        background_color: "#fff7ed",
-        theme_color: "#c2410c",
-        icons: [
-          { src: iconUrl, sizes: "192x192", type: "image/png", purpose: "any" }
-        ]
-      };
-      const manifestUrl = "data:application/manifest+json;charset=utf-8," + encodeURIComponent(JSON.stringify(manifestObj));
-      document.getElementById("pwaManifestLink").href = manifestUrl;
-
-      let deferredPrompt = null;
-      const btnInstall = document.getElementById("btnInstallApp");
-
-      window.addEventListener("beforeinstallprompt", (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        btnInstall.classList.remove("hidden");
-      });
-
-      btnInstall.addEventListener("click", async () => {
-        if (!deferredPrompt) return;
-        deferredPrompt.prompt();
-        await deferredPrompt.userChoice;
-        deferredPrompt = null;
-        btnInstall.classList.add("hidden");
-      });
-    }
-
-    function formatLocalDateTime(dateObj = new Date()) {
-      const y = dateObj.getFullYear();
-      const m = String(dateObj.getMonth() + 1).padStart(2, "0");
-      const d = String(dateObj.getDate()).padStart(2, "0");
-      const hh = String(dateObj.getHours()).padStart(2, "0");
-      const mm = String(dateObj.getMinutes()).padStart(2, "0");
-      const ss = String(dateObj.getSeconds()).padStart(2, "0");
-      return `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
-    }
-
-    function initTheme() {
-      const saved = localStorage.getItem("pos_theme") || "light";
-      document.documentElement.setAttribute("data-theme", saved);
-      document.getElementById("btnTheme").textContent = saved === "dark" ? "Mode Terang" : "Mode Gelap";
-    }
-
-    document.getElementById("btnTheme").addEventListener("click", () => {
-      const current = document.documentElement.getAttribute("data-theme");
-      const next = current === "dark" ? "light" : "dark";
-      document.documentElement.setAttribute("data-theme", next);
-      localStorage.setItem("pos_theme", next);
-      document.getElementById("btnTheme").textContent = next === "dark" ? "Mode Terang" : "Mode Gelap";
-    });
-
-    document.querySelectorAll(".tab-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        const target = btn.getAttribute("data-tab");
-        document.getElementById("tab-pos").classList.toggle("hidden", target !== "pos");
-        document.getElementById("tab-orders").classList.toggle("hidden", target !== "orders");
-        document.getElementById("tab-inventory").classList.toggle("hidden", target !== "inventory");
-        document.getElementById("tab-finance").classList.toggle("hidden", target !== "finance");
-        if (target === "orders") renderOrdersTable();
-        if (target === "inventory") renderInventoryTab();
-        if (target === "finance") renderFinanceTab();
-      });
-    });
-
-    function getFilteredProdukByKategori() {
-      const cat = document.getElementById("kategoriFilter").value;
-      const activeList = state.katalog.filter(p => p.aktif !== false);
-      if (cat === "ALL") return activeList;
-      const targetCat = normCat(cat);
-      return activeList.filter(p => normCat(p.kategori) === targetCat);
-    }
-
-    function populateProdukSelect() {
-      const cat = document.getElementById("kategoriFilter").value;
-      const sel = document.getElementById("produkSelect");
-      const filtered = getFilteredProdukByKategori();
-
-      if (filtered.length === 0) {
-        sel.innerHTML = `<option value="">-- Belum ada produk di kategori ${cat} --</option>`;
-        sel.disabled = true;
-        document.getElementById("btnAddItem").disabled = true;
-        document.getElementById("bannerDimsBox").classList.add("hidden");
-        document.getElementById("qtyLabel").textContent = "Jumlah";
-        document.getElementById("hargaLabel").textContent = "Harga Satuan (Rp)";
-        setMoneyInput("hargaOverride", 0);
-        document.getElementById("itemCalcDesc").textContent = `Tidak ada layanan/produk untuk kategori ${cat}`;
-        document.getElementById("itemCalcTotal").textContent = "Rp 0";
-        return;
-      }
-
-      sel.disabled = false;
-      document.getElementById("btnAddItem").disabled = false;
-      sel.innerHTML = filtered.map(p =>
-        `<option value="${p.id_produk}">${p.nama_produk} • ${fmtRp(p.harga_dasar)}/${getUnitLabel(p.tipe_hitung)}</option>`
-      ).join("");
-
-      syncSelectedProductFields();
-    }
-
-    function getSelectedProduct() {
-      const filtered = getFilteredProdukByKategori();
-      if (filtered.length === 0) return null;
-      const id = document.getElementById("produkSelect").value;
-      return filtered.find(p => p.id_produk === id) || filtered[0];
-    }
-
-    function syncSelectedProductFields() {
-      const prod = getSelectedProduct();
-      if (!prod) return;
-      const unitLabel = getUnitLabel(prod.tipe_hitung);
-      const qty = Math.max(1, Number(document.getElementById("qtyInput").value || 1));
-      const useGrosir = prod.tipe_hitung !== "LUAS_M2" && qty >= 10 && Number(prod.harga_grosir_min10) > 0;
-      const defaultPrice = useGrosir ? Number(prod.harga_grosir_min10) : Number(prod.harga_dasar);
-
-      document.getElementById("qtyLabel").textContent = `Jumlah (${unitLabel})`;
-      document.getElementById("hargaLabel").textContent = `Harga per ${unitLabel} (Rp)`;
-      setMoneyInput("hargaOverride", defaultPrice);
-      document.getElementById("bannerDimsBox").classList.toggle("hidden", prod.tipe_hitung !== "LUAS_M2");
-      updateItemPreview();
-    }
-
-    function computeItemTotal(prod, qty, panjangCm, lebarCm, hargaSatuan) {
-      const unitLabel = getUnitLabel(prod.tipe_hitung);
-      if (prod.tipe_hitung === "LUAS_M2") {
-        const rawM2 = (Number(panjangCm || 0) * Number(lebarCm || 0)) / 10000;
-        const billedM2 = Math.max(1, rawM2);
-        return {
-          total: Math.round(billedM2 * qty * hargaSatuan),
-          desc: `${panjangCm}x${lebarCm} cm (${billedM2.toFixed(2).replace(".", ",")} m² bayar) × ${qty} × ${fmtRp(hargaSatuan)}`
-        };
-      }
-      return {
-        total: Math.round(qty * hargaSatuan),
-        desc: `${qty} ${unitLabel} × ${fmtRp(hargaSatuan)}`
-      };
-    }
-
-    function updateItemPreview() {
-      const prod = getSelectedProduct();
-      if (!prod) return;
-      const qty = Math.max(1, Number(document.getElementById("qtyInput").value || 1));
-      const p = Number(document.getElementById("panjangCm").value || 0);
-      const l = Number(document.getElementById("lebarCm").value || 0);
-      const harga = getMoneyInput("hargaOverride");
-
-      const calc = computeItemTotal(prod, qty, p, l, harga);
-      document.getElementById("itemCalcDesc").textContent = calc.desc;
-      document.getElementById("itemCalcTotal").textContent = fmtRp(calc.total);
-    }
-
-    document.getElementById("kategoriFilter").addEventListener("change", populateProdukSelect);
-    document.getElementById("produkSelect").addEventListener("change", syncSelectedProductFields);
-    document.getElementById("qtyInput").addEventListener("input", () => {
-      const prod = getSelectedProduct();
-      const qty = Math.max(1, Number(document.getElementById("qtyInput").value || 1));
-      if (prod && prod.tipe_hitung !== "LUAS_M2") {
-        const useGrosir = qty >= 10 && Number(prod.harga_grosir_min10) > 0;
-        setMoneyInput("hargaOverride", useGrosir ? Number(prod.harga_grosir_min10) : Number(prod.harga_dasar));
-      }
-      updateItemPreview();
-    });
-    ["panjangCm", "lebarCm", "hargaOverride"].forEach(id => {
-      document.getElementById(id).addEventListener("input", updateItemPreview);
-    });
-
-    document.getElementById("btnAddItem").addEventListener("click", () => {
-      const prod = getSelectedProduct();
-      if (!prod) return;
-      const qty = Math.max(1, Number(document.getElementById("qtyInput").value || 1));
-      const p = prod.tipe_hitung === "LUAS_M2" ? Number(document.getElementById("panjangCm").value || 0) : 0;
-      const l = prod.tipe_hitung === "LUAS_M2" ? Number(document.getElementById("lebarCm").value || 0) : 0;
-      const harga = getMoneyInput("hargaOverride");
-      const spec = document.getElementById("spesifikasiInput").value.trim() || (prod.tipe_hitung === "LUAS_M2" ? `${p}x${l} cm` : "-");
-
-      const calc = computeItemTotal(prod, qty, p, l, harga);
-
-      state.cart.push({
-        id_produk: prod.id_produk,
-        kategori: formatCategoryLabel(prod.kategori),
-        nama_item_snapshot: prod.nama_produk,
-        tipe_hitung: prod.tipe_hitung,
-        id_bahan_terkait: prod.id_bahan_terkait || "",
-        panjang_cm: p,
-        lebar_cm: l,
-        qty,
-        spesifikasi_catatan: spec,
-        harga_satuan: harga,
-        total_harga_item: calc.total
-      });
-
-      document.getElementById("spesifikasiInput").value = "";
-      renderCart();
-      updateSummary();
-    });
-
-    document.getElementById("btnClearCart").addEventListener("click", () => {
-      state.cart = [];
-      renderCart();
-      updateSummary();
-    });
-
-    function renderCart() {
-      const tbody = document.getElementById("cartBody");
-      if (state.cart.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-muted)">Belum ada item ditambahkan</td></tr>`;
-        return;
-      }
-      tbody.innerHTML = state.cart.map((item, idx) => `
-        <tr>
-          <td><strong>${item.nama_item_snapshot}</strong></td>
-          <td>${item.spesifikasi_catatan}</td>
-          <td>${item.qty} ${getUnitLabel(item.tipe_hitung)}</td>
-          <td>${fmtRp(item.total_harga_item)}</td>
-          <td><button class="btn btn-sm" onclick="removeCartItem(${idx})">Hapus</button></td>
-        </tr>
-      `).join("");
-    }
-
-    window.removeCartItem = function(idx) {
-      state.cart.splice(idx, 1);
-      renderCart();
-      updateSummary();
-    };
-
-    function updateSummary() {
-      const subtotal = state.cart.reduce((acc, it) => acc + Number(it.total_harga_item || 0), 0);
-      const desain = getMoneyInput("biayaDesain");
-      const diskon = getMoneyInput("diskonInput");
-      const grandTotal = Math.max(0, subtotal + desain - diskon);
-      const bayar = Math.min(grandTotal, getMoneyInput("nominalBayar"));
-      const sisa = Math.max(0, grandTotal - bayar);
-
-      document.getElementById("sumSubtotal").textContent = fmtRp(subtotal);
-      document.getElementById("sumDesain").textContent = fmtRp(desain);
-      document.getElementById("sumDiskon").textContent = "- " + fmtRp(diskon);
-      document.getElementById("sumGrandTotal").textContent = fmtRp(grandTotal);
-      document.getElementById("sumBayar").textContent = fmtRp(bayar);
-      document.getElementById("sumSisa").textContent = fmtRp(sisa);
-
-      return { subtotal, desain, diskon, grandTotal, bayar, sisa };
-    }
-
-    ["biayaDesain", "diskonInput", "nominalBayar"].forEach(id => {
-      document.getElementById(id).addEventListener("input", updateSummary);
-    });
-
-    function buildLocalNotaNumber() {
-      const d = new Date();
-      const ymd = d.getFullYear() + String(d.getMonth() + 1).padStart(2, "0") + String(d.getDate()).padStart(2, "0");
-      const seq = String(state.orders.length + 1).padStart(3, "0");
-      return `INV-${ymd}-${seq}`;
-    }
-
-    document.getElementById("btnSaveOrder").addEventListener("click", async () => {
-      if (state.cart.length === 0) {
-        alert("Tambahkan minimal 1 item ke nota terlebih dahulu.");
-        return;
-      }
-      const nama = document.getElementById("namaPelanggan").value.trim();
-      if (!nama) {
-        alert("Nama pelanggan wajib diisi.");
-        return;
-      }
-
-      const sum = updateSummary();
-      const statusBayar = sum.bayar >= sum.grandTotal && sum.grandTotal > 0
-        ? "LUNAS"
-        : (sum.bayar > 0 ? "DP" : "BELUM_BAYAR");
-      const nowStr = formatLocalDateTime();
-
-      const payload = {
-        no_nota: buildLocalNotaNumber(),
-        tanggal_order: nowStr,
-        deadline: document.getElementById("deadlineInput").value.replace("T", " "),
-        nama_pelanggan: nama,
-        no_wa: document.getElementById("noWa").value.trim(),
-        subtotal: sum.subtotal,
-        biaya_desain: sum.desain,
-        diskon: sum.diskon,
-        grand_total: sum.grandTotal,
-        nominal_bayar: sum.bayar,
-        sisa_tagihan: sum.sisa,
-        status_bayar: statusBayar,
-        metode_bayar: document.getElementById("metodeBayar").value,
-        status_produksi: "ANTRE_DESAIN",
-        items: [...state.cart]
-      };
-
-      if (API_URL) {
-        try {
-          const res = await fetch(API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify({ action: "createOrder", ...payload })
-          });
-          const json = await res.json();
-          if (!json.ok) throw new Error(json.error);
-          if (json.data && json.data.no_nota) payload.no_nota = json.data.no_nota;
-        } catch (err) {
-          alert("Gagal kirim ke Google Sheets: " + err.message);
-          return;
-        }
-      } else {
-        payload.items.forEach(it => {
-          if (!it.id_bahan_terkait) return;
-          const st = state.stok.find(s => s.id_bahan === it.id_bahan_terkait);
-          if (st) {
-            const used = it.tipe_hitung === "LUAS_M2"
-              ? Math.max(1, (Number(it.panjang_cm || 0) * Number(it.lebar_cm || 0)) / 10000) * Number(it.qty || 1)
-              : Number(it.qty || 1);
-            st.stok_saat_ini = Math.max(0, Number((Number(st.stok_saat_ini || 0) - used).toFixed(2)));
-          }
-        });
-      }
-
-      if (Number(payload.nominal_bayar) > 0) {
-        state.pembayaran.unshift({
-          id_bayar: "PAY-" + Date.now().toString().slice(-6),
-          no_nota: payload.no_nota,
-          tanggal_bayar: nowStr,
-          jenis_bayar: statusBayar === "LUNAS" ? "LUNAS_LANGSUNG" : "DP",
-          nominal: Number(payload.nominal_bayar),
-          metode: payload.metode_bayar
-        });
-      }
-
-      state.orders.unshift(payload);
-      payload.items.forEach(it => state.details.push({ ...it, no_nota: payload.no_nota }));
-
-      openNotaModal(payload, "konfirmasi");
-      state.cart = [];
-      renderCart();
-      document.getElementById("namaPelanggan").value = "";
-      document.getElementById("noWa").value = "";
-      setMoneyInput("biayaDesain", 0);
-      setMoneyInput("diskonInput", 0);
-      setMoneyInput("nominalBayar", 0);
-      updateSummary();
-    });
-
-    function formatPaymentChannelsText() {
-      const activeList = (state.paymentMethods || []).filter(m => m.aktif !== false);
-      if (activeList.length === 0) {
-        return "Info pembayaran: silakan atur no. rekening di tab Keuangan & Kas.";
-      }
-      return activeList.map(m => {
-        const an = m.atas_nama ? ` a.n. ${m.atas_nama}` : "";
-        return `• ${m.kanal}: *${m.nomor}*${an}`;
-      }).join("\n");
-    }
-
-    function buildWaMessage(ord, templateKey = "konfirmasi") {
-      const bizName = state.bizProfile.nama_usaha || DEFAULT_BIZ_PROFILE.nama_usaha;
-      const bizPhone = (state.bizProfile.no_hp_usaha || "").trim();
-      const footerLines = bizPhone ? `— ${bizName} (${bizPhone})` : `— ${bizName}`;
-      const items = ord.items || state.details.filter(d => d.no_nota === ord.no_nota);
-      const rincian = items.map(it => `${it.nama_item_snapshot} (${it.qty} ${getUnitLabel(it.tipe_hitung)})`).join(", ") || "-";
-      const ringkasan =
-        `Nota: *${ord.no_nota}*\n` +
-        `Item: ${rincian}\n` +
-        `Total: *${fmtRp(ord.grand_total)}* | Dibayar: *${fmtRp(ord.nominal_bayar)}*\n` +
-        `Sisa: *${fmtRp(ord.sisa_tagihan)}*`;
-
-      if (templateKey === "preview") {
-        return (
-          `Halo Kak ${ord.nama_pelanggan}, preview desain *${ord.no_nota}* (${rincian}) sudah siap dicek.\n` +
-          `Mohon cek teks, ukuran & finishing. Balas "ACC CETAK" jika sesuai atau tulis revisinya.\n` +
-          `${footerLines}`
-        );
-      }
-      if (templateKey === "pelunasan") {
-        return (
-          `Halo Kak ${ord.nama_pelanggan}, pengingat pelunasan:\n` +
-          `${ringkasan}\n\n` +
-          `Rekening / Pembayaran:\n` +
-          `${formatPaymentChannelsText()}\n` +
-          `Mohon kirim bukti transfer setelah bayar ya Kak.\n` +
-          `${footerLines}`
-        );
-      }
-      if (templateKey === "siap_ambil") {
-        return (
-          `Halo Kak ${ord.nama_pelanggan}, pesanan *${ord.no_nota}* (${rincian}) sudah *SIAP DIAMBIL*.\n` +
-          `Sisa Tagihan: *${fmtRp(ord.sisa_tagihan)}*\n` +
-          `${footerLines}`
-        );
-      }
-      return (
-        `Halo Kak ${ord.nama_pelanggan}, order Anda sudah kami terima:\n` +
-        `${ringkasan}\n` +
-        `Status: *${ord.status_produksi}*\n` +
-        `${footerLines}`
-      );
-    }
-
-    function setActiveWaTemplate(tplKey) {
-      state.activeWaTemplate = tplKey;
-      document.querySelectorAll(".wa-pill").forEach(pill => {
-        pill.classList.toggle("active", pill.getAttribute("data-tpl") === tplKey);
-      });
-      if (state.activeNota) {
-        document.getElementById("waPreviewText").value = buildWaMessage(state.activeNota, tplKey);
-      }
-    }
-
-    document.querySelectorAll(".wa-pill").forEach(pill => {
-      pill.addEventListener("click", () => {
-        setActiveWaTemplate(pill.getAttribute("data-tpl"));
-      });
-    });
-
-    function openNotaModal(order, defaultTpl = "konfirmasi") {
-      state.activeNota = order;
-      const items = order.items || state.details.filter(d => d.no_nota === order.no_nota);
-
-      document.getElementById("notaBusinessName").textContent = state.bizProfile.nama_usaha || DEFAULT_BIZ_PROFILE.nama_usaha;
-      document.getElementById("notaBusinessAddress").textContent = state.bizProfile.alamat_usaha || DEFAULT_BIZ_PROFILE.alamat_usaha;
-      applyPhoneText(document.getElementById("notaBusinessPhone"), state.bizProfile.no_hp_usaha || "");
-      renderLogoBox(
-        document.getElementById("notaLogoBox"),
-        state.bizProfile.logo_data_url || "",
-        state.bizProfile.nama_usaha || DEFAULT_BIZ_PROFILE.nama_usaha
-      );
-      document.getElementById("notaNomor").textContent = order.no_nota;
-      document.getElementById("notaTanggal").textContent = order.tanggal_order;
-      document.getElementById("notaPelanggan").textContent = order.nama_pelanggan;
-      document.getElementById("notaWa").textContent = order.no_wa || "-";
-      document.getElementById("notaDeadline").textContent = order.deadline || "-";
-      document.getElementById("notaStatusBayar").textContent = order.status_bayar;
-
-      document.getElementById("notaItemsBody").innerHTML = items.map(it => `
-        <tr>
-          <td>${it.nama_item_snapshot}</td>
-          <td>${it.spesifikasi_catatan || "-"}</td>
-          <td>${it.qty} ${getUnitLabel(it.tipe_hitung)}</td>
-          <td>${fmtRp(it.total_harga_item)}</td>
-        </tr>
-      `).join("");
-
-      document.getElementById("notaSubtotal").textContent = fmtRp(order.subtotal);
-      document.getElementById("notaDesain").textContent = fmtRp(order.biaya_desain);
-      document.getElementById("notaDiskon").textContent = "- " + fmtRp(order.diskon);
-      document.getElementById("notaGrandTotal").textContent = fmtRp(order.grand_total);
-      document.getElementById("notaBayar").textContent = fmtRp(order.nominal_bayar);
-      document.getElementById("notaSisa").textContent = fmtRp(order.sisa_tagihan);
-
-      setActiveWaTemplate(defaultTpl);
-      document.getElementById("notaModal").classList.remove("hidden");
-    }
-
-    function restorePageTitle() {
-      if (state.defaultPageTitle) {
-        document.title = state.defaultPageTitle;
-      }
-    }
-
-    window.addEventListener("afterprint", restorePageTitle);
-
-    document.getElementById("btnPrintNotaPdf").addEventListener("click", () => {
-      const previousTitle = document.title;
-      const pdfName = buildPdfFilenameBase(state.activeNota);
-      document.title = pdfName;
-      window.print();
-      setTimeout(() => {
-        if (document.title === pdfName) {
-          document.title = previousTitle || state.defaultPageTitle;
-        }
-      }, 1000);
-    });
-
-    document.getElementById("btnCloseNota").addEventListener("click", () => {
-      restorePageTitle();
-      document.getElementById("notaModal").classList.add("hidden");
-    });
-
-    document.getElementById("btnWaNota").addEventListener("click", () => {
-      const ord = state.activeNota;
-      if (!ord) return;
-      const rawWa = String(ord.no_wa || "").replace(/\D/g, "");
-      const waNorm = rawWa.startsWith("0") ? "62" + rawWa.slice(1) : rawWa;
-      const customMsg = document.getElementById("waPreviewText").value || buildWaMessage(ord, state.activeWaTemplate);
-      const text = encodeURIComponent(customMsg);
-      const url = waNorm ? `https://wa.me/${waNorm}?text=${text}` : `https://wa.me/?text=${text}`;
-      window.open(url, "_blank");
-    });
-
-    function renderOrdersTable() {
-      const q = (document.getElementById("searchOrder").value || "").toLowerCase();
-      const filtered = state.orders.filter(o =>
-        String(o.no_nota).toLowerCase().includes(q) ||
-        String(o.nama_pelanggan).toLowerCase().includes(q)
-      );
-
-      const tbody = document.getElementById("ordersBody");
-      if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted)">Belum ada data order</td></tr>`;
-        return;
-      }
-
-      tbody.innerHTML = filtered.map(o => {
-        const badgeClass = o.status_bayar === "LUNAS" ? "lunas" : (o.status_bayar === "DP" ? "dp" : "");
-        return `
-          <tr>
-            <td><strong>${o.no_nota}</strong></td>
-            <td>${o.nama_pelanggan}</td>
-            <td>
-              <div>${fmtRp(o.grand_total)}</div>
-              <small style="color:var(--text-muted)">Sisa: ${fmtRp(o.sisa_tagihan)}</small>
-            </td>
-            <td><span class="badge ${badgeClass}">${o.status_bayar}</span></td>
-            <td>
-              <select onchange="changeOrderStatus('${o.no_nota}', this.value)" style="padding:6px 8px;border-radius:8px;border:1px solid var(--border-color);background:var(--surface-alt);color:var(--text-main)">
-                ${["ANTRE_DESAIN", "PROSES_CETAK", "FINISHING", "SIAP_AMBIL", "SELESAI"].map(st =>
-                  `<option value="${st}" ${o.status_produksi === st ? "selected" : ""}>${st}</option>`
-                ).join("")}
-              </select>
-            </td>
-            <td style="white-space:nowrap">
-              <button class="btn btn-sm" onclick="reopenNota('${o.no_nota}')">Nota & WA</button>
-              ${Number(o.sisa_tagihan) > 0 ? `<button class="btn btn-primary btn-sm" onclick="payRemaining('${o.no_nota}', ${o.sisa_tagihan})">Lunasi</button>` : ""}
-            </td>
-          </tr>
-        `;
-      }).join("");
-    }
-
-    document.getElementById("searchOrder").addEventListener("input", renderOrdersTable);
-
-    window.reopenNota = function(noNota) {
-      const ord = state.orders.find(o => o.no_nota === noNota);
-      if (!ord) return;
-      const tpl = ord.status_produksi === "SIAP_AMBIL"
-        ? "siap_ambil"
-        : (Number(ord.sisa_tagihan) > 0 && ord.status_produksi !== "ANTRE_DESAIN" ? "pelunasan" : "konfirmasi");
-      openNotaModal(ord, tpl);
-    };
-
-    window.changeOrderStatus = async function(noNota, statusBaru) {
-      const ord = state.orders.find(o => o.no_nota === noNota);
-      if (ord) ord.status_produksi = statusBaru;
-      if (API_URL) {
-        await fetch(API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ action: "updateStatus", no_nota: noNota, status_produksi: statusBaru })
-        });
-      }
-    };
-
-    window.payRemaining = async function(noNota, sisa) {
-      const input = prompt(`Catat pembayaran untuk ${noNota} (Sisa: ${fmtRp(sisa)}):`, fmtNum(sisa));
-      if (!input) return;
-      const nominal = Math.min(Number(sisa), parseMoney(input));
-      if (!nominal) return;
-
-      const ord = state.orders.find(o => o.no_nota === noNota);
-      if (ord) {
-        ord.nominal_bayar = Number(ord.nominal_bayar || 0) + nominal;
-        ord.sisa_tagihan = Math.max(0, Number(ord.grand_total || 0) - ord.nominal_bayar);
-        ord.status_bayar = ord.sisa_tagihan === 0 ? "LUNAS" : "DP";
-      }
-
-      state.pembayaran.unshift({
-        id_bayar: "PAY-" + Date.now().toString().slice(-6),
-        no_nota: noNota,
-        tanggal_bayar: formatLocalDateTime(),
-        jenis_bayar: ord && ord.status_bayar === "LUNAS" ? "PELUNASAN" : "CICILAN",
-        nominal,
-        metode: (ord && ord.metode_bayar) || "Tunai"
-      });
-
-      if (API_URL) {
-        await fetch(API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ action: "recordPayment", no_nota: noNota, nominal, metode: (ord && ord.metode_bayar) || "Tunai" })
-        });
-      }
-      renderOrdersTable();
-      renderFinanceTab();
-    };
-
-    // TAB 3: KATALOG & STOK BAHAN
-    function renderInventoryTab() {
-      const katBody = document.getElementById("katalogTableBody");
-      katBody.innerHTML = state.katalog.map(p => `
-        <tr>
-          <td>
-            <strong>${p.nama_produk}</strong>
-            <div style="font-size:0.75rem;color:var(--text-muted)">${p.id_produk} • ${p.kategori}</div>
-          </td>
-          <td><span class="badge">${p.tipe_hitung}</span></td>
-          <td>${fmtRp(p.harga_dasar)} / ${getUnitLabel(p.tipe_hitung)}</td>
-          <td><button class="btn btn-sm" onclick="editKatalog('${p.id_produk}')">Edit</button></td>
-        </tr>
-      `).join("");
-
-      const stokBody = document.getElementById("stokTableBody");
-      stokBody.innerHTML = state.stok.map(s => {
-        const cur = Number(s.stok_saat_ini || 0);
-        const min = Number(s.batas_minimum || 0);
-        let stLabel = "AMAN";
-        let stClass = "aman";
-        if (cur <= 0) { stLabel = "HABIS"; stClass = "habis"; }
-        else if (cur <= min) { stLabel = "MENIPIS"; stClass = "menipis"; }
-
-        return `
-          <tr>
-            <td>
-              <strong>${s.nama_bahan}</strong>
-              <div style="font-size:0.75rem;color:var(--text-muted)">${s.id_bahan}</div>
-            </td>
-            <td><strong>${cur}</strong> / ${min} ${s.satuan_stok}</td>
-            <td><span class="badge ${stClass}">${stLabel}</span></td>
-            <td style="white-space:nowrap">
-              <button class="btn btn-sm" onclick="adjustStockUI('${s.id_bahan}', -1)">-1</button>
-              <button class="btn btn-sm" onclick="adjustStockUI('${s.id_bahan}', 1)">+1</button>
-              <button class="btn btn-sm" onclick="adjustStockUI('${s.id_bahan}', 10)">+10</button>
-            </td>
-          </tr>
-        `;
-      }).join("");
-    }
-
-    window.editKatalog = function(idProduk) {
-      const p = state.katalog.find(item => item.id_produk === idProduk);
-      if (!p) return;
-      document.getElementById("katIdProduk").value = p.id_produk;
-      document.getElementById("katKategori").value = p.kategori;
-      document.getElementById("katNama").value = p.nama_produk;
-      document.getElementById("katTipeHitung").value = p.tipe_hitung;
-      setMoneyInput("katHargaDasar", p.harga_dasar);
-      setMoneyInput("katHargaGrosir", p.harga_grosir_min10 || 0);
-      document.getElementById("katIdBahan").value = p.id_bahan_terkait || "";
-    };
-
-    document.getElementById("btnResetKatalog").addEventListener("click", () => {
-      document.getElementById("formKatalog").reset();
-      document.getElementById("katIdProduk").value = "";
-      setMoneyInput("katHargaDasar", 15000);
-      setMoneyInput("katHargaGrosir", 0);
-    });
-
-    document.getElementById("formKatalog").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const idVal = document.getElementById("katIdProduk").value.trim() || ("PRD-" + Date.now().toString().slice(-4));
-      const item = {
-        id_produk: idVal,
-        kategori: document.getElementById("katKategori").value,
-        nama_produk: document.getElementById("katNama").value.trim(),
-        tipe_hitung: document.getElementById("katTipeHitung").value,
-        harga_dasar: getMoneyInput("katHargaDasar"),
-        harga_grosir_min10: getMoneyInput("katHargaGrosir"),
-        id_bahan_terkait: document.getElementById("katIdBahan").value.trim(),
-        aktif: true
-      };
-
-      const idx = state.katalog.findIndex(k => k.id_produk === idVal);
-      if (idx >= 0) {
-        state.katalog.splice(idx, 1);
-      }
-      state.katalog.unshift(item);
-
-      if (API_URL) {
-        await fetch(API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ action: "upsertProduct", ...item })
-        });
-      }
-
-      populateProdukSelect();
-      renderInventoryTab();
-      document.getElementById("formKatalog").reset();
-      document.getElementById("katIdProduk").value = "";
-      setMoneyInput("katHargaDasar", 15000);
-      setMoneyInput("katHargaGrosir", 0);
-    });
-
-    document.getElementById("formTambahStok").addEventListener("submit", (e) => {
-      e.preventDefault();
-      const idBahan = document.getElementById("stokIdBahan").value.trim();
-      const namaBahan = document.getElementById("stokNamaBahan").value.trim();
-      const satuan = document.getElementById("stokSatuan").value.trim() || "pcs";
-      const stokAwal = Number(document.getElementById("stokAwal").value || 0);
-      const stokMin = Number(document.getElementById("stokMin").value || 0);
-
-      const idx = state.stok.findIndex(s => s.id_bahan === idBahan);
-      const row = { id_bahan: idBahan, nama_bahan: namaBahan, satuan_stok: satuan, stok_saat_ini: stokAwal, batas_minimum: stokMin };
-      if (idx >= 0) {
-        state.stok.splice(idx, 1);
-      }
-      state.stok.unshift(row);
-
-      renderInventoryTab();
-      document.getElementById("formTambahStok").reset();
-    });
-
-    window.adjustStockUI = async function(idBahan, delta) {
-      const s = state.stok.find(item => item.id_bahan === idBahan);
-      if (!s) return;
-      s.stok_saat_ini = Math.max(0, Number(s.stok_saat_ini || 0) + Number(delta));
-      renderInventoryTab();
-
-      if (API_URL) {
-        await fetch(API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ action: "adjustStock", id_bahan: idBahan, delta })
-        });
-      }
-    };
-
-    // PENGATURAN SISTEM PEMBAYARAN
-    function renderPaymentMethodsTable() {
-      const body = document.getElementById("paymentMethodsBody");
-      if (!state.paymentMethods || state.paymentMethods.length === 0) {
-        body.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--text-muted)">Belum ada rekening/metode tersimpan</td></tr>`;
-        return;
-      }
-
-      body.innerHTML = state.paymentMethods.map(m => {
-        const an = m.atas_nama ? `<div style="font-size:0.75rem;color:var(--text-muted)">a.n. ${m.atas_nama}</div>` : "";
-        const stBadge = m.aktif !== false
-          ? `<span class="badge aman">Aktif</span>`
-          : `<span class="badge">Nonaktif</span>`;
-        return `
-          <tr>
-            <td><strong>${m.kanal}</strong></td>
-            <td><strong>${m.nomor}</strong>${an}</td>
-            <td>${stBadge}</td>
-            <td style="white-space:nowrap">
-              <button class="btn btn-sm" onclick="editPaymentMethod('${m.id}')">Edit</button>
-              <button class="btn btn-sm" onclick="deletePaymentMethod('${m.id}')">Hapus</button>
-            </td>
-          </tr>
-        `;
-      }).join("");
-    }
-
-    window.editPaymentMethod = function(id) {
-      const m = state.paymentMethods.find(item => item.id === id);
-      if (!m) return;
-      document.getElementById("payEditId").value = m.id;
-      document.getElementById("payKanal").value = m.kanal;
-      document.getElementById("payNomor").value = m.nomor;
-      document.getElementById("payAtasNama").value = m.atas_nama || "";
-      document.getElementById("payAktif").value = String(m.aktif !== false);
-    };
-
-    window.deletePaymentMethod = function(id) {
-      state.paymentMethods = state.paymentMethods.filter(item => item.id !== id);
-      savePaymentMethods();
-      renderPaymentMethodsTable();
-      if (state.activeNota && state.activeWaTemplate === "pelunasan") {
-        setActiveWaTemplate("pelunasan");
-      }
-    };
-
-    document.getElementById("btnResetPaymentMethod").addEventListener("click", () => {
-      document.getElementById("formPaymentMethod").reset();
-      document.getElementById("payEditId").value = "";
-      document.getElementById("payAktif").value = "true";
-    });
-
-    document.getElementById("formPaymentMethod").addEventListener("submit", (e) => {
-      e.preventDefault();
-      const editId = document.getElementById("payEditId").value.trim();
-      const item = {
-        id: editId || ("PAYM-" + Date.now().toString().slice(-5)),
-        kanal: document.getElementById("payKanal").value.trim(),
-        nomor: document.getElementById("payNomor").value.trim(),
-        atas_nama: document.getElementById("payAtasNama").value.trim(),
-        aktif: document.getElementById("payAktif").value === "true"
-      };
-
-      const idx = state.paymentMethods.findIndex(m => m.id === item.id);
-      if (idx >= 0) {
-        state.paymentMethods.splice(idx, 1);
-      }
-      state.paymentMethods.unshift(item);
-
-      savePaymentMethods();
-      renderPaymentMethodsTable();
-      document.getElementById("formPaymentMethod").reset();
-      document.getElementById("payEditId").value = "";
-      document.getElementById("payAktif").value = "true";
-
-      if (state.activeNota && state.activeWaTemplate === "pelunasan") {
-        setActiveWaTemplate("pelunasan");
-      }
-    });
-
-    // TAB 4: REKAP KEUANGAN, KAS HARIAN & EKSPOR/IMPOR DATA
-    function extractYmd(dtStr) {
-      const m = String(dtStr || "").match(/^(\d{4}-\d{2}-\d{2})/);
-      return m ? m[1] : "";
-    }
-
-    function extractYm(dtStr) {
-      const m = String(dtStr || "").match(/^(\d{4}-\d{2})/);
-      return m ? m[1] : "";
-    }
-
-    function formatMonthLabel(ym) {
-      const m = String(ym || "").match(/^(\d{4})-(\d{2})$/);
-      if (!m) return ym || "-";
-      const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
-      const idx = Math.max(0, Math.min(11, parseInt(m[2], 10) - 1));
-      return `${months[idx]} ${m[1]}`;
-    }
-
-    function resolveItemCategory(item) {
-      if (item && item.kategori) return formatCategoryLabel(item.kategori);
-      if (item && item.id_produk) {
-        const prod = state.katalog.find(k => k.id_produk === item.id_produk);
-        if (prod && prod.kategori) return formatCategoryLabel(prod.kategori);
-      }
-      if (item && item.nama_item_snapshot) {
-        const prodByName = state.katalog.find(
-          k => normCat(k.nama_produk) === normCat(item.nama_item_snapshot)
-        );
-        if (prodByName && prodByName.kategori) return formatCategoryLabel(prodByName.kategori);
-      }
-      return "Lainnya";
-    }
-
-    function getFinancePeriodData() {
-      const selectedMonth = document.getElementById("filterBulanKas").value || "";
-      const selectedDate = document.getElementById("filterTanggalKas").value || "";
-
-      const matchesPeriod = (dtStr) => {
-        const ymd = extractYmd(dtStr);
-        const ym = extractYm(dtStr);
-        if (selectedDate) return ymd === selectedDate;
-        if (selectedMonth) return ym === selectedMonth;
-        return true;
-      };
-
-      const filteredOrders = state.orders.filter(o => matchesPeriod(o.tanggal_order));
-      const filteredPayments = state.pembayaran.filter(p => matchesPeriod(p.tanggal_bayar));
-
-      const totalOmzet = filteredOrders.reduce((acc, o) => acc + Number(o.grand_total || 0), 0);
-
-      let kasMasuk = 0;
-      const byMetode = { Tunai: 0, QRIS: 0, "Transfer Bank": 0 };
-
-      if (filteredPayments.length > 0) {
-        filteredPayments.forEach(p => {
-          const nom = Number(p.nominal || 0);
-          kasMasuk += nom;
-          const met = p.metode || "Tunai";
-          if (byMetode[met] !== undefined) byMetode[met] += nom;
-          else byMetode.Tunai += nom;
-        });
-      } else if (!selectedDate && !selectedMonth && state.orders.length > 0) {
-        state.orders.forEach(o => {
-          const nom = Number(o.nominal_bayar || 0);
-          kasMasuk += nom;
-          const met = o.metode_bayar || "Tunai";
-          if (byMetode[met] !== undefined) byMetode[met] += nom;
-          else byMetode.Tunai += nom;
-        });
-      }
-
-      const piutangOrders = state.orders.filter(o => Number(o.sisa_tagihan || 0) > 0);
-      const totalPiutang = filteredOrders.reduce((acc, o) => acc + Number(o.sisa_tagihan || 0), 0);
-      const rate = totalOmzet > 0 ? Math.min(100, Math.round((kasMasuk / totalOmzet) * 100)) : 0;
-
-      const monthlyMap = {};
-      const monthCategoryMap = {};
-
-      const ensureMonthBucket = (ym) => {
-        if (!monthlyMap[ym]) {
-          monthlyMap[ym] = { ym, orderCount: 0, omzet: 0, kasMasuk: 0, piutang: 0 };
-        }
-        if (!monthCategoryMap[ym]) {
-          monthCategoryMap[ym] = {};
-        }
-      };
-
-      const addCategoryOmzet = (ym, catName, amount) => {
-        const val = Number(amount || 0);
-        if (val <= 0) return;
-        ensureMonthBucket(ym);
-        const label = formatCategoryLabel(catName);
-        monthCategoryMap[ym][label] = (monthCategoryMap[ym][label] || 0) + val;
-      };
-
-      state.orders.forEach(o => {
-        const ym = extractYm(o.tanggal_order) || "Tanpa Bulan";
-        if (selectedMonth && ym !== selectedMonth) return;
-        if (selectedDate && extractYmd(o.tanggal_order) !== selectedDate) return;
-        ensureMonthBucket(ym);
-        monthlyMap[ym].orderCount += 1;
-        monthlyMap[ym].omzet += Number(o.grand_total || 0);
-        monthlyMap[ym].piutang += Number(o.sisa_tagihan || 0);
-
-        const orderItems = Array.isArray(o.items) && o.items.length > 0
-          ? o.items
-          : state.details.filter(d => d.no_nota === o.no_nota);
-
-        const itemsSum = orderItems.reduce((acc, it) => acc + Number(it.total_harga_item || 0), 0);
-        if (orderItems.length > 0) {
-          orderItems.forEach(it => {
-            addCategoryOmzet(ym, resolveItemCategory(it), Number(it.total_harga_item || 0));
-          });
-        }
-        const netAdj = Number(o.grand_total || 0) - itemsSum;
-        if (netAdj > 0) {
-          addCategoryOmzet(ym, "Lainnya", netAdj);
-        }
-      });
-
-      if (state.pembayaran.length > 0) {
-        state.pembayaran.forEach(p => {
-          const ym = extractYm(p.tanggal_bayar) || "Tanpa Bulan";
-          if (selectedMonth && ym !== selectedMonth) return;
-          if (selectedDate && extractYmd(p.tanggal_bayar) !== selectedDate) return;
-          ensureMonthBucket(ym);
-          monthlyMap[ym].kasMasuk += Number(p.nominal || 0);
-        });
-      } else {
-        state.orders.forEach(o => {
-          const ym = extractYm(o.tanggal_order) || "Tanpa Bulan";
-          if (selectedMonth && ym !== selectedMonth) return;
-          if (selectedDate && extractYmd(o.tanggal_order) !== selectedDate) return;
-          if (monthlyMap[ym]) {
-            monthlyMap[ym].kasMasuk += Number(o.nominal_bayar || 0);
-          }
-        });
-      }
-
-      const monthlyRows = Object.values(monthlyMap).sort((a, b) => b.ym.localeCompare(a.ym));
-
-      const categoryMonthlyRows = [];
-      monthlyRows.forEach(m => {
-        const catObj = monthCategoryMap[m.ym] || {};
-        const entries = Object.entries(catObj).sort((a, b) => b[1] - a[1]);
-        entries.forEach(([kategori, omzetKat]) => {
-          const sharePct = m.omzet > 0 ? Math.min(100, Math.round((omzetKat / m.omzet) * 100)) : 0;
-          categoryMonthlyRows.push({
-            ym: m.ym,
-            kategori,
-            omzet: omzetKat,
-            monthOmzet: m.omzet,
-            sharePct
-          });
-        });
-      });
-
-      return {
-        selectedMonth,
-        selectedDate,
-        filteredOrders,
-        filteredPayments,
-        totalOmzet,
-        kasMasuk,
-        byMetode,
-        piutangOrders,
-        totalPiutang,
-        rate,
-        monthlyRows,
-        categoryMonthlyRows
-      };
-    }
-
-    function renderFinanceTab() {
-      const data = getFinancePeriodData();
-      const periodSuffix = data.selectedDate
-        ? ` — Tanggal ${data.selectedDate}`
-        : (data.selectedMonth ? ` — Bulan ${formatMonthLabel(data.selectedMonth)}` : " — Semua Periode");
-      document.getElementById("financeReportTitle").textContent = `Rekap Keuangan & Kas Harian${periodSuffix}`;
-
-      document.getElementById("kpiOmzet").textContent = fmtRp(data.totalOmzet);
-      document.getElementById("kpiOrderCount").textContent = `${data.filteredOrders.length} order tercatat`;
-      document.getElementById("kpiKasMasuk").textContent = fmtRp(data.kasMasuk);
-      document.getElementById("kpiMetodeBreakdown").textContent =
-        `Tunai: ${fmtRp(data.byMetode.Tunai)} • QRIS: ${fmtRp(data.byMetode.QRIS)} • TF: ${fmtRp(data.byMetode["Transfer Bank"])}`;
-      document.getElementById("kpiPiutang").textContent = fmtRp(data.totalPiutang);
-      document.getElementById("kpiPiutangCount").textContent = `${data.piutangOrders.length} nota belum lunas`;
-      document.getElementById("kpiCollectionRate").textContent = `${data.rate}%`;
-
-      const monthlyBody = document.getElementById("monthlySummaryBody");
-      if (data.monthlyRows.length === 0) {
-        monthlyBody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-muted)">Belum ada rekap bulanan tercatat</td></tr>`;
-      } else {
-        monthlyBody.innerHTML = data.monthlyRows.map(m => `
-          <tr>
-            <td><strong>${formatMonthLabel(m.ym)}</strong> <span style="font-size:0.75rem;color:var(--text-muted)">(${m.ym})</span></td>
-            <td>${m.orderCount} order</td>
-            <td><strong>${fmtRp(m.omzet)}</strong></td>
-            <td style="color:var(--success)"><strong>${fmtRp(m.kasMasuk)}</strong></td>
-            <td style="color:var(--warning)">${fmtRp(m.piutang)}</td>
-          </tr>
-        `).join("");
-      }
-
-      const catBody = document.getElementById("categoryMonthlyBody");
-      if (data.categoryMonthlyRows.length === 0) {
-        catBody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--text-muted)">Belum ada rincian omzet per kategori pada periode ini</td></tr>`;
-      } else {
-        catBody.innerHTML = data.categoryMonthlyRows.map(row => `
-          <tr>
-            <td><strong>${formatMonthLabel(row.ym)}</strong> <span style="font-size:0.75rem;color:var(--text-muted)">(${row.ym})</span></td>
-            <td><span class="badge">${row.kategori}</span></td>
-            <td><strong>${fmtRp(row.omzet)}</strong></td>
-            <td>${row.sharePct}%</td>
-          </tr>
-        `).join("");
-      }
-
-      const kasBody = document.getElementById("kasLogBody");
-      if (data.filteredPayments.length === 0) {
-        kasBody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--text-muted)">Belum ada mutasi pembayaran tercatat</td></tr>`;
-      } else {
-        kasBody.innerHTML = data.filteredPayments.map(p => `
-          <tr>
-            <td>
-              <strong>${p.no_nota}</strong>
-              <div style="font-size:0.75rem;color:var(--text-muted)">${p.tanggal_bayar || "-"}</div>
-            </td>
-            <td><span class="badge">${p.jenis_bayar || "BAYAR"}</span></td>
-            <td>${p.metode || "Tunai"}</td>
-            <td><strong>${fmtRp(p.nominal)}</strong></td>
-          </tr>
-        `).join("");
-      }
-
-      const piutangBody = document.getElementById("piutangBody");
-      if (data.piutangOrders.length === 0) {
-        piutangBody.innerHTML = `<tr><td colspan="3" style="text-align:center;color:var(--text-muted)">Tidak ada sisa piutang</td></tr>`;
-      } else {
-        piutangBody.innerHTML = data.piutangOrders.map(o => `
-          <tr>
-            <td>
-              <strong>${o.no_nota}</strong> • ${o.nama_pelanggan}
-              <div style="font-size:0.75rem;color:var(--text-muted)">Total: ${fmtRp(o.grand_total)} • Bayar: ${fmtRp(o.nominal_bayar)}</div>
-            </td>
-            <td><strong style="color:var(--warning)">${fmtRp(o.sisa_tagihan)}</strong></td>
-            <td><button class="btn btn-primary btn-sm" onclick="payRemaining('${o.no_nota}', ${o.sisa_tagihan})">Lunasi</button></td>
-          </tr>
-        `).join("");
-      }
-
-      renderPaymentMethodsTable();
-    }
-
-    document.getElementById("filterBulanKas").addEventListener("change", () => {
-      if (document.getElementById("filterBulanKas").value) {
-        document.getElementById("filterTanggalKas").value = "";
-      }
-      renderFinanceTab();
-    });
-
-    document.getElementById("filterTanggalKas").addEventListener("change", () => {
-      if (document.getElementById("filterTanggalKas").value) {
-        document.getElementById("filterBulanKas").value = "";
-      }
-      renderFinanceTab();
-    });
-
-    document.getElementById("btnResetTanggalKas").addEventListener("click", () => {
-      document.getElementById("filterBulanKas").value = "";
-      document.getElementById("filterTanggalKas").value = "";
-      renderFinanceTab();
-    });
-
-    function csvCell(val) {
-      const s = String(val ?? "").replace(/"/g, '""');
-      return `"${s}"`;
-    }
-
-    function triggerFileDownload(filename, content, mimeType) {
-      const blob = new Blob([content], { type: mimeType });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-    }
-
-    document.getElementById("btnExportCsv").addEventListener("click", () => {
-      const data = getFinancePeriodData();
-      const lines = [];
-
-      lines.push([csvCell("REKAP BULANAN"), csvCell("JUMLAH ORDER"), csvCell("OMZET"), csvCell("KAS MASUK"), csvCell("SISA PIUTANG")].join(";"));
-      data.monthlyRows.forEach(m => {
-        lines.push([csvCell(m.ym), csvCell(m.orderCount), csvCell(m.omzet), csvCell(m.kasMasuk), csvCell(m.piutang)].join(";"));
-      });
-
-      lines.push("");
-      lines.push([csvCell("BULAN"), csvCell("KATEGORI PRODUK"), csvCell("OMZET KATEGORI"), csvCell("PORSI BULAN (%)")].join(";"));
-      data.categoryMonthlyRows.forEach(row => {
-        lines.push([csvCell(row.ym), csvCell(row.kategori), csvCell(row.omzet), csvCell(`${row.sharePct}%`)].join(";"));
-      });
-
-      lines.push("");
-      lines.push([csvCell("NO NOTA"), csvCell("TANGGAL ORDER"), csvCell("PELANGGAN"), csvCell("METODE BAYAR"), csvCell("STATUS BAYAR"), csvCell("STATUS PRODUKSI"), csvCell("GRAND TOTAL"), csvCell("DIBAYAR"), csvCell("SISA TAGIHAN")].join(";"));
-      data.filteredOrders.forEach(o => {
-        lines.push([
-          csvCell(o.no_nota),
-          csvCell(o.tanggal_order),
-          csvCell(o.nama_pelanggan),
-          csvCell(o.metode_bayar || "Tunai"),
-          csvCell(o.status_bayar),
-          csvCell(o.status_produksi),
-          csvCell(o.grand_total || 0),
-          csvCell(o.nominal_bayar || 0),
-          csvCell(o.sisa_tagihan || 0)
-        ].join(";"));
-      });
-
-      const periodTag = data.selectedDate || data.selectedMonth || "semua";
-      const fileName = `rekap-bulanan-${sanitizeFilePart(periodTag, "semua")}.csv`;
-      triggerFileDownload(fileName, "\uFEFF" + lines.join("\r\n"), "text/csv;charset=utf-8;");
-    });
-
-    document.getElementById("btnExportJson").addEventListener("click", () => {
-      const exportPayload = {
-        exported_at: formatLocalDateTime(),
-        bizProfile: {
-          nama_usaha: state.bizProfile.nama_usaha,
-          alamat_usaha: state.bizProfile.alamat_usaha,
-          no_hp_usaha: state.bizProfile.no_hp_usaha,
-          logo_data_url: state.bizProfile.logo_data_url
-        },
-        katalog: state.katalog,
-        stok: state.stok,
-        orders: state.orders,
-        details: state.details,
-        pembayaran: state.pembayaran,
-        paymentMethods: state.paymentMethods
-      };
-      const todayYmd = formatLocalDateTime().slice(0, 10);
-      triggerFileDownload(`data-pos-${todayYmd}.json`, JSON.stringify(exportPayload, null, 2), "application/json;charset=utf-8;");
-    });
-
-    document.getElementById("importJsonFile").addEventListener("change", async (e) => {
-      const inputEl = e.target;
-      const file = inputEl && inputEl.files && inputEl.files[0];
-      if (!file) return;
-
-      try {
-        const rawText = await file.text();
-        const parsed = JSON.parse(rawText);
-        if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
-          throw new Error("Format objek JSON tidak valid.");
-        }
-
-        const hasAnyData = ["katalog", "stok", "orders", "details", "pembayaran", "paymentMethods", "bizProfile"]
-          .some((k) => Object.prototype.hasOwnProperty.call(parsed, k));
-        if (!hasAnyData) {
-          throw new Error("File JSON tidak memuat struktur backup POS yang dikenali.");
-        }
-
-        const ok = confirm(
-          "Impor file JSON akan menimpa data aktif di aplikasi saat ini (katalog, stok, order, kas & pengaturan). Lanjutkan?"
-        );
-        if (!ok) {
-          inputEl.value = "";
-          return;
-        }
-
-        if (Array.isArray(parsed.katalog)) state.katalog = parsed.katalog;
-        if (Array.isArray(parsed.stok)) state.stok = parsed.stok;
-        if (Array.isArray(parsed.orders)) state.orders = parsed.orders;
-        if (Array.isArray(parsed.details)) state.details = parsed.details;
-        if (Array.isArray(parsed.pembayaran)) state.pembayaran = parsed.pembayaran;
-
-        if (Array.isArray(parsed.paymentMethods) && parsed.paymentMethods.length > 0) {
-          state.paymentMethods = parsed.paymentMethods;
-          savePaymentMethods();
-        }
-
-        if (parsed.bizProfile && typeof parsed.bizProfile === "object") {
-          state.bizProfile = {
-            nama_usaha: String(parsed.bizProfile.nama_usaha || state.bizProfile.nama_usaha || DEFAULT_BIZ_PROFILE.nama_usaha).trim() || DEFAULT_BIZ_PROFILE.nama_usaha,
-            alamat_usaha: String(parsed.bizProfile.alamat_usaha || state.bizProfile.alamat_usaha || DEFAULT_BIZ_PROFILE.alamat_usaha).trim() || DEFAULT_BIZ_PROFILE.alamat_usaha,
-            no_hp_usaha: String(parsed.bizProfile.no_hp_usaha ?? state.bizProfile.no_hp_usaha ?? "").trim(),
-            logo_data_url: String(parsed.bizProfile.logo_data_url ?? state.bizProfile.logo_data_url ?? "")
-          };
-          saveBizProfileToStorage();
-          applyBizProfileUI();
-          setupPWA();
-        }
-
-        populateProdukSelect();
-        renderOrdersTable();
-        renderInventoryTab();
-        renderFinanceTab();
-        alert("Backup JSON berhasil dipulihkan ke aplikasi.");
-      } catch (err) {
-        alert("Gagal mengimpor file JSON: " + err.message);
-      } finally {
-        inputEl.value = "";
-      }
-    });
-
-    async function syncFromSheets() {
-      const banner = document.getElementById("connectionBanner");
-      if (!API_URL) {
-        banner.textContent = "Mode Lokal aktif: isi variabel API_URL di kode untuk menghubungkan ke Google Sheets.";
-        return;
-      }
-      banner.textContent = "Menghubungkan ke Google Sheets...";
-      try {
-        const res = await fetch(`${API_URL}?action=getDashboardData`);
-        const json = await res.json();
-        if (!json.ok) throw new Error(json.error);
-        if (Array.isArray(json.data.katalog) && json.data.katalog.length > 0) {
-          state.katalog = [...json.data.katalog].reverse();
-        }
-        if (Array.isArray(json.data.stok) && json.data.stok.length > 0) {
-          state.stok = [...json.data.stok].reverse();
-        }
-        state.orders = (json.data.orders || []).slice().reverse();
-        state.details = json.data.details || [];
-        state.pembayaran = (json.data.pembayaran || []).slice().reverse();
-        populateProdukSelect();
-        renderOrdersTable();
-        renderInventoryTab();
-        renderFinanceTab();
-        banner.textContent = "Terhubung ke Google Sheets — data katalog, stok, order & kas tersinkronisasi.";
-      } catch (err) {
-        banner.textContent = "Gagal sinkronisasi Google Sheets: " + err.message;
-      }
-    }
-
-    document.getElementById("btnSync").addEventListener("click", syncFromSheets);
-
-    applyBizProfileUI();
-    setupPWA();
-    bindMoneyInputs();
-    initTheme();
-    populateProdukSelect();
-    renderCart();
-    updateSummary();
-    renderInventoryTab();
-    renderFinanceTab();
-    syncFromSheets();
-  </script>
+  <script src="app.js" defer></script>
 </body>
 </html>
