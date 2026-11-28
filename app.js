@@ -422,66 +422,45 @@ function getUnitLabel(tipeHitung) {
   return UNIT_LABELS[String(tipeHitung || "").toUpperCase()] || "pcs";
 }
 
-function setupPWA() {
-  const svgIcon = [
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">',
-    '<rect width="192" height="192" rx="36" fill="#c2410c"/>',
-    '<text x="96" y="114" font-family="system-ui,sans-serif" font-size="72"',
-    ' font-weight="800" fill="#ffffff" text-anchor="middle">OO</text>',
-    "</svg>"
-  ].join("");
-  const iconUrl = state.bizProfile.logo_data_url
-    || ("data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgIcon));
-  $("appleIconLink").href = iconUrl;
-
-  const manifestObj = {
-    name: `${state.bizProfile.nama_usaha} — POS`,
-    short_name: state.bizProfile.nama_usaha.slice(0, 15) || "POS Usaha",
-    start_url: "./",
-    display: "standalone",
-    background_color: "#fff7ed",
-    theme_color: "#c2410c",
-    icons: [{ src: iconUrl, sizes: "192x192", type: "image/png", purpose: "any" }]
-  };
-  $("pwaManifestLink").href =
-    "data:application/manifest+json;charset=utf-8,"
-    + encodeURIComponent(JSON.stringify(manifestObj));
-
-  let deferredPrompt = null;
-  const btnInstall = $("btnInstallApp");
-
-  window.addEventListener("beforeinstallprompt", (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    btnInstall.classList.remove("hidden");
-  });
-
-  btnInstall.addEventListener("click", async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    await deferredPrompt.userChoice;
-    deferredPrompt = null;
-    btnInstall.classList.add("hidden");
-  });
-}
-
 function pad2(n) {
   return String(n).padStart(2, "0");
 }
 
+function getLocalDateParts(d = new Date()) {
+  return {
+    year: String(d.getFullYear()),
+    month: pad2(d.getMonth() + 1),
+    day: pad2(d.getDate()),
+    hour: pad2(d.getHours()),
+    minute: pad2(d.getMinutes()),
+    second: pad2(d.getSeconds())
+  };
+}
+
 function formatLocalDateTime(d = new Date()) {
-  const datePart = `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
-  const timePart = `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
-  return `${datePart} ${timePart}`;
+  const p = getLocalDateParts(d);
+  return `${p.year}-${p.month}-${p.day} ${p.hour}:${p.minute}:${p.second}`;
 }
 
 function formatDateTimeLocalInput(d = new Date()) {
-  const datePart = `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
-  return `${datePart}T${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+  const p = getLocalDateParts(d);
+  return `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}`;
 }
 
-function setDefaultDeadlineInput() {
-  if ($("deadlineInput")) $("deadlineInput").value = formatDateTimeLocalInput(new Date());
+function formatDateInput(d = new Date()) {
+  const p = getLocalDateParts(d);
+  return `${p.year}-${p.month}-${p.day}`;
+}
+
+function formatMonthInput(d = new Date()) {
+  const p = getLocalDateParts(d);
+  return `${p.year}-${p.month}`;
+}
+
+function setDefaultDateTimeInputs(now = new Date()) {
+  if ($("deadlineInput")) $("deadlineInput").value = formatDateTimeLocalInput(now);
+  if ($("filterTanggalKas")) $("filterTanggalKas").value = formatDateInput(now);
+  if ($("filterBulanKas")) $("filterBulanKas").value = formatMonthInput(now);
 }
 
 function initTheme() {
@@ -646,8 +625,8 @@ function updateSummary() {
 
 function buildLocalNotaNumber() {
   const d = new Date();
-  const ymd = `${d.getFullYear()}${pad2(d.getMonth() + 1)}${pad2(d.getDate())}`;
-  return `INV-${ymd}-${String(state.orders.length + 1).padStart(3, "0")}`;
+  const p = getLocalDateParts(d);
+  return `INV-${p.year}${p.month}${p.day}-${String(state.orders.length + 1).padStart(3, "0")}`;
 }
 
 function deductLocalStock(items) {
@@ -788,7 +767,7 @@ function bindPosEvents() {
     renderCart();
     $("namaPelanggan").value = "";
     $("noWa").value = "";
-    setDefaultDeadlineInput();
+    setDefaultDateTimeInputs(new Date());
     setMoneyInput("biayaDesain", 0);
     setMoneyInput("diskonInput", 0);
     setMoneyInput("nominalBayar", 0);
@@ -1661,13 +1640,122 @@ function bindFinanceEvents() {
     renderFinanceTab();
   });
   $("btnResetTanggalKas").addEventListener("click", () => {
-    $("filterBulanKas").value = "";
-    $("filterTanggalKas").value = "";
+    const now = new Date();
+    $("filterTanggalKas").value = formatDateInput(now);
+    $("filterBulanKas").value = formatMonthInput(now);
     renderFinanceTab();
   });
   $("btnExportCsv").addEventListener("click", exportFinanceCsv);
   $("btnExportJson").addEventListener("click", exportFinanceJson);
   $("importJsonFile").addEventListener("change", importFinanceJson);
+}
+
+function buildDefaultIconSvg() {
+  return [
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">',
+    "<defs>",
+    '<linearGradient id="kasirGrad" x1="0%" y1="0%" x2="100%" y2="100%">',
+    '<stop offset="0%" stop-color="#c2410c"/>',
+    '<stop offset="100%" stop-color="#ea580c"/>',
+    "</linearGradient>",
+    "</defs>",
+    '<rect width="512" height="512" rx="112" fill="url(#kasirGrad)"/>',
+    '<rect x="28" y="28" width="456" height="456" rx="92" fill="none"',
+    ' stroke="#ffedd5" stroke-opacity="0.35" stroke-width="6"/>',
+    '<path d="M176 92 h116 v64 h-116 z" fill="#ffffff"/>',
+    '<rect x="196" y="112" width="76" height="8" rx="4" fill="#ea580c"/>',
+    '<rect x="196" y="130" width="52" height="8" rx="4" fill="#fdba74"/>',
+    '<rect x="308" y="116" width="64" height="40" rx="8" fill="#ffffff"/>',
+    '<rect x="318" y="128" width="44" height="16" rx="4" fill="#1c1917"/>',
+    '<path d="M124 176 h264 l24 148 H100 Z" fill="#fff7ed"/>',
+    '<rect x="148" y="200" width="38" height="24" rx="6" fill="#ea580c"/>',
+    '<rect x="200" y="200" width="38" height="24" rx="6" fill="#ea580c"/>',
+    '<rect x="252" y="200" width="38" height="24" rx="6" fill="#ea580c"/>',
+    '<rect x="148" y="236" width="38" height="24" rx="6" fill="#ea580c"/>',
+    '<rect x="200" y="236" width="38" height="24" rx="6" fill="#ea580c"/>',
+    '<rect x="252" y="236" width="38" height="24" rx="6" fill="#ea580c"/>',
+    '<rect x="310" y="200" width="54" height="60" rx="8" fill="#15803d"/>',
+    '<rect x="100" y="336" width="312" height="68" rx="14" fill="#ffffff"/>',
+    '<rect x="224" y="362" width="64" height="16" rx="8" fill="#c2410c"/>',
+    "</svg>"
+  ].join("");
+}
+
+function renderIconToPngDataUrl(sourceUrl, size = 512) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, size, size);
+      ctx.drawImage(img, 0, 0, size, size);
+      resolve(canvas.toDataURL("image/png"));
+    };
+    img.onerror = () => resolve(sourceUrl);
+    img.src = sourceUrl;
+  });
+}
+
+let deferredInstallPrompt = null;
+let pwaPromptBound = false;
+
+function bindInstallPromptOnce() {
+  if (pwaPromptBound) return;
+  pwaPromptBound = true;
+  const btnInstall = $("btnInstallApp");
+
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    btnInstall.classList.remove("hidden");
+  });
+
+  btnInstall.addEventListener("click", async () => {
+    if (!deferredInstallPrompt) return;
+    deferredInstallPrompt.prompt();
+    await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    btnInstall.classList.add("hidden");
+  });
+}
+
+async function setupPWA() {
+  bindInstallPromptOnce();
+
+  const defaultSvgUrl =
+    "data:image/svg+xml;charset=utf-8,"
+    + encodeURIComponent(buildDefaultIconSvg());
+  const rawSource = state.bizProfile.logo_data_url || defaultSvgUrl;
+
+  if ($("faviconSvgLink")) {
+    $("faviconSvgLink").href = rawSource;
+  }
+
+  const icon192 = await renderIconToPngDataUrl(rawSource, 192);
+  const icon512 = await renderIconToPngDataUrl(rawSource, 512);
+
+  if ($("appleIconLink")) {
+    $("appleIconLink").href = icon192;
+  }
+
+  const manifestObj = {
+    name: `${state.bizProfile.nama_usaha} — POS`,
+    short_name: state.bizProfile.nama_usaha.slice(0, 15) || "POS Usaha",
+    start_url: "./",
+    display: "standalone",
+    background_color: "#fff7ed",
+    theme_color: "#c2410c",
+    icons: [
+      { src: icon192, sizes: "192x192", type: "image/png", purpose: "any" },
+      { src: icon512, sizes: "512x512", type: "image/png", purpose: "any maskable" }
+    ]
+  };
+
+  $("pwaManifestLink").href =
+    "data:application/manifest+json;charset=utf-8,"
+    + encodeURIComponent(JSON.stringify(manifestObj));
 }
 
 async function syncFromSheets() {
@@ -1713,7 +1801,7 @@ function initApp() {
 
   applyBizProfileUI();
   setupPWA();
-  setDefaultDeadlineInput();
+  setDefaultDateTimeInputs();
   bindMoneyInputs();
   initTheme();
   populateProdukSelect();

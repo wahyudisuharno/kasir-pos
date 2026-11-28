@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Ikon Kasir POS">
+  <defs>
+    <linearGradient id="kasirGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c2410c" />
+      <stop offset="100%" stop-color="#ea580c" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#kasirGrad)" />
+  <rect x="28" y="28" width="456" height="456" rx="92" fill="none" stroke="#ffedd5" stroke-opacity="0.35" stroke-width="6" />
+  <path d="M176 92 h116 v64 h-116 z" fill="#ffffff" />
+  <rect x="196" y="112" width="76" height="8" rx="4" fill="#ea580c" />
+  <rect x="196" y="130" width="52" height="8" rx="4" fill="#fdba74" />
+  <rect x="308" y="116" width="64" height="40" rx="8" fill="#ffffff" />
+  <rect x="318" y="128" width="44" height="16" rx="4" fill="#1c1917" />
+  <path d="M124 176 h264 l24 148 H100 Z" fill="#fff7ed" />
+  <rect x="148" y="200" width="38" height="24" rx="6" fill="#ea580c" />
+  <rect x="200" y="200" width="38" height="24" rx="6" fill="#ea580c" />
+  <rect x="252" y="200" width="38" height="24" rx="6" fill="#ea580c" />
+  <rect x="148" y="236" width="38" height="24" rx="6" fill="#ea580c" />
+  <rect x="200" y="236" width="38" height="24" rx="6" fill="#ea580c" />
+  <rect x="252" y="236" width="38" height="24" rx="6" fill="#ea580c" />
+  <rect x="310" y="200" width="54" height="60" rx="8" fill="#15803d" />
+  <rect x="100" y="336" width="312" height="68" rx="14" fill="#ffffff" />
+  <rect x="224" y="362" width="64" height="16" rx="8" fill="#c2410c" />
+</svg>
