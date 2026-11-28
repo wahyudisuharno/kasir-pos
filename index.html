@@ -960,6 +960,23 @@
             <tbody id="monthlySummaryBody"></tbody>
           </table>
         </div>
+
+        <div class="card-title" style="margin-top:18px;margin-bottom:10px;font-size:0.94rem">
+          <span>Rincian Omzet per Kategori Produk (Bulanan)</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Bulan</th>
+                <th>Kategori Produk</th>
+                <th>Omzet Kategori</th>
+                <th>Porsi Bulan</th>
+              </tr>
+            </thead>
+            <tbody id="categoryMonthlyBody"></tbody>
+          </table>
+        </div>
       </div>
 
       <div class="grid-2">
@@ -1260,6 +1277,14 @@
 
     function normCat(val) {
       return String(val || "").trim().toLowerCase().replace(/\s+/g, " ");
+    }
+
+    function formatCategoryLabel(rawCat) {
+      const clean = String(rawCat || "").trim();
+      if (!clean) return "Lainnya";
+      const known = ["Banner", "Cetak A3", "Merchandise", "Kalender", "Stationery"];
+      const matched = known.find(k => normCat(k) === normCat(clean));
+      return matched || clean;
     }
 
     function sanitizeFilePart(str, fallback = "") {
@@ -1636,6 +1661,7 @@
 
       state.cart.push({
         id_produk: prod.id_produk,
+        kategori: formatCategoryLabel(prod.kategori),
         nama_item_snapshot: prod.nama_produk,
         tipe_hitung: prod.tipe_hitung,
         id_bahan_terkait: prod.id_bahan_terkait || "",
@@ -2269,6 +2295,21 @@
       return `${months[idx]} ${m[1]}`;
     }
 
+    function resolveItemCategory(item) {
+      if (item && item.kategori) return formatCategoryLabel(item.kategori);
+      if (item && item.id_produk) {
+        const prod = state.katalog.find(k => k.id_produk === item.id_produk);
+        if (prod && prod.kategori) return formatCategoryLabel(prod.kategori);
+      }
+      if (item && item.nama_item_snapshot) {
+        const prodByName = state.katalog.find(
+          k => normCat(k.nama_produk) === normCat(item.nama_item_snapshot)
+        );
+        if (prodByName && prodByName.kategori) return formatCategoryLabel(prodByName.kategori);
+      }
+      return "Lainnya";
+    }
+
     function getFinancePeriodData() {
       const selectedMonth = document.getElementById("filterBulanKas").value || "";
       const selectedDate = document.getElementById("filterTanggalKas").value || "";
@@ -2312,30 +2353,63 @@
       const rate = totalOmzet > 0 ? Math.min(100, Math.round((kasMasuk / totalOmzet) * 100)) : 0;
 
       const monthlyMap = {};
-      state.orders.forEach(o => {
-        const ym = extractYm(o.tanggal_order) || "Tanpa Bulan";
-        if (selectedMonth && ym !== selectedMonth) return;
+      const monthCategoryMap = {};
+
+      const ensureMonthBucket = (ym) => {
         if (!monthlyMap[ym]) {
           monthlyMap[ym] = { ym, orderCount: 0, omzet: 0, kasMasuk: 0, piutang: 0 };
         }
+        if (!monthCategoryMap[ym]) {
+          monthCategoryMap[ym] = {};
+        }
+      };
+
+      const addCategoryOmzet = (ym, catName, amount) => {
+        const val = Number(amount || 0);
+        if (val <= 0) return;
+        ensureMonthBucket(ym);
+        const label = formatCategoryLabel(catName);
+        monthCategoryMap[ym][label] = (monthCategoryMap[ym][label] || 0) + val;
+      };
+
+      state.orders.forEach(o => {
+        const ym = extractYm(o.tanggal_order) || "Tanpa Bulan";
+        if (selectedMonth && ym !== selectedMonth) return;
+        if (selectedDate && extractYmd(o.tanggal_order) !== selectedDate) return;
+        ensureMonthBucket(ym);
         monthlyMap[ym].orderCount += 1;
         monthlyMap[ym].omzet += Number(o.grand_total || 0);
         monthlyMap[ym].piutang += Number(o.sisa_tagihan || 0);
+
+        const orderItems = Array.isArray(o.items) && o.items.length > 0
+          ? o.items
+          : state.details.filter(d => d.no_nota === o.no_nota);
+
+        const itemsSum = orderItems.reduce((acc, it) => acc + Number(it.total_harga_item || 0), 0);
+        if (orderItems.length > 0) {
+          orderItems.forEach(it => {
+            addCategoryOmzet(ym, resolveItemCategory(it), Number(it.total_harga_item || 0));
+          });
+        }
+        const netAdj = Number(o.grand_total || 0) - itemsSum;
+        if (netAdj > 0) {
+          addCategoryOmzet(ym, "Lainnya", netAdj);
+        }
       });
 
       if (state.pembayaran.length > 0) {
         state.pembayaran.forEach(p => {
           const ym = extractYm(p.tanggal_bayar) || "Tanpa Bulan";
           if (selectedMonth && ym !== selectedMonth) return;
-          if (!monthlyMap[ym]) {
-            monthlyMap[ym] = { ym, orderCount: 0, omzet: 0, kasMasuk: 0, piutang: 0 };
-          }
+          if (selectedDate && extractYmd(p.tanggal_bayar) !== selectedDate) return;
+          ensureMonthBucket(ym);
           monthlyMap[ym].kasMasuk += Number(p.nominal || 0);
         });
       } else {
         state.orders.forEach(o => {
           const ym = extractYm(o.tanggal_order) || "Tanpa Bulan";
           if (selectedMonth && ym !== selectedMonth) return;
+          if (selectedDate && extractYmd(o.tanggal_order) !== selectedDate) return;
           if (monthlyMap[ym]) {
             monthlyMap[ym].kasMasuk += Number(o.nominal_bayar || 0);
           }
@@ -2343,6 +2417,22 @@
       }
 
       const monthlyRows = Object.values(monthlyMap).sort((a, b) => b.ym.localeCompare(a.ym));
+
+      const categoryMonthlyRows = [];
+      monthlyRows.forEach(m => {
+        const catObj = monthCategoryMap[m.ym] || {};
+        const entries = Object.entries(catObj).sort((a, b) => b[1] - a[1]);
+        entries.forEach(([kategori, omzetKat]) => {
+          const sharePct = m.omzet > 0 ? Math.min(100, Math.round((omzetKat / m.omzet) * 100)) : 0;
+          categoryMonthlyRows.push({
+            ym: m.ym,
+            kategori,
+            omzet: omzetKat,
+            monthOmzet: m.omzet,
+            sharePct
+          });
+        });
+      });
 
       return {
         selectedMonth,
@@ -2355,7 +2445,8 @@
         piutangOrders,
         totalPiutang,
         rate,
-        monthlyRows
+        monthlyRows,
+        categoryMonthlyRows
       };
     }
 
@@ -2386,6 +2477,20 @@
             <td><strong>${fmtRp(m.omzet)}</strong></td>
             <td style="color:var(--success)"><strong>${fmtRp(m.kasMasuk)}</strong></td>
             <td style="color:var(--warning)">${fmtRp(m.piutang)}</td>
+          </tr>
+        `).join("");
+      }
+
+      const catBody = document.getElementById("categoryMonthlyBody");
+      if (data.categoryMonthlyRows.length === 0) {
+        catBody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--text-muted)">Belum ada rincian omzet per kategori pada periode ini</td></tr>`;
+      } else {
+        catBody.innerHTML = data.categoryMonthlyRows.map(row => `
+          <tr>
+            <td><strong>${formatMonthLabel(row.ym)}</strong> <span style="font-size:0.75rem;color:var(--text-muted)">(${row.ym})</span></td>
+            <td><span class="badge">${row.kategori}</span></td>
+            <td><strong>${fmtRp(row.omzet)}</strong></td>
+            <td>${row.sharePct}%</td>
           </tr>
         `).join("");
       }
@@ -2470,6 +2575,12 @@
       lines.push([csvCell("REKAP BULANAN"), csvCell("JUMLAH ORDER"), csvCell("OMZET"), csvCell("KAS MASUK"), csvCell("SISA PIUTANG")].join(";"));
       data.monthlyRows.forEach(m => {
         lines.push([csvCell(m.ym), csvCell(m.orderCount), csvCell(m.omzet), csvCell(m.kasMasuk), csvCell(m.piutang)].join(";"));
+      });
+
+      lines.push("");
+      lines.push([csvCell("BULAN"), csvCell("KATEGORI PRODUK"), csvCell("OMZET KATEGORI"), csvCell("PORSI BULAN (%)")].join(";"));
+      data.categoryMonthlyRows.forEach(row => {
+        lines.push([csvCell(row.ym), csvCell(row.kategori), csvCell(row.omzet), csvCell(`${row.sharePct}%`)].join(";"));
       });
 
       lines.push("");
