@@ -933,3 +933,62 @@ th {
     padding: 0 !important;
   }
 }
+
+/* Kunci lebar penuh & cegah luapan horizontal pada kartu katalog */
+#tab-inventory,
+#tab-inventory .card,
+#tab-inventory .card-title,
+#tab-inventory form,
+#tab-inventory .form-grid,
+#tab-inventory .form-grid > *,
+#tab-inventory .field,
+#tab-inventory .btn-row,
+#tab-inventory .compact-table-toolbar,
+#tab-inventory .compact-table-footer,
+#tab-inventory .table-wrap {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+#tab-inventory input,
+#tab-inventory select,
+#tab-inventory textarea,
+#tab-inventory button {
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+#tab-inventory .field input,
+#tab-inventory .field select,
+#tab-inventory .katalog-search,
+#tab-inventory .katalog-select {
+  width: 100%;
+  display: block;
+}
+
+@media (max-width: 640px) {
+  #tab-inventory .compact-table-toolbar {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  #tab-inventory .compact-table-toolbar > * {
+    width: 100%;
+    flex: 0 0 auto;
+  }
+
+  #tab-inventory .btn-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  #tab-inventory .btn-row > .btn {
+    width: 100%;
+  }
+}
